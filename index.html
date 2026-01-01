@@ -42,10 +42,11 @@
         .lb-name { color: #888; text-transform: uppercase; }
         .lb-score { color: var(--yellow); font-weight: bold; }
 
-        /* Manual */
-        .manual-box { width: 100%; background: #0a0b0e; border-radius: 10px; padding: 15px; overflow-y: auto; max-height: 450px; }
-        .manual-item { margin-bottom: 15px; font-size: 0.85rem; text-align: left; }
-        .manual-item b { color: var(--cyan); display: block; margin-bottom: 3px; font-size: 0.75rem; letter-spacing: 1px; }
+        /* Manual Styling */
+        .manual-box { width: 100%; background: #0a0b0e; border-radius: 10px; padding: 15px; overflow-y: auto; max-height: 500px; border: 1px solid var(--border); }
+        .manual-item { margin-bottom: 18px; font-size: 0.8rem; text-align: left; line-height: 1.4; }
+        .manual-item b { color: var(--cyan); display: block; margin-bottom: 4px; font-size: 0.7rem; letter-spacing: 1.5px; text-transform: uppercase; }
+        .manual-divider { height: 1px; background: var(--border); margin: 15px 0; }
 
         /* UI Elements */
         input {
@@ -61,7 +62,7 @@
         .btn-secondary { background: transparent; border: 1px solid var(--border); font-size: 0.8rem; padding: 12px; }
 
         /* Combo Feedback */
-        #combo-alert { color: var(--magenta); font-weight: 900; font-size: 1rem; position: absolute; top: 110px; opacity: 0; transition: 0.3s; }
+        #combo-alert { color: var(--magenta); font-weight: 900; font-size: 1rem; position: absolute; top: 110px; opacity: 0; transition: 0.3s; z-index: 20; pointer-events: none; }
 
         /* Game HUD */
         .game-hud { display: flex; justify-content: space-between; width: 100%; margin-bottom: 20px; font-size: 0.8rem; color: #888; }
@@ -82,11 +83,17 @@
     </div>
 
     <div id="screen-manual" class="screen">
-        <div class="logo-small">STAGING AREA</div>
+        <div class="logo-small">STUDIO OPS</div>
         <div class="manual-box">
-            <div class="manual-item"><b>XP OVERDRIVE</b>Complete 3 tasks in a row for a +25 XP bonus.</div>
-            <div class="manual-item"><b>CLEAN STREAK</b>Complete 6 tasks without a single RERUN for a random Massive Bonus (50-150 Clout).</div>
-            <div class="manual-item"><b>LIFETIME CLOUT</b>Your total career points. Session records go to the Global Leaderboard.</div>
+            <div class="manual-item"><b>1. CHOOSE YOUR WORKFLOW</b>Select a field (Engineer, Beats, or Writer). Each field presents specialized tasks designed to break creative blocks.</div>
+            <div class="manual-item"><b>2. COMPLETE THE DECK</b>You are issued 10 tasks. You have 60 seconds per task. Perform the task in your DAW and hit "COMPLETE" to move forward.</div>
+            <div class="manual-item"><b>3. BASE CLOUT</b>Each card completed = +10 Clout.</div>
+            
+            <div class="manual-divider"></div>
+            
+            <div class="manual-item"><b>XP OVERDRIVE</b>Complete 3 tasks in a row (without the timer hitting zero) for a +25 bonus.</div>
+            <div class="manual-item"><b>CLEAN STREAK</b>Complete 6 tasks without using a single RERUN for a random Massive Bonus (50-150 Clout).</div>
+            <div class="manual-item"><b>LIFETIME CLOUT</b>Your total career points accumulated across all sessions. Session records go to the Global Leaderboard.</div>
         </div>
         <button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">INITIALIZE RIG</button>
     </div>
@@ -210,7 +217,7 @@
                 document.getElementById('timer').innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
                 if(timeLeft <= 0) { 
                     clearInterval(timerInterval); 
-                    comboCount = 0; // Reset combo if timer runs out
+                    comboCount = 0; 
                     showScreen('screen-modes'); 
                 }
             }
@@ -230,16 +237,14 @@
         comboCount++;
         cleanStreakCount++;
 
-        // 3-In-A-Row XP Bonus
         if(comboCount === 3) {
             sessionClout += 25;
             triggerAlert("XP OVERDRIVE +25");
             comboCount = 0;
         }
 
-        // 6-In-A-Row Clean Streak Bonus
         if(cleanStreakCount === 6 && !rerunUsedInSession) {
-            const bonus = Math.floor(Math.random() * 101) + 50; // 50-150
+            const bonus = Math.floor(Math.random() * 101) + 50; 
             sessionClout += bonus;
             triggerAlert(`CLEAN STREAK +${bonus}`);
         }
@@ -250,7 +255,7 @@
 
     function rerollTask() {
         rerunUsedInSession = true;
-        cleanStreakCount = 0; // Break the clean streak
+        cleanStreakCount = 0; 
         const deck = cardDecks[selectedMode] || cardDecks.production;
         document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
     }
