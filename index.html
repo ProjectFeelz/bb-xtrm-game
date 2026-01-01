@@ -45,7 +45,6 @@
             border-right: 12px solid var(--rig-wood);
         }
 
-        /* SCREENS AS CARDS */
         .screen {
             position: absolute;
             inset: 15px;
@@ -106,15 +105,8 @@
 
         #card { width: 100%; flex: 1; border: 1px solid #333; background: #0a0a0a; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 20px; text-align: center; margin: 10px 0; font-size: 1.2rem; color: #fff; box-shadow: inset 0 0 15px #000; overflow: hidden; }
         
-        /* NEW ANIMATION CLASSES */
-        @keyframes slideIn {
-            0% { transform: translateX(100%); opacity: 0; }
-            100% { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes eject {
-            0% { transform: translateX(0); opacity: 1; }
-            100% { transform: translateX(-100%); opacity: 0; }
-        }
+        @keyframes slideIn { 0% { transform: translateX(100%); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+        @keyframes eject { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(-100%); opacity: 0; } }
         .card-load { animation: slideIn 0.4s ease-out forwards; }
         .card-eject { animation: eject 0.3s ease-in forwards; }
 
@@ -123,7 +115,7 @@
         .mini-badge { width: 12px; height: 12px; background: var(--yellow); border-radius: 50%; box-shadow: 0 0 8px var(--yellow); }
 
         #cheat-error { color: var(--red); font-size: 0.6rem; font-weight: bold; opacity: 0; transition: 0.2s; height: 10px; text-transform: uppercase; }
-        #combo-alert { color: var(--magenta); font-weight: 900; font-size: 1rem; opacity: 0; height: 20px; }
+        #combo-alert { color: var(--magenta); font-weight: 900; font-size: 1rem; opacity: 0; height: 20px; transition: 0.3s;}
 
         input { width: 100%; padding: 15px; background: #000; border: 1px solid var(--cyan); color: var(--cyan); border-radius: 8px; text-align: center; font-size: 1rem; margin-bottom: 10px; outline: none; }
         .cooldown-text { display: block; font-size: 0.6rem; opacity: 0.7; font-weight: normal; margin-top: 2px; }
@@ -198,6 +190,32 @@
 </div>
 
 <script>
+    // --- AUDIO ENGINE ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    function playTone(freq, type, duration, vol = 0.1) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    const sfx = {
+        click: () => playTone(150, 'sine', 0.1, 0.2),
+        error: () => { playTone(100, 'sawtooth', 0.2, 0.1); playTone(80, 'sawtooth', 0.2, 0.1); },
+        success: () => { playTone(600, 'sine', 0.2, 0.1); setTimeout(()=>playTone(800, 'sine', 0.3, 0.1), 50); },
+        tick: (isLow) => playTone(isLow ? 1200 : 800, 'square', 0.05, 0.03),
+        xp: () => { [440, 554, 659, 880].forEach((f, i) => setTimeout(() => playTone(f, 'sine', 0.4, 0.1), i * 100)); },
+        boot: () => { playTone(200, 'sine', 1, 0.2); playTone(400, 'sine', 1, 0.1); }
+    };
+
+    // --- GAME LOGIC ---
     const SET_LIMIT = 10;
     const TASK_TIME = 30; 
     const cardDecks = {
@@ -207,10 +225,12 @@
     };
 
     let sessionClout = 0, timeLeft = 0, timerInterval = null, isPaused = false, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
-    let comboCount = 0, rerunUsedInSession = false, cleanStreakCount = 0, cooldownLeft = 0, speedDemonCount = 0;
+    let comboCount = 0, rerunUsedInSession = false, speedDemonCount = 0, cooldownLeft = 0;
     const API_PATH = "/.netlify/functions";
 
     function showScreen(id) {
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        sfx.click();
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         const target = document.getElementById(id);
         if(target) target.classList.add('active-screen');
@@ -242,8 +262,9 @@
 
     function validateAuth() {
         const name = document.getElementById('username').value.trim().toUpperCase();
-        if(name.length < 2) return;
+        if(name.length < 2) { sfx.error(); return; }
         currentCallsign = name;
+        sfx.boot();
         document.getElementById('welcome-msg').innerText = `WELCOME, ${currentCallsign}`;
         if(!sessionStorage.getItem('manualSeen')) {
             sessionStorage.setItem('manualSeen', 'true');
@@ -253,7 +274,7 @@
 
     function startGame(mode) {
         selectedMode = mode; tasksCompleted = 0; sessionClout = 0; isPaused = false;
-        comboCount = 0; cleanStreakCount = 0; rerunUsedInSession = false; speedDemonCount = 0;
+        comboCount = 0; rerunUsedInSession = false; speedDemonCount = 0;
         document.getElementById('clout-val').innerText = "0";
         document.getElementById('perfect-badge').style.display = "none";
         showScreen('screen-game');
@@ -263,8 +284,6 @@
     function drawTask() {
         if(tasksCompleted >= SET_LIMIT) { endSession(); return; }
         const cardBody = document.getElementById('card-body');
-        
-        // Eject current card
         cardBody.classList.remove('card-load');
         cardBody.classList.add('card-eject');
         
@@ -272,11 +291,8 @@
             document.getElementById('task-count').innerText = `${tasksCompleted + 1}/${SET_LIMIT}`;
             const deck = cardDecks[selectedMode] || cardDecks.production;
             cardBody.innerText = deck[Math.floor(Math.random() * deck.length)];
-            
-            // Load new card
             cardBody.classList.remove('card-eject');
             cardBody.classList.add('card-load');
-            
             timeLeft = TASK_TIME;
             cooldownLeft = 10; 
             updateCooldownUI();
@@ -304,16 +320,29 @@
             if(!isPaused) {
                 timeLeft--;
                 if(cooldownLeft > 0) { cooldownLeft--; updateCooldownUI(); }
+                
+                sfx.tick(timeLeft <= 10);
                 if(timeLeft <= 10) timerEl.classList.add('timer-low');
+                
                 const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
                 timerEl.innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
-                if(timeLeft <= 0) { clearInterval(timerInterval); comboCount = 0; showScreen('screen-modes'); }
+                
+                if(timeLeft <= 0) { 
+                    clearInterval(timerInterval); 
+                    sfx.error();
+                    showScreen('screen-modes'); 
+                }
             }
         }, 1000);
     }
 
     function attemptComplete() {
-        if(cooldownLeft > 0) { showCheatError(); return; }
+        if(cooldownLeft > 0) { 
+            sfx.error();
+            showCheatError(); 
+            return; 
+        }
+        sfx.success();
         completeTask();
     }
 
@@ -325,12 +354,23 @@
 
     function completeTask() {
         let currentBonus = 0;
-        if (timeLeft > 15) { currentBonus += 5; speedDemonCount++; triggerAlert("SPEED DEMON +5"); }
+        if (timeLeft > 15) { 
+            currentBonus += 5; 
+            speedDemonCount++; 
+            triggerAlert("SPEED DEMON +5"); 
+        }
         tasksCompleted++; 
         sessionClout += (10 + currentBonus);
-        comboCount++; cleanStreakCount++;
+        comboCount++; 
         
-        if(comboCount === 3) { sessionClout += 25; setTimeout(() => triggerAlert("XP OVERDRIVE +25"), 800); comboCount = 0; }
+        if(comboCount === 3) { 
+            sessionClout += 25; 
+            setTimeout(() => {
+                sfx.xp();
+                triggerAlert("XP OVERDRIVE +25");
+            }, 500); 
+            comboCount = 0; 
+        }
         document.getElementById('clout-val').innerText = sessionClout;
         drawTask();
     }
@@ -342,13 +382,12 @@
     }
 
     function rerollTask() { 
+        sfx.click();
         rerunUsedInSession = true; 
         const deck = cardDecks[selectedMode] || cardDecks.production;
         const cardBody = document.getElementById('card-body');
-        
         cardBody.classList.remove('card-load');
         cardBody.classList.add('card-eject');
-        
         setTimeout(() => {
             cardBody.innerText = deck[Math.floor(Math.random() * deck.length)];
             cardBody.classList.remove('card-eject');
@@ -358,6 +397,7 @@
 
     async function endSession() {
         clearInterval(timerInterval);
+        sfx.xp();
         showScreen('screen-results');
         if (!rerunUsedInSession && speedDemonCount >= 5) {
             document.getElementById('perfect-badge').style.display = "block";
@@ -379,9 +419,9 @@
         } catch (e) { document.getElementById('result-footer').innerText = "OFFLINE MODE."; }
     }
 
-    function resetAll() { if(confirm("ERASE ALL CAREER PROGRESS?")) { localStorage.clear(); location.reload(); } }
-    function togglePause() { isPaused = !isPaused; document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE"; }
-    function exitGame() { clearInterval(timerInterval); showScreen('screen-modes'); }
+    function resetAll() { if(confirm("ERASE ALL CAREER PROGRESS?")) { sfx.error(); localStorage.clear(); location.reload(); } }
+    function togglePause() { sfx.click(); isPaused = !isPaused; document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE"; }
+    function exitGame() { sfx.click(); clearInterval(timerInterval); showScreen('screen-modes'); }
     window.onload = () => showScreen('screen-auth');
 </script>
 </body>
