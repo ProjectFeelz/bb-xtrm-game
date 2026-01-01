@@ -1,0 +1,80 @@
+<script>
+    // ... (Keep your paceDecks and cardDecks constant definitions here) ...
+
+    let clout = 0, timeLeft = 0, timerInterval = null, isPaused = false, selectedMode = '', currentType = '';
+    let combo = 0, multiplier = 1.0, currentCallsign = "";
+
+    // NEW: The URL where your Netlify functions will live
+    const API_PATH = "/.netlify/functions";
+
+    window.onload = () => {
+        const saved = localStorage.getItem('bb_artist_name');
+        if (saved) {
+            currentCallsign = saved;
+            document.getElementById('welcome-msg').innerText = `WELCOME, ${currentCallsign}`;
+            showScreen('screen-modes');
+        } else {
+            showScreen('screen-auth');
+        }
+    };
+
+    // ... (Keep showScreen, validateAuth, resetRig, startGame, drawTask, startTimer as they were) ...
+
+    async function endSession() {
+        clearInterval(timerInterval);
+        document.getElementById('result-header').innerText = "SET COMPLETE!";
+        document.getElementById('result-header').style.color = "var(--cyan)";
+        document.getElementById('result-artist').innerText = `ARTIST: ${currentCallsign}`;
+        document.getElementById('result-clout').innerText = clout;
+        
+        // SYNC START: Send the data to Netlify
+        document.getElementById('result-footer').innerText = "SYNCING CLOUT TO GLOBAL RIG...";
+        
+        try {
+            const response = await fetch(`${API_PATH}/save-score`, {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    username: currentCallsign, 
+                    score: clout 
+                })
+            });
+            if (response.ok) {
+                document.getElementById('result-footer').innerText = "CLOUT BANKED SUCCESSFULLY.";
+            }
+        } catch (err) {
+            document.getElementById('result-footer').innerText = "SYNC FAILED. SAVED LOCALLY ONLY.";
+            console.error("Netlify Sync Error:", err);
+        }
+
+        showScreen('screen-results');
+    }
+
+    async function showLeaderboard() {
+        const body = document.getElementById('leaderboard-body');
+        body.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px;">FETCHING GLOBAL DATA...</td></tr>';
+        showScreen('screen-board');
+
+        try {
+            // SYNC START: Fetch real data from Netlify
+            const response = await fetch(`${API_PATH}/get-scores`);
+            const data = await response.json(); // Data should be an array of {username, clout}
+
+            if (data && data.length > 0) {
+                body.innerHTML = data.map((d, i) => `
+                    <tr>
+                        <td style="padding:15px 0; border-bottom:1px solid #222;">
+                            <span style="color:var(--yellow)">#${i+1}</span> ${d.username}
+                        </td>
+                        <td style="text-align:right; color:var(--yellow)">${d.clout}</td>
+                    </tr>`).join('');
+            } else {
+                body.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px;">NO DATA RECORDED</td></tr>';
+            }
+        } catch (err) {
+            body.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px; color:var(--red);">OFFLINE MODE: CANNOT REACH HUB</td></tr>';
+        }
+    }
+
+    // ... (Keep breakCombo, skipCard, rerollTimer, togglePause, exitGame) ...
+</script>
+
