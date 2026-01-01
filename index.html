@@ -57,7 +57,6 @@
         .game-hud { display: flex; justify-content: space-between; width: 100%; margin-bottom: 10px; font-size: 0.8rem; color: #888; }
         .hud-val { color: var(--cyan); font-weight: bold; }
         
-        /* High Stakes Red Timer when low */
         #timer { font-size: 6rem; color: var(--yellow); font-family: monospace; line-height: 1; margin: 0; }
         .timer-low { color: var(--red) !important; animation: pulse 0.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
@@ -65,6 +64,14 @@
         #card { width: 100%; flex: 1; border: 2px solid var(--border); background: #121519; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 25px; text-align: center; margin: 15px 0; font-size: 1.4rem; font-weight: 600; }
         #game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
         
+        /* Perfect Set Badge */
+        #perfect-badge { 
+            display: none; color: var(--yellow); border: 2px solid var(--yellow);
+            padding: 10px 20px; border-radius: 50px; font-size: 0.8rem; font-weight: 900;
+            margin-top: 15px; animation: glow 1.5s infinite alternate;
+        }
+        @keyframes glow { from { box-shadow: 0 0 5px var(--yellow); } to { box-shadow: 0 0 20px var(--yellow); } }
+
         .cooldown-text { font-size: 0.6rem; display: block; margin-top: 4px; opacity: 0.7; font-weight: normal; }
     </style>
 </head>
@@ -81,11 +88,10 @@
     <div id="screen-manual" class="screen">
         <div class="logo-small">STUDIO OPS</div>
         <div style="text-align: left; font-size: 0.8rem; line-height: 1.6; background: #0a0b0e; padding: 15px; border-radius: 10px;">
-            <b style="color:var(--red)">• HIGH STAKES:</b> You only have 30s per task.<br>
-            <b>• 10s LOCK:</b> Hard lockout on completion. No skipping!<br>
-            <b>• XP COMBO:</b> 3 tasks in a row = +25 XP.<br>
-            <b>• CLEAN STREAK:</b> 6 tasks, no RERUN = Random Bonus.<br>
-            <b>• GLOBAL RANK:</b> Check your standing against other artists.
+            <b style="color:var(--red)">• HIGH STAKES:</b> 30s per task.<br>
+            <b>• 10s LOCK:</b> You must work for at least 10s.<br>
+            <b style="color:var(--green)">• SPEED DEMON:</b> Finish with >15s left for +5 Clout.<br>
+            <b style="color:var(--yellow)">• PERFECT SET:</b> 0 Reruns + 5 Speed Bonuses = GOLD BADGE.
         </div>
         <button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">INITIALIZE RIG</button>
     </div>
@@ -129,6 +135,7 @@
     <div id="screen-results" class="screen">
         <h2 id="result-header">SET COMPLETE</h2>
         <div id="result-clout" style="font-size: 4rem; color: var(--yellow)">0</div>
+        <div id="perfect-badge">PERFECT SET // GOLD STATUS</div>
         <p id="result-footer" style="margin-top: 20px;">BANKING CLOUT...</p>
         <button class="btn btn-primary" style="margin-top: 20px" onclick="showScreen('screen-modes')">CONTINUE</button>
     </div>
@@ -136,7 +143,7 @@
 
 <script>
     const SET_LIMIT = 10;
-    const TASK_TIME = 30; // 30 Seconds High Stakes
+    const TASK_TIME = 30; 
     const cardDecks = {
         production: ['Filter everything below 200Hz', 'Layer a snare sample', 'Bus melodic elements', 'Mute lead instrument', 'Apply 1/8th delay', 'Saturate the Bass', 'Pan hats 30% Right', 'Double vocals', 'Reverse reverb tail', 'Bitcrush melody'],
         songwriting: ['Rhyme with Stone', 'No I, Me, or My', '3 questions', 'Start with previous word', 'Weather metaphor', 'Specific color', '4-line story', 'Alliterate next line', 'End line with verb', 'Write about machine'],
@@ -144,7 +151,7 @@
     };
 
     let sessionClout = 0, timeLeft = 0, timerInterval = null, isPaused = false, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
-    let comboCount = 0, rerunUsedInSession = false, cleanStreakCount = 0, cooldownLeft = 0;
+    let comboCount = 0, rerunUsedInSession = false, cleanStreakCount = 0, cooldownLeft = 0, speedDemonCount = 0;
     const API_PATH = "/.netlify/functions";
 
     function showScreen(id) {
@@ -179,8 +186,9 @@
 
     function startGame(mode) {
         selectedMode = mode; tasksCompleted = 0; sessionClout = 0; isPaused = false;
-        comboCount = 0; cleanStreakCount = 0; rerunUsedInSession = false;
+        comboCount = 0; cleanStreakCount = 0; rerunUsedInSession = false; speedDemonCount = 0;
         document.getElementById('clout-val').innerText = "0";
+        document.getElementById('perfect-badge').style.display = "none";
         showScreen('screen-game');
         drawTask();
     }
@@ -221,27 +229,16 @@
                     cooldownLeft--;
                     updateCooldownUI();
                 }
-
-                // UI Feedback for low time
                 if(timeLeft <= 10) timerEl.classList.add('timer-low');
-
                 const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
                 timerEl.innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
-                
-                if(timeLeft <= 0) { 
-                    clearInterval(timerInterval); 
-                    comboCount = 0; 
-                    showScreen('screen-modes'); 
-                }
+                if(timeLeft <= 0) { clearInterval(timerInterval); comboCount = 0; showScreen('screen-modes'); }
             }
         }, 1000);
     }
 
     function attemptComplete() {
-        if(cooldownLeft > 0) {
-            showCheatError();
-            return;
-        }
+        if(cooldownLeft > 0) { showCheatError(); return; }
         completeTask();
     }
 
@@ -252,20 +249,28 @@
     }
 
     function completeTask() {
+        let currentBonus = 0;
+        if (timeLeft > 15) {
+            currentBonus += 5;
+            speedDemonCount++;
+            triggerAlert("SPEED DEMON +5");
+        }
+
         tasksCompleted++; 
-        sessionClout += 10;
+        sessionClout += (10 + currentBonus);
         comboCount++;
         cleanStreakCount++;
 
         if(comboCount === 3) { 
             sessionClout += 25; 
-            triggerAlert("XP OVERDRIVE +25"); 
+            setTimeout(() => triggerAlert("XP OVERDRIVE +25"), 800); 
             comboCount = 0; 
         }
+        
         if(cleanStreakCount === 6 && !rerunUsedInSession) {
             const bonus = Math.floor(Math.random() * 101) + 50; 
             sessionClout += bonus;
-            triggerAlert(`CLEAN STREAK +${bonus}`);
+            setTimeout(() => triggerAlert(`CLEAN STREAK +${bonus}`), 1600);
         }
 
         document.getElementById('clout-val').innerText = sessionClout;
@@ -287,6 +292,13 @@
     async function endSession() {
         clearInterval(timerInterval);
         showScreen('screen-results');
+        
+        // Perfect Set Check
+        if (!rerunUsedInSession && speedDemonCount >= 5) {
+            document.getElementById('perfect-badge').style.display = "block";
+            sessionClout += 100; // Secret 100pt bonus for Perfect Set
+        }
+
         const currentTotal = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
         localStorage.setItem(`clout_${currentCallsign}`, currentTotal + sessionClout);
         
