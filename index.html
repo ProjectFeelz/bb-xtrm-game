@@ -28,7 +28,6 @@
             background: var(--panel); z-index: 10;
         }
         .active-screen { display: flex !important; }
-        
         .logo-small { font-size: 2rem; font-weight: 900; color: var(--cyan); margin-bottom: 20px; font-style: italic; }
         h2 { font-size: 0.7rem; letter-spacing: 3px; color: #666; text-transform: uppercase; margin-bottom: 15px; text-align: center; }
         
@@ -74,7 +73,6 @@
             margin-top: 15px; animation: glow 1.5s infinite alternate;
         }
         @keyframes glow { from { box-shadow: 0 0 5px var(--yellow); } to { box-shadow: 0 0 20px var(--yellow); } }
-
         .cooldown-text { font-size: 0.6rem; display: block; margin-top: 4px; opacity: 0.7; font-weight: normal; }
     </style>
 </head>
@@ -91,11 +89,10 @@
     <div id="screen-manual" class="screen">
         <div class="logo-small">STUDIO OPS</div>
         <div style="text-align: left; font-size: 0.75rem; line-height: 1.5; background: #0a0b0e; padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-            <b style="color:var(--red)">• HIGH STAKES:</b> You have exactly 30s to complete each task. If the timer hits zero, the session ends. <br><br>
-            <b style="color:var(--cyan)">• 10s SECURITY LOCK:</b> The 'COMPLETE' button is hard-locked for the first 10s of every card. Focus on the craft during this time.<br><br>
-            <b style="color:var(--green)">• SPEED DEMON:</b> Submit your task with more than 15s left on the clock to earn +5 bonus Clout.<br><br>
-            <b style="color:var(--magenta)">• XP COMBO:</b> Chain 3 tasks without a RERUN or failure to trigger +25 XP Overdrive.<br><br>
-            <b style="color:var(--yellow)">• PERFECT SET:</b> Complete all 10 tasks with 0 RERUNS and 5+ SPEED bonuses to earn a Career Trophy and +100 Clout.
+            <b style="color:var(--red)">• HIGH STAKES:</b> 30s per task. <br><br>
+            <b style="color:var(--cyan)">• DYNAMIC TENSION:</b> Audio intensity increases as time runs out.<br><br>
+            <b style="color:var(--green)">• SPEED DEMON:</b> Submit with >15s left for +5 Clout.<br><br>
+            <b style="color:var(--yellow)">• PERFECT SET:</b> 0 Reruns + 5 Speed Bonuses = Career Trophy.
         </div>
         <button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">INITIALIZE RIG</button>
     </div>
@@ -107,7 +104,6 @@
             <div id="global-rank-display" style="font-size: 2.2rem; color: var(--cyan); font-weight: 900;">RANKING...</div>
             <div id="last-score" style="color: var(--yellow); font-size: 0.8rem; margin-top: 5px;">0 LIFETIME CLOUT</div>
             <div id="career-stats">
-                <div style="color: #444; font-size: 0.55rem; letter-spacing: 1px;">PERFECT SET HISTORY</div>
                 <div id="badge-container" class="badge-row"></div>
             </div>
         </div>
@@ -150,6 +146,48 @@
 </div>
 
 <script>
+    // --- ADVANCED AUDIO ENGINE ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let musicInterval = null;
+
+    function playSfx(freq, type, duration, vol, ramp = true) {
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        if(ramp) gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    // Dynamic Loop Generator
+    function tickMusic() {
+        if (isPaused || !timerInterval) return;
+        
+        // Music intensifies as timeLeft decreases
+        const intensity = (30 - timeLeft) / 30; // 0 to 1
+        const tempo = Math.max(200, 600 - (intensity * 450)); // Fast ticks
+        const freq = 60 + (intensity * 140); // Base pitch rises
+        
+        playSfx(freq, 'sine', 0.1, 0.05);
+        if(timeLeft < 10) playSfx(freq * 2, 'triangle', 0.05, 0.02); // Add high-pitched stress
+
+        musicInterval = setTimeout(tickMusic, tempo);
+    }
+
+    const sfx = {
+        click: () => playSfx(800, 'sine', 0.1, 0.1),
+        success: () => { playSfx(600, 'sine', 0.2, 0.1); setTimeout(()=>playSfx(900, 'sine', 0.2, 0.1), 100); },
+        combo: () => { playSfx(400, 'square', 0.1, 0.05); setTimeout(()=>playSfx(800, 'square', 0.3, 0.05), 100); },
+        error: () => playSfx(100, 'sawtooth', 0.4, 0.1),
+        rankUp: () => { playSfx(440, 'sine', 0.5, 0.1); playSfx(554, 'sine', 0.5, 0.1); playSfx(659, 'sine', 0.5, 0.1); }
+    };
+
+    // --- GAME LOGIC ---
     const SET_LIMIT = 10;
     const TASK_TIME = 30; 
     const cardDecks = {
@@ -160,13 +198,12 @@
 
     let sessionClout = 0, timeLeft = 0, timerInterval = null, isPaused = false, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
     let comboCount = 0, rerunUsedInSession = false, cleanStreakCount = 0, cooldownLeft = 0, speedDemonCount = 0;
-    const API_PATH = "/.netlify/functions";
 
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         const target = document.getElementById(id);
         if(target) target.classList.add('active-screen');
-        if(id === 'screen-modes') { updateRankDisplay(); renderBadges(); }
+        if(id === 'screen-modes') { updateRankDisplay(); renderBadges(); clearTimeout(musicInterval); }
     }
 
     function renderBadges() {
@@ -174,53 +211,42 @@
         const container = document.getElementById('badge-container');
         container.innerHTML = '';
         for(let i=0; i<count; i++) {
-            const b = document.createElement('div');
-            b.className = 'mini-badge';
+            const b = document.createElement('div'); b.className = 'mini-badge';
             container.appendChild(b);
         }
     }
 
-    async function updateRankDisplay() {
+    function updateRankDisplay() {
         const savedClout = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
         document.getElementById('last-score').innerText = `${savedClout} LIFETIME CLOUT`;
-        try {
-            const res = await fetch(`${API_PATH}/get-scores?t=${Date.now()}`);
-            const data = await res.json();
-            const sorted = data.sort((a,b) => b.clout - a.clout);
-            const rank = sorted.findIndex(u => u.username === currentCallsign) + 1;
-            document.getElementById('global-rank-display').innerText = rank > 0 ? `#${rank} WORLD` : "UNRANKED";
-        } catch (e) { document.getElementById('global-rank-display').innerText = "OFFLINE"; }
+        document.getElementById('global-rank-display').innerText = "LOCAL RIG";
     }
 
     function validateAuth() {
         const name = document.getElementById('username').value.trim().toUpperCase();
         if(name.length < 2) return;
+        sfx.click();
         currentCallsign = name;
         document.getElementById('welcome-msg').innerText = `WELCOME, ${currentCallsign}`;
-        if(!sessionStorage.getItem('manualSeen')) {
-            sessionStorage.setItem('manualSeen', 'true');
-            showScreen('screen-manual');
-        } else { showScreen('screen-modes'); }
+        showScreen('screen-modes');
     }
 
     function startGame(mode) {
+        sfx.click();
         selectedMode = mode; tasksCompleted = 0; sessionClout = 0; isPaused = false;
         comboCount = 0; cleanStreakCount = 0; rerunUsedInSession = false; speedDemonCount = 0;
         document.getElementById('clout-val').innerText = "0";
         document.getElementById('perfect-badge').style.display = "none";
         showScreen('screen-game');
         drawTask();
+        tickMusic(); // Start dynamic music
     }
 
-    // FIX: Shuffle card text correctly every time
     function drawTask() {
         if(tasksCompleted >= SET_LIMIT) { endSession(); return; }
-        
         document.getElementById('task-count').innerText = `${tasksCompleted + 1}/${SET_LIMIT}`;
         const deck = cardDecks[selectedMode] || cardDecks.production;
-        const randomCard = deck[Math.floor(Math.random() * deck.length)];
-        document.getElementById('card-body').innerText = randomCard;
-        
+        document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
         timeLeft = TASK_TIME;
         cooldownLeft = 10; 
         updateCooldownUI();
@@ -247,23 +273,18 @@
             if(!isPaused) {
                 timeLeft--;
                 if(cooldownLeft > 0) { cooldownLeft--; updateCooldownUI(); }
-                if(timeLeft <= 10) timerEl.classList.add('timer-low');
+                if(timeLeft <= 10) { timerEl.classList.add('timer-low'); }
                 const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
                 timerEl.innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
-                if(timeLeft <= 0) { clearInterval(timerInterval); comboCount = 0; showScreen('screen-modes'); }
+                if(timeLeft <= 0) { sfx.error(); clearInterval(timerInterval); showScreen('screen-modes'); }
             }
         }, 1000);
     }
 
     function attemptComplete() {
-        if(cooldownLeft > 0) { showCheatError(); return; }
+        if(cooldownLeft > 0) { sfx.error(); return; }
+        sfx.success();
         completeTask();
-    }
-
-    function showCheatError() {
-        const err = document.getElementById('cheat-error');
-        err.style.opacity = "1";
-        setTimeout(() => err.style.opacity = "0", 2000);
     }
 
     function completeTask() {
@@ -271,16 +292,10 @@
         if (timeLeft > 15) { currentBonus += 5; speedDemonCount++; triggerAlert("SPEED DEMON +5"); }
         tasksCompleted++; 
         sessionClout += (10 + currentBonus);
-        comboCount++; cleanStreakCount++;
-        
-        if(comboCount === 3) { sessionClout += 25; setTimeout(() => triggerAlert("XP OVERDRIVE +25"), 800); comboCount = 0; }
-        if(cleanStreakCount === 6 && !rerunUsedInSession) {
-            const bonus = Math.floor(Math.random() * 101) + 50; 
-            sessionClout += bonus;
-            setTimeout(() => triggerAlert(`CLEAN STREAK +${bonus}`), 1600);
-        }
+        comboCount++;
+        if(comboCount === 3) { sfx.combo(); sessionClout += 25; comboCount = 0; }
         document.getElementById('clout-val').innerText = sessionClout;
-        drawTask(); // Shuffle next card
+        drawTask();
     }
 
     function triggerAlert(text) {
@@ -290,41 +305,36 @@
     }
 
     function rerollTask() { 
-        rerunUsedInSession = true; 
-        cleanStreakCount = 0; 
+        sfx.click(); rerunUsedInSession = true; 
         const deck = cardDecks[selectedMode] || cardDecks.production;
         document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
     }
 
-    async function endSession() {
+    function endSession() {
         clearInterval(timerInterval);
+        clearTimeout(musicInterval);
+        sfx.rankUp();
         showScreen('screen-results');
-        
         if (!rerunUsedInSession && speedDemonCount >= 5) {
             document.getElementById('perfect-badge').style.display = "block";
             sessionClout += 100;
             const perfects = parseInt(localStorage.getItem(`perfect_${currentCallsign}`) || 0);
             localStorage.setItem(`perfect_${currentCallsign}`, perfects + 1);
         }
-
         const currentTotal = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
         localStorage.setItem(`clout_${currentCallsign}`, currentTotal + sessionClout);
         document.getElementById('result-clout').innerText = sessionClout;
-        const footer = document.getElementById('result-footer');
-        footer.innerText = "SYNCING TO GLOBAL RIG...";
-        try {
-            await fetch(`${API_PATH}/save-score`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: currentCallsign, score: sessionClout })
-            });
-            footer.innerText = "RANK UPDATED SUCCESSFULLY.";
-        } catch (e) { footer.innerText = "OFFLINE: SAVED TO LOCAL RIG."; }
     }
 
-    function resetAll() { if(confirm("ERASE ALL CAREER PROGRESS?")) { localStorage.clear(); location.reload(); } }
-    function togglePause() { isPaused = !isPaused; document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE"; }
-    function exitGame() { clearInterval(timerInterval); showScreen('screen-modes'); }
+    function togglePause() { 
+        sfx.click(); 
+        isPaused = !isPaused; 
+        document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE"; 
+        if(!isPaused) tickMusic(); // Resume music
+    }
+    
+    function resetAll() { if(confirm("ERASE CAREER?")) { localStorage.clear(); location.reload(); } }
+    function exitGame() { clearTimeout(musicInterval); clearInterval(timerInterval); showScreen('screen-modes'); }
     window.onload = () => showScreen('screen-auth');
 </script>
 </body>
