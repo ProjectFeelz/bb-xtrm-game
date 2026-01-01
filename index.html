@@ -305,9 +305,26 @@
     }
 
     function rerollTask() { 
-        sfx.click(); rerunUsedInSession = true; 
+        sfx.click(); 
+        rerunUsedInSession = true; 
+        
+        // Pick new card
         const deck = cardDecks[selectedMode] || cardDecks.production;
         document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
+        
+        // FULL RESET of timers for this task
+        timeLeft = TASK_TIME;
+        cooldownLeft = 10;
+        
+        // Update UI immediately
+        const timerEl = document.getElementById('timer');
+        timerEl.innerText = "00:30";
+        timerEl.classList.remove('timer-low');
+        updateCooldownUI();
+        
+        // Re-sync the audio heartbeat to the new time
+        clearTimeout(musicInterval);
+        tickMusic();
     }
 
     function endSession() {
