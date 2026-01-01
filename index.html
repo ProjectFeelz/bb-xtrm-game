@@ -6,287 +6,198 @@
     <title>BB XTRM // PRO STUDIO</title>
     <style>
         :root {
-    --rig-metal: #1a1c1e;
-    --rig-wood: #3d2b1f; /* For that vintage side-panel feel */
-    --tape-black: #0d0d0d;
-    --cyan: #00f2ff;
-    --magenta: #ff00ff;
-    --yellow: #f1c40f;
-    --glass: rgba(0, 242, 255, 0.05);
-    --neon-glow: 0 0 15px rgba(0, 242, 255, 0.6);
-}
-
-body {
-    background: #050505;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
-}
-
-/* The Main Hardware Unit */
-#console {
-    width: 100%;
-    max-width: 420px;
-    height: 92vh;
-    background: var(--rig-metal);
-    border: 10px solid #222;
-    border-radius: 45px;
-    box-shadow: 
-        inset 0 0 40px #000,
-        0 30px 60px rgba(0,0,0,0.9),
-        -5px 0 0 var(--rig-wood), 5px 0 0 var(--rig-wood); /* Wood trim hint */
-    position: relative;
-    padding: 20px;
-}
-
-/* The Glass Screen / Tape Window */
-.screen {
-    position: absolute;
-    inset: 15px;
-    background: var(--tape-black);
-    border: 4px solid #333;
-    border-radius: 25px;
-    padding: 25px;
-    display: none;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-/* CRT Scanline Effect */
-.screen::before {
-    content: " ";
-    display: block;
-    position: absolute;
-    top: 0; left: 0; bottom: 0; right: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-    z-index: 100;
-    background-size: 100% 4px, 3px 100%;
-    pointer-events: none;
-}
-
-/* Mechanical Keyboard Style Buttons */
-.btn {
-    background: #2a2a2a;
-    border: 1px solid #444;
-    border-bottom: 6px solid #111;
-    border-radius: 8px;
-    color: var(--cyan);
-    text-shadow: var(--neon-glow);
-    font-family: 'Courier New', monospace;
-    font-weight: 900;
-    transition: all 0.1s;
-    transform: translateY(0);
-}
-
-.btn:active {
-    transform: translateY(4px);
-    border-bottom: 2px solid #111;
-}
-
-.logo-large {
-    font-size: 3.5rem;
-    font-style: italic;
-    font-weight: 900;
-    color: var(--cyan);
-    text-shadow: var(--neon-glow);
-    margin-bottom: 10px;
-    text-align: center;
-}
-        
-        #rank-panel {
-            width: 100%; background: #0a0b0e; border: 1px solid var(--border);
-            border-radius: 10px; margin-bottom: 20px; padding: 20px; text-align: center;
+            --rig-metal: #1a1c1e;
+            --rig-wood: #3d2b1f;
+            --tape-black: #050505;
+            --cyan: #00f2ff;
+            --magenta: #ff00ff;
+            --yellow: #f1c40f;
+            --green: #2ecc71;
+            --red: #ff4757;
+            --border: #2a2f36;
+            --neon-glow: 0 0 15px rgba(0, 242, 255, 0.4);
         }
 
-        #career-stats { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; align-items: center; }
-        .badge-row { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; margin-top: 5px; }
-        .mini-badge { width: 12px; height: 12px; background: var(--yellow); border-radius: 50%; box-shadow: 0 0 5px var(--yellow); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', monospace; }
 
-        #cheat-error { color: var(--red); font-weight: bold; font-size: 0.75rem; letter-spacing: 1px; opacity: 0; transition: 0.2s; height: 15px; margin-bottom: 5px; text-transform: uppercase; }
-
-        input {
-            width: 100%; padding: 16px; background: #0a0b0e; border: 1px solid var(--border);
-            color: var(--cyan); border-radius: 8px; outline: none; font-size: 1.1rem; text-align: center;
+        body {
+            background-color: #000;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
+
+        /* THE HARDWARE CHASSIS */
+        #console {
+            width: 100%;
+            max-width: 420px;
+            height: 92vh;
+            background: var(--rig-metal);
+            border: 8px solid #222;
+            border-radius: 40px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 30px #000;
+            border-left: 12px solid var(--rig-wood);
+            border-right: 12px solid var(--rig-wood);
+        }
+
+        /* SCREENS AS CARDS */
+        .screen {
+            position: absolute;
+            inset: 15px;
+            background: var(--tape-black);
+            border: 2px solid #222;
+            border-radius: 25px;
+            padding: 25px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            overflow-y: auto;
+        }
+
+        .active-screen { display: flex !important; }
+
+        /* CRT SCANLINE EFFECT */
+        .screen::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 100;
+            border-radius: 25px;
+        }
+
+        .logo-small { font-size: 2.2rem; font-weight: 900; color: var(--cyan); text-shadow: var(--neon-glow); font-style: italic; margin-bottom: 10px; }
+        h2 { font-size: 0.7rem; letter-spacing: 4px; color: var(--magenta); text-transform: uppercase; margin-bottom: 20px; text-align: center; }
+
+        /* BUTTONS */
         .btn {
-            width: 100%; padding: 18px; border: 1px solid var(--border); border-radius: 12px;
-            background: rgba(255,255,255,0.03); color: white; font-weight: bold;
-            cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.2s;
+            width: 100%;
+            padding: 16px;
+            background: #2a2a2a;
+            color: var(--cyan);
+            border: 1px solid #444;
+            border-bottom: 6px solid #000;
+            border-radius: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.1s;
+            margin-bottom: 10px;
         }
-        .btn-primary { background: var(--cyan); color: black; border: none; }
-        .btn-locked { background: #1a1d23 !important; color: #444 !important; border: 1px solid #222 !important; cursor: not-allowed; opacity: 0.5; }
-        .btn-secondary { background: transparent; border: 1px solid var(--border); font-size: 0.8rem; padding: 12px; }
+        .btn:active { transform: translateY(4px); border-bottom: 2px solid #000; }
+        .btn-primary { background: #004444; border-color: var(--cyan); }
+        .btn-secondary { font-size: 0.7rem; color: #888; border-color: #333; }
+        .btn-locked { background: #111 !important; color: #444 !important; border-bottom: 2px solid #000; cursor: not-allowed; opacity: 0.5; }
 
-        #combo-alert { color: var(--magenta); font-weight: 900; font-size: 1.2rem; margin-top: -10px; margin-bottom: 10px; opacity: 0; transition: 0.3s; z-index: 20; height: 20px; text-align: center; }
-
-        .game-hud { display: flex; justify-content: space-between; width: 100%; margin-bottom: 10px; font-size: 0.8rem; color: #888; }
-        .hud-val { color: var(--cyan); font-weight: bold; }
-        
-        #timer { font-size: 6rem; color: var(--yellow); font-family: monospace; line-height: 1; margin: 0; }
+        /* HUD & GAME ELEMENTS */
+        .game-hud { display: flex; justify-content: space-between; width: 100%; margin-bottom: 10px; font-size: 0.7rem; color: #666; font-weight: bold;}
+        .hud-val { color: var(--cyan); }
+        #timer { font-size: 5rem; color: var(--yellow); font-weight: bold; line-height: 1; margin: 10px 0; }
         .timer-low { color: var(--red) !important; animation: pulse 0.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-        #card { width: 100%; flex: 1; border: 2px solid var(--border); background: #121519; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 25px; text-align: center; margin: 15px 0; font-size: 1.4rem; font-weight: 600; }
-        #game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+        #card { width: 100%; flex: 1; border: 1px solid #333; background: #0a0a0a; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 20px; text-align: center; margin: 10px 0; font-size: 1.2rem; color: #fff; box-shadow: inset 0 0 15px #000; overflow: hidden; }
         
-        #perfect-badge { 
-            display: none; color: var(--yellow); border: 2px solid var(--yellow);
-            padding: 10px 20px; border-radius: 50px; font-size: 0.8rem; font-weight: 900;
-            margin-top: 15px; animation: glow 1.5s infinite alternate;
+        /* NEW ANIMATION CLASSES */
+        @keyframes slideIn {
+            0% { transform: translateX(100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
         }
-        @keyframes glow { from { box-shadow: 0 0 5px var(--yellow); } to { box-shadow: 0 0 20px var(--yellow); } }
-        .cooldown-text { font-size: 0.6rem; display: block; margin-top: 4px; opacity: 0.7; font-weight: normal; }
+        @keyframes eject {
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(-100%); opacity: 0; }
+        }
+        .card-load { animation: slideIn 0.4s ease-out forwards; }
+        .card-eject { animation: eject 0.3s ease-in forwards; }
+
+        #rank-panel { width: 100%; background: #000; border: 1px solid #222; border-radius: 15px; padding: 15px; margin-bottom: 20px; text-align: center; }
+        .badge-row { display: flex; gap: 5px; justify-content: center; margin-top: 10px; }
+        .mini-badge { width: 12px; height: 12px; background: var(--yellow); border-radius: 50%; box-shadow: 0 0 8px var(--yellow); }
+
+        #cheat-error { color: var(--red); font-size: 0.6rem; font-weight: bold; opacity: 0; transition: 0.2s; height: 10px; text-transform: uppercase; }
+        #combo-alert { color: var(--magenta); font-weight: 900; font-size: 1rem; opacity: 0; height: 20px; }
+
+        input { width: 100%; padding: 15px; background: #000; border: 1px solid var(--cyan); color: var(--cyan); border-radius: 8px; text-align: center; font-size: 1rem; margin-bottom: 10px; outline: none; }
+        .cooldown-text { display: block; font-size: 0.6rem; opacity: 0.7; font-weight: normal; margin-top: 2px; }
     </style>
 </head>
 <body>
 
 <div id="console">
-    <div id="screen-auth" class="screen active-screen">
-    <div class="logo-large">BB XTRM</div>
-    <div style="color:var(--magenta); letter-spacing: 4px; font-size: 0.7rem; text-align: center; margin-bottom: 30px;">
-        STATION REGISTRY
+    <div id="screen-auth" class="screen">
+        <div class="logo-small">BB XTRM</div>
+        <h2>Registry</h2>
+        <input type="text" id="username" placeholder="ARTIST NAME">
+        <button class="btn btn-primary" onclick="validateAuth()">ENGAGE RIG</button>
     </div>
-    
-    <div style="display: flex; justify-content: space-around; margin: 40px 0;">
-        <div class="spool"></div>
-        <div class="spool"></div>
-    </div>
-
-    <input type="text" id="username" placeholder="INPUT ARTIST NAME..." 
-           style="background: #000; border: 2px solid var(--cyan); color: var(--cyan); box-shadow: inset 0 0 10px var(--cyan);">
-    
-    <button class="btn btn-primary" style="margin-top: 40px; height: 65px; font-size: 1.2rem;" onclick="validateAuth()">
-        ENGAGE RIG
-    </button>
-</div>
-
-<div id="screen-results" class="screen" style="border-color: var(--yellow);">
-    <div class="logo-large" style="color: var(--yellow); font-size: 2rem;">SESSION MASTER</div>
-    <div id="result-clout" style="font-size: 5rem; color: var(--yellow); text-shadow: 0 0 20px var(--yellow);">0</div>
-    <div id="perfect-badge" style="border: 2px solid var(--yellow); padding: 10px; color: var(--yellow);">
-        GOLD STATUS // ARCHIVED
-    </div>
-    <button class="btn btn-primary" style="margin-top: auto;" onclick="showScreen('screen-modes')">EJECT & CONTINUE</button>
-</div>
 
     <div id="screen-manual" class="screen">
-        <div class="logo-small">HOW TO PLAY</div>
-<div style="text-align: left; font-size: 0.75rem; line-height: 1.4; background: #0a0b0e; padding: 15px; border-radius: 12px; border: 1px solid var(--border); overflow-y: auto; max-height: 60vh;">
-    <b style="color:var(--cyan); font-size: 0.8rem;">1. INITIALIZATION</b><br>
-    Select a field (ENGINEER, BEATS, or WRITER) to begin. Each session consists of 10 rapid-fire tasks tailored to that discipline.
-    <br><br>
-
-    <b style="color:var(--red); font-size: 0.8rem;">2. THE CLOCK</b><br>
-    You have 30s per task. Audio intensity increases as time runs out. If the timer hits zero, the session is terminated immediately. There is **NO PAUSE**; once you start, the clock never stops.
-    <br><br>
-
-    <b style="color:var(--green); font-size: 0.8rem;">3. CLOUT (POINTS)</b><br>
-    • <b>Base Task:</b> +10 Clout per completion.<br>
-    • <b>Speed Demon:</b> +5 Bonus if submitted with >15s remaining.<br>
-    • <b>XP Overdrive:</b> Complete 3 tasks in a row without rerunning for a +25 Combo.
-    <br><br>
-
-    <b style="color:var(--yellow); font-size: 0.8rem;">4. RIG MECHANICS</b><br>
-    • <b>RERUN:</b> Use this to swap a difficult task. It resets your task timer to 30s but <b>disqualifies</b> you from a Perfect Set.<br>
-    • <b>SECURITY LOCK:</b> Every task has a 10s cooldown. You cannot "Complete" a task instantly; you must put in the work.
-    <br><br>
-
-    <b style="color:var(--magenta); font-size: 0.8rem;">5. GOLD STATUS</b><br>
-    To achieve a <b>PERFECT SET</b> and earn a career trophy, you must complete all 10 tasks with 0 Reruns and at least 5 Speed Demon bonuses.
-</div>
-<button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">INITIALIZE RIG</button>
+        <div class="logo-small" style="font-size: 1.5rem; color:var(--magenta)">STUDIO OPS</div>
+        <div style="text-align: left; font-size: 0.7rem; line-height: 1.4; background: #000; padding: 15px; border: 1px solid #333; border-radius: 10px;">
+            <b style="color:var(--red)">• HIGH STAKES:</b> 30s per task. Timer hits zero = Session Over.<br><br>
+            <b style="color:var(--cyan)">• SECURITY LOCK:</b> 'COMPLETE' is locked for the first 10s.<br><br>
+            <b style="color:var(--green)">• SPEED DEMON:</b> Submit with >15s left for +5 Clout.<br><br>
+            <b style="color:var(--yellow)">• PERFECT SET:</b> 0 Reruns + 5 Speed bonuses = GOLD STATUS.
+        </div>
+        <button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">INITIALIZE RIG</button>
     </div>
 
     <div id="screen-modes" class="screen">
-        <h2 id="welcome-msg">WELCOME, ARTIST</h2>
+        <h2 id="welcome-msg" style="color:var(--cyan)">WELCOME, ARTIST</h2>
         <div id="rank-panel">
-            <div style="color: #666; font-size: 0.6rem; letter-spacing: 2px; margin-bottom: 5px;">CURRENT STATUS</div>
-            <div id="global-rank-display" style="font-size: 2.2rem; color: var(--cyan); font-weight: 900;">RANKING...</div>
-            <div id="last-score" style="color: var(--yellow); font-size: 0.8rem; margin-top: 5px;">0 LIFETIME CLOUT</div>
-            <div id="career-stats">
-                <div id="badge-container" class="badge-row"></div>
-            </div>
+            <div style="color: #444; font-size: 0.6rem; letter-spacing: 2px;">GLOBAL STATUS</div>
+            <div id="global-rank-display" style="font-size: 1.8rem; color: var(--cyan); font-weight: 900;">RANKING...</div>
+            <div id="last-score" style="color: var(--yellow); font-size: 0.7rem;">0 LIFETIME CLOUT</div>
+            <div id="badge-container" class="badge-row"></div>
         </div>
-        <button class="btn" style="margin-bottom:10px" onclick="startGame('production')">ENGINEER</button>
-        <button class="btn" style="margin-bottom:10px" onclick="startGame('beats')">BEATS</button>
-        <button class="btn" style="margin-bottom:10px" onclick="startGame('songwriting')">WRITER</button>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;">
+        <button class="btn" onclick="startGame('production')">ENGINEER</button>
+        <button class="btn" onclick="startGame('beats')">BEATS</button>
+        <button class="btn" onclick="startGame('songwriting')">WRITER</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: auto;">
             <button class="btn btn-secondary" onclick="showScreen('screen-manual')">MANUAL</button>
-            <button class="btn btn-secondary" onclick="resetCareer()">ERASE DATA</button>
+            <button class="btn btn-secondary" style="color:var(--red)" onclick="resetAll()">RESET</button>
         </div>
     </div>
 
     <div id="screen-game" class="screen">
         <div class="game-hud">
             <span>TASK: <span id="task-count" class="hud-val">1/10</span></span>
-            <span>SESSION: <span id="clout-val" class="hud-val">0</span></span>
+            <span>CLOUT: <span id="clout-val" class="hud-val">0</span></span>
         </div>
-        <div id="cheat-error">!! SECURITY TRIGGERED: COMPLETE TOO EARLY !!</div>
+        <div id="cheat-error">!! SECURITY: COMPLETE LOCKED !!</div>
         <div id="timer">00:30</div>
         <div id="combo-alert">XP OVERDRIVE +25</div>
         <div id="card"><div id="card-body">Awaiting sync...</div></div>
-        <div id="game-controls">
-            <button id="complete-btn" class="btn btn-primary" style="grid-column: span 2" onclick="attemptComplete()">
-                COMPLETE
-                <span id="cooldown-timer" class="cooldown-text">LOCKED</span>
-            </button>
+        
+        <button id="complete-btn" class="btn btn-primary" onclick="attemptComplete()">
+            COMPLETE
+            <span id="cooldown-timer" class="cooldown-text">LOCKED</span>
+        </button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;">
             <button class="btn btn-secondary" onclick="rerollTask()">RERUN</button>
-            <button class="btn btn-secondary" onclick="restartSession()">RESTART</button>
-            <button class="btn btn-secondary" style="grid-column: span 2; color: var(--red); border-color: #400;" onclick="exitGame()">EJECT</button>
+            <button id="pause-btn" class="btn btn-secondary" onclick="togglePause()">PAUSE</button>
         </div>
+        <button class="btn btn-secondary" style="color:var(--red); border-color:#400; margin-top: 10px;" onclick="exitGame()">EJECT RIG</button>
     </div>
 
     <div id="screen-results" class="screen">
         <h2 id="result-header">SET COMPLETE</h2>
         <div id="result-clout" style="font-size: 4rem; color: var(--yellow)">0</div>
-        <div id="perfect-badge">PERFECT SET // GOLD STATUS</div>
-        <p id="result-footer" style="margin-top: 20px;">BANKING CLOUT...</p>
+        <div id="perfect-badge" style="display:none; color: var(--yellow); border: 1px solid var(--yellow); padding: 5px 15px; border-radius: 20px; font-size: 0.7rem; font-weight: bold;">GOLD STATUS</div>
+        <p id="result-footer" style="margin-top: 20px; font-size: 0.6rem; color: #666;">BANKING CLOUT...</p>
         <button class="btn btn-primary" style="margin-top: 20px" onclick="showScreen('screen-modes')">CONTINUE</button>
     </div>
 </div>
 
 <script>
-    // --- ADVANCED AUDIO ENGINE ---
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    let musicInterval = null;
-    let gameRunning = false;
-
-    function playSfx(freq, type, duration, vol, ramp = true) {
-        if(audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-        if(ramp) gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-    }
-
-    function tickMusic() {
-        if (!gameRunning) return;
-        const intensity = (30 - timeLeft) / 30; 
-        const tempo = Math.max(200, 600 - (intensity * 450)); 
-        const freq = 60 + (intensity * 140); 
-        playSfx(freq, 'sine', 0.1, 0.05);
-        if(timeLeft < 10) playSfx(freq * 2, 'triangle', 0.05, 0.02); 
-        musicInterval = setTimeout(tickMusic, tempo);
-    }
-
-    const sfx = {
-        click: () => playSfx(800, 'sine', 0.1, 0.1),
-        success: () => { playSfx(600, 'sine', 0.2, 0.1); setTimeout(()=>playSfx(900, 'sine', 0.2, 0.1), 100); },
-        combo: () => { playSfx(400, 'square', 0.1, 0.05); setTimeout(()=>playSfx(800, 'square', 0.3, 0.05), 100); },
-        error: () => playSfx(100, 'sawtooth', 0.4, 0.1),
-        rankUp: () => { playSfx(440, 'sine', 0.5, 0.1); playSfx(554, 'sine', 0.5, 0.1); playSfx(659, 'sine', 0.5, 0.1); }
-    };
-
-    // --- GAME LOGIC ---
     const SET_LIMIT = 10;
     const TASK_TIME = 30; 
     const cardDecks = {
@@ -295,14 +206,15 @@ body {
         beats: ['Replace snare with Clap', 'Nudge hats 5ms late', 'Pitch kick up 2 semitones','1-bar drum break', 'Add shaker loop', 'Reverse the crash','Half-time the hi-hats', 'Velocity humanize kicks', 'Woodblock on the 4', 'Triple hi-hat speed','Delete every 4th kick', 'Add a rimshot on the "and"', 'Ghost note snares','Flanger on the drum bus', 'Pitch down the hats', 'Replace kick with a tom','Add a tambourine on 2 and 4', 'Randomize hat velocities', 'Add a cowbell hit','Filter the drums for 2 bars', 'Roll the snare at the end']
     };
 
-    let sessionClout = 0, timeLeft = 0, timerInterval = null, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
-    let comboCount = 0, rerunUsedInSession = false, cooldownLeft = 0, speedDemonCount = 0;
+    let sessionClout = 0, timeLeft = 0, timerInterval = null, isPaused = false, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
+    let comboCount = 0, rerunUsedInSession = false, cleanStreakCount = 0, cooldownLeft = 0, speedDemonCount = 0;
+    const API_PATH = "/.netlify/functions";
 
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         const target = document.getElementById(id);
         if(target) target.classList.add('active-screen');
-        if(id === 'screen-modes') { updateRankDisplay(); renderBadges(); clearTimeout(musicInterval); gameRunning = false; }
+        if(id === 'screen-modes') { updateRankDisplay(); renderBadges(); }
     }
 
     function renderBadges() {
@@ -310,55 +222,66 @@ body {
         const container = document.getElementById('badge-container');
         container.innerHTML = '';
         for(let i=0; i<count; i++) {
-            const b = document.createElement('div'); b.className = 'mini-badge';
+            const b = document.createElement('div');
+            b.className = 'mini-badge';
             container.appendChild(b);
         }
     }
 
-    function updateRankDisplay() {
-    const savedClout = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
-    document.getElementById('last-score').innerText = `${savedClout} LIFETIME CLOUT`;
-    
-    // Dynamic Rank Logic
-    let rankTitle = "INTERN";
-    if (savedClout > 500) rankTitle = "GHOST PRODUCER";
-    if (savedClout > 1500) rankTitle = "STUDIO ENGINEER";
-    if (savedClout > 5000) rankTitle = "HIT MAKER";
-    if (savedClout > 10000) rankTitle = "XTRM EXECUTIVE";
-    if (savedClout > 50000) rankTitle = "INDUSTRY ICON";
-
-    document.getElementById('global-rank-display').innerText = rankTitle;
-}
+    async function updateRankDisplay() {
+        const savedClout = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
+        document.getElementById('last-score').innerText = `${savedClout} LIFETIME CLOUT`;
+        try {
+            const res = await fetch(`${API_PATH}/get-scores?t=${Date.now()}`);
+            const data = await res.json();
+            const sorted = data.sort((a,b) => b.clout - a.clout);
+            const rank = sorted.findIndex(u => u.username === currentCallsign) + 1;
+            document.getElementById('global-rank-display').innerText = rank > 0 ? `#${rank} WORLD` : "UNRANKED";
+        } catch (e) { document.getElementById('global-rank-display').innerText = "OFFLINE"; }
+    }
 
     function validateAuth() {
         const name = document.getElementById('username').value.trim().toUpperCase();
         if(name.length < 2) return;
-        sfx.click();
         currentCallsign = name;
         document.getElementById('welcome-msg').innerText = `WELCOME, ${currentCallsign}`;
-        showScreen('screen-modes');
+        if(!sessionStorage.getItem('manualSeen')) {
+            sessionStorage.setItem('manualSeen', 'true');
+            showScreen('screen-manual');
+        } else { showScreen('screen-modes'); }
     }
 
     function startGame(mode) {
-        sfx.click();
-        selectedMode = mode; tasksCompleted = 0; sessionClout = 0; gameRunning = true;
-        comboCount = 0; rerunUsedInSession = false; speedDemonCount = 0;
+        selectedMode = mode; tasksCompleted = 0; sessionClout = 0; isPaused = false;
+        comboCount = 0; cleanStreakCount = 0; rerunUsedInSession = false; speedDemonCount = 0;
         document.getElementById('clout-val').innerText = "0";
         document.getElementById('perfect-badge').style.display = "none";
         showScreen('screen-game');
         drawTask();
-        tickMusic();
     }
 
     function drawTask() {
         if(tasksCompleted >= SET_LIMIT) { endSession(); return; }
-        document.getElementById('task-count').innerText = `${tasksCompleted + 1}/${SET_LIMIT}`;
-        const deck = cardDecks[selectedMode] || cardDecks.production;
-        document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
-        timeLeft = TASK_TIME;
-        cooldownLeft = 10; 
-        updateCooldownUI();
-        startTimer();
+        const cardBody = document.getElementById('card-body');
+        
+        // Eject current card
+        cardBody.classList.remove('card-load');
+        cardBody.classList.add('card-eject');
+        
+        setTimeout(() => {
+            document.getElementById('task-count').innerText = `${tasksCompleted + 1}/${SET_LIMIT}`;
+            const deck = cardDecks[selectedMode] || cardDecks.production;
+            cardBody.innerText = deck[Math.floor(Math.random() * deck.length)];
+            
+            // Load new card
+            cardBody.classList.remove('card-eject');
+            cardBody.classList.add('card-load');
+            
+            timeLeft = TASK_TIME;
+            cooldownLeft = 10; 
+            updateCooldownUI();
+            startTimer();
+        }, 300);
     }
 
     function updateCooldownUI() {
@@ -378,19 +301,26 @@ body {
         const timerEl = document.getElementById('timer');
         timerEl.classList.remove('timer-low');
         timerInterval = setInterval(() => {
-            timeLeft--;
-            if(cooldownLeft > 0) { cooldownLeft--; updateCooldownUI(); }
-            if(timeLeft <= 10) { timerEl.classList.add('timer-low'); }
-            const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-            timerEl.innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
-            if(timeLeft <= 0) { sfx.error(); clearInterval(timerInterval); showScreen('screen-modes'); }
+            if(!isPaused) {
+                timeLeft--;
+                if(cooldownLeft > 0) { cooldownLeft--; updateCooldownUI(); }
+                if(timeLeft <= 10) timerEl.classList.add('timer-low');
+                const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+                timerEl.innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
+                if(timeLeft <= 0) { clearInterval(timerInterval); comboCount = 0; showScreen('screen-modes'); }
+            }
         }, 1000);
     }
 
     function attemptComplete() {
-        if(cooldownLeft > 0) { sfx.error(); return; }
-        sfx.success();
+        if(cooldownLeft > 0) { showCheatError(); return; }
         completeTask();
+    }
+
+    function showCheatError() {
+        const err = document.getElementById('cheat-error');
+        err.style.opacity = "1";
+        setTimeout(() => err.style.opacity = "0", 2000);
     }
 
     function completeTask() {
@@ -398,8 +328,9 @@ body {
         if (timeLeft > 15) { currentBonus += 5; speedDemonCount++; triggerAlert("SPEED DEMON +5"); }
         tasksCompleted++; 
         sessionClout += (10 + currentBonus);
-        comboCount++;
-        if(comboCount === 3) { sfx.combo(); sessionClout += 25; comboCount = 0; }
+        comboCount++; cleanStreakCount++;
+        
+        if(comboCount === 3) { sessionClout += 25; setTimeout(() => triggerAlert("XP OVERDRIVE +25"), 800); comboCount = 0; }
         document.getElementById('clout-val').innerText = sessionClout;
         drawTask();
     }
@@ -411,31 +342,22 @@ body {
     }
 
     function rerollTask() { 
-        sfx.click(); rerunUsedInSession = true; 
+        rerunUsedInSession = true; 
         const deck = cardDecks[selectedMode] || cardDecks.production;
-        document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
-        timeLeft = TASK_TIME;
-        cooldownLeft = 10;
-        const timerEl = document.getElementById('timer');
-        timerEl.innerText = "00:30";
-        timerEl.classList.remove('timer-low');
-        updateCooldownUI();
-        clearTimeout(musicInterval);
-        tickMusic();
+        const cardBody = document.getElementById('card-body');
+        
+        cardBody.classList.remove('card-load');
+        cardBody.classList.add('card-eject');
+        
+        setTimeout(() => {
+            cardBody.innerText = deck[Math.floor(Math.random() * deck.length)];
+            cardBody.classList.remove('card-eject');
+            cardBody.classList.add('card-load');
+        }, 300);
     }
 
-    function restartSession() {
-        if(confirm("RESTART CURRENT SESSION? (All clout from this set will be lost)")) {
-            sfx.click();
-            startGame(selectedMode);
-        }
-    }
-
-    function endSession() {
-        gameRunning = false;
+    async function endSession() {
         clearInterval(timerInterval);
-        clearTimeout(musicInterval);
-        sfx.rankUp();
         showScreen('screen-results');
         if (!rerunUsedInSession && speedDemonCount >= 5) {
             document.getElementById('perfect-badge').style.display = "block";
@@ -446,10 +368,20 @@ body {
         const currentTotal = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
         localStorage.setItem(`clout_${currentCallsign}`, currentTotal + sessionClout);
         document.getElementById('result-clout').innerText = sessionClout;
+        
+        try {
+            await fetch(`${API_PATH}/save-score`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: currentCallsign, score: sessionClout })
+            });
+            document.getElementById('result-footer').innerText = "RANK UPDATED.";
+        } catch (e) { document.getElementById('result-footer').innerText = "OFFLINE MODE."; }
     }
-    
-    function resetCareer() { if(confirm("ERASE ALL CAREER PROGRESS?")) { localStorage.clear(); location.reload(); } }
-    function exitGame() { gameRunning = false; clearTimeout(musicInterval); clearInterval(timerInterval); showScreen('screen-modes'); }
+
+    function resetAll() { if(confirm("ERASE ALL CAREER PROGRESS?")) { localStorage.clear(); location.reload(); } }
+    function togglePause() { isPaused = !isPaused; document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE"; }
+    function exitGame() { clearInterval(timerInterval); showScreen('screen-modes'); }
     window.onload = () => showScreen('screen-auth');
 </script>
 </body>
