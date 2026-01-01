@@ -80,11 +80,22 @@
 
 <div id="console">
     <div id="screen-auth" class="screen">
-        <div class="logo-small">BB XTRM</div>
-        <h2>Registry</h2>
-        <input type="text" id="username" placeholder="ARTIST NAME">
-        <button class="btn btn-primary" style="margin-top:20px" onclick="validateAuth()">LOGIN</button>
+    <div class="logo-large">BB XTRM</div>
+    <div class="spool-visual"><div style="width:20px; height:20px; background:#333; border-radius:50%;"></div></div>
+    <h2 style="color:var(--magenta)">STATION REGISTRY</h2>
+    <input type="text" id="username" placeholder="INPUT ARTIST NAME..." 
+           style="background: #000; border: 2px solid var(--cyan); color: var(--cyan); text-shadow: var(--neon-glow);">
+    <button class="btn btn-primary" style="margin-top:40px; height: 60px;" onclick="validateAuth()">ENGAGE RIG</button>
+</div>
+
+<div id="screen-results" class="screen" style="border-color: var(--yellow);">
+    <div class="logo-large" style="color: var(--yellow); font-size: 2rem;">SESSION MASTER</div>
+    <div id="result-clout" style="font-size: 5rem; color: var(--yellow); text-shadow: 0 0 20px var(--yellow);">0</div>
+    <div id="perfect-badge" style="border: 2px solid var(--yellow); padding: 10px; color: var(--yellow);">
+        GOLD STATUS // ARCHIVED
     </div>
+    <button class="btn btn-primary" style="margin-top: auto;" onclick="showScreen('screen-modes')">EJECT & CONTINUE</button>
+</div>
 
     <div id="screen-manual" class="screen">
         <div class="logo-small">HOW TO PLAY</div>
