@@ -80,11 +80,11 @@
         <h2 id="welcome-msg">WELCOME, ARTIST</h2>
         
         <div id="leaderboard-panel">
-            <div style="text-align: center; color: var(--cyan); margin-bottom: 8px; font-size: 0.6rem; letter-spacing: 2px;">GLOBAL RIG STANDINGS</div>
+            <div style="text-align: center; color: var(--cyan); margin-bottom: 8px; font-size: 0.6rem; letter-spacing: 2px;">TOP SESSION RECORDS</div>
             <div id="lb-content"><div style="text-align:center; color:#444;">SYNCING...</div></div>
             <div id="user-stats" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); display: flex; justify-content: space-between;">
-                <span style="color: #666;">YOUR BANK:</span>
-                <span id="last-score" style="color: var(--cyan);">0 CLOUT</span>
+                <span style="color: #666;">LIFETIME CLOUT:</span>
+                <span id="last-score" style="color: var(--cyan);">0</span>
             </div>
         </div>
 
@@ -145,7 +145,7 @@
     // --- PERSISTENCE ---
     function updateLocalDisplay() {
         const savedClout = localStorage.getItem(`clout_${currentCallsign}`) || 0;
-        document.getElementById('last-score').innerText = savedClout + " TOTAL CLOUT";
+        document.getElementById('last-score').innerText = savedClout;
     }
 
     async function loadLeaderboard() {
