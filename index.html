@@ -1,75 +1,75 @@
 <script>
-    // --- MASSIVE DATA DECKS (90+ UNIQUE TASKS) ---
+    // --- MASSIVE DATA DECKS (90 PER SECTION - SIMPLE ENGLISH) ---
     const SET_LIMIT = 10;
     const paceDecks = [30, 45, 60, 90, 120];
     
     const cardDecks = {
         production: [
-            'Turn down the volume on the loudest sound', 'Make the bass sound "thicker"', 'Add a tiny bit of echo to the lead melody', 'Make the drums sound like they are in a big room', 'Remove the very low sounds from the piano',
-            'Make one sound move from the left ear to the right ear', 'Add a "fuzzy" or "crunchy" sound to the kick drum', 'Make the vocals sound like they are coming through a telephone', 'Turn off the loudest instrument for 10 seconds', 'Make the quietest sound much louder',
-            'Add a "shimmer" effect to the high sounds', 'Make the song feel more "airy"', 'Slowly turn the volume up on a new sound', 'Make the drums sound "punchy" and sharp', 'Add a "wah-wah" effect to a sound',
-            'Make a sound repeat every 4 beats', 'Turn down the high sounds on the bass', 'Make the snare drum sound "snappier"', 'Add a "ghost" sound that is very quiet', 'Make the song sound "darker" or "moodier"',
-            'Add a "bright" sound to the chorus', 'Make the lead instrument sound "wide"', 'Add a "robotic" feel to a vocal', 'Make a sound "pulse" like a heartbeat', 'Turn off all the "echo" effects for a moment',
-            'Make the kick drum feel like a "thump" in your chest', 'Add a "swirling" sound effect', 'Make the song sound like it is underwater', 'Add a "crackling" record player sound', 'Make the vocals sound very close to the listener',
-            'Turn up the "mid" sounds on the guitar', 'Make a sound "glitch" or stutter', 'Add a "metallic" ring to a sound', 'Make the song sound "warm" like an old tape', 'Add a "hissing" sound in the background',
-            'Make the drums sound "dry" and close', 'Add a "twinkling" sound at the end of a bar', 'Make a sound "fade away" slowly', 'Turn the bass up until you can feel it', 'Make the high-hats sound "silky"',
-            'Add a "spacey" reverb to the synth', 'Make the song sound "aggressive"', 'Add a "pumping" effect to the music', 'Make a sound "vibrate" quickly', 'Turn the vocals down so they hide in the music',
-            'Make the song sound "lo-fi"', 'Add a "shaking" sound to the rhythm', 'Make a sound feel "heavy"', 'Add a "whistling" sound', 'Make the music "dip" when the kick drum hits',
-            'Turn up the treble on the bells', 'Make a sound feel "hollow"', 'Add a "pulsing" light sound', 'Make the song sound "royal"', 'Add a "nature" sound like rain',
-            'Make a sound "jump" around the speakers', 'Add a "clock ticking" sound', 'Make the music feel "fast" even if it is slow', 'Add a "laser" sound effect', 'Make the song sound "dusty"',
-            'Turn off the bass for a whole bar', 'Make the drums sound "crushed"', 'Add a "human" sound like a clap', 'Make a sound "sweep" up in pitch', 'Add a "robotic" hum',
-            'Make the song sound "vintage"', 'Add a "dreamy" texture', 'Make a sound "bounce"', 'Add a "sharp" edge to the lead', 'Make the song sound "expensive"',
-            'Turn the volume down on the drums only', 'Make a sound "wobble"', 'Add a "clicking" rhythm', 'Make the song feel "empty" for a moment', 'Add a "distorted" vocal',
-            'Make a sound "ring" like a bell', 'Add a "ocean wave" sound', 'Make the song feel "crowded"', 'Add a "glittery" sound', 'Make a sound "pop"',
-            'Turn up the "bass" on the vocals', 'Make a sound "slide" up', 'Add a "choppy" effect', 'Make the song feel "chilly"', 'Add a "fire crackle" sound',
-            'Make a sound "growl"', 'Add a "magic" chime', 'Make the song feel "tough"', 'Add a "wind" sound', 'Make the music "stop" suddenly'
+            'Turn down the loudest sound', 'Make the bass sound thicker', 'Add echo to the main melody', 'Make the drums sound like they are in a big room', 'Remove the low rumble from the piano',
+            'Move a sound from left ear to right ear', 'Add a fuzzy sound to the kick drum', 'Make the vocals sound like a telephone call', 'Turn off the loudest sound for 10 seconds', 'Make the quietest sound much louder',
+            'Add a shimmer effect to high sounds', 'Make the song feel airy', 'Slowly turn up the volume on a new sound', 'Make the drums sound sharp and punchy', 'Add a wah-wah effect',
+            'Make a sound repeat every 4 beats', 'Turn down the high sounds on the bass', 'Make the snare drum sound snappier', 'Add a very quiet ghost sound', 'Make the song sound moody',
+            'Add a bright sound to the chorus', 'Make the main instrument sound wide', 'Add a robotic feel to a vocal', 'Make a sound pulse like a heart', 'Turn off all echo for a moment',
+            'Make the kick drum feel like a thump', 'Add a swirling sound effect', 'Make the song sound like it is underwater', 'Add a crackling record player sound', 'Make the vocals sound very close',
+            'Turn up the middle sounds on a guitar', 'Make a sound stutter or glitch', 'Add a metallic ring to a sound', 'Make the song sound warm like old tape', 'Add a hissing sound in the back',
+            'Make the drums sound dry and close', 'Add a twinkling sound at the end', 'Make a sound fade away slowly', 'Turn the bass up high', 'Make the high-hats sound silky',
+            'Add spacey reverb to a synth', 'Make the song sound aggressive', 'Add a pumping effect to the music', 'Make a sound vibrate quickly', 'Hide the vocals behind the music',
+            'Make the song sound lo-fi', 'Add a shaking sound to the beat', 'Make a sound feel heavy', 'Add a whistling sound', 'Make the music dip when the kick hits',
+            'Turn up the treble on the bells', 'Make a sound feel hollow', 'Add a pulsing light sound', 'Make the song sound royal', 'Add a rain sound',
+            'Make a sound jump between speakers', 'Add a clock ticking sound', 'Make the music feel fast', 'Add a laser sound effect', 'Make the song sound dusty',
+            'Turn off the bass for one whole bar', 'Make the drums sound crushed', 'Add a hand clap', 'Make a sound sweep upwards', 'Add a robotic hum',
+            'Make the song sound vintage', 'Add a dreamy texture', 'Make a sound bounce', 'Add a sharp edge to the lead', 'Make the song sound expensive',
+            'Turn the volume down on only the drums', 'Make a sound wobble', 'Add a clicking rhythm', 'Make the song feel empty for a second', 'Add a distorted vocal',
+            'Make a sound ring like a bell', 'Add an ocean wave sound', 'Make the song feel crowded', 'Add a glittery sound', 'Make a sound pop',
+            'Turn up the bass on the vocals', 'Make a sound slide up in pitch', 'Add a choppy effect', 'Make the song feel chilly', 'Add a fire crackle sound',
+            'Make a sound growl', 'Add a magic chime', 'Make the song feel tough', 'Add a wind sound', 'Make the music stop suddenly'
         ],
         beats: [
-            'Change the snare drum to a hand clap', 'Add a extra kick drum hit', 'Make the hi-hats play twice as fast', 'Remove the drums for 4 beats', 'Make the kick drum sound much deeper',
-            'Add a "shake" sound every beat', 'Make the snare drum sound "tinny"', 'Play a drum fill at the end of the bar', 'Make the hi-hats sound "crunchy"', 'Add a "cowbell" sound',
-            'Make the drums "swing" like a dance', 'Add a "tambourine" on the 2 and 4', 'Make the kick drum "slide" down', 'Remove the snare for a whole bar', 'Add a "rimshot" sound',
-            'Make the drums sound "glitchy"', 'Add a "woodblock" hit', 'Make the hi-hats "open" and "close"', 'Add a "bongo" drum rhythm', 'Make the drums sound like they are in a cave',
-            'Add a "stomp" sound', 'Make the kick drum play a "triplet"', 'Add a "snap" instead of a snare', 'Make the hi-hats "pan" left and right', 'Add a "crash" cymbal at the start',
-            'Make the drums sound "old school"', 'Add a "shaker" that never stops', 'Make the kick drum very "short"', 'Add a "toms" drum roll', 'Make the drums sound "industrial"',
-            'Add a "human" beatbox sound', 'Make the hi-hats sound "whispery"', 'Add a "reverse" cymbal sound', 'Make the drums feel "lazy" and slow', 'Add a "whistle" on the beat',
-            'Make the kick drum sound "boxy"', 'Add a "triangle" ding', 'Make the snare sound "fat"', 'Add a "clink" sound like glass', 'Make the drums sound "futuristic"',
-            'Add a "conga" drum loop', 'Make the hi-hats very "bright"', 'Add a "heartbeat" kick pattern', 'Make the drums "stop and start"', 'Add a "finger snap"',
-            'Make the snare sound "wet" with echo', 'Add a "brush" drum sound', 'Make the kick "distorted"', 'Add a "sleigh bell" rhythm', 'Make the drums sound "lo-fi"',
-            'Add a "gong" sound', 'Make the hi-hats "stutter"', 'Add a "knock" sound', 'Make the drums sound "muffled"', 'Add a "clapper" sound',
-            'Make the kick drum "double up"', 'Add a "chime" on the 1', 'Make the snare "ring out"', 'Add a "scratchy" record sound', 'Make the drums "jumpy"',
-            'Add a "pop" sound', 'Make the hi-hats "tick"', 'Add a "boom" sound', 'Make the drums "smooth"', 'Add a "clicking" beat',
-            'Make the kick drum "soft"', 'Add a "buzz" sound', 'Make the snare "sharp"', 'Add a "ticking clock" drum', 'Make the drums "echo"',
-            'Add a "rim click"', 'Make the hi-hats "fizz"', 'Add a "thud" sound', 'Make the drums "airy"', 'Add a "clap" on every beat',
-            'Make the kick "punchy"', 'Add a "zip" sound', 'Make the snare "hollow"', 'Add a "shimmer" drum', 'Make the drums "heavy"',
-            'Add a "bell" on the off-beat', 'Make the hi-hats "dark"', 'Add a "slap" sound', 'Make the drums "clean"', 'Add a "jingle"',
-            'Make the kick "fast"', 'Add a "pulse" beat', 'Make the snare "loose"', 'Add a "rattle"', 'Make the drums "tight"'
+            'Change the snare to a hand clap', 'Add one extra kick drum hit', 'Make hi-hats play twice as fast', 'Remove drums for 4 beats', 'Make the kick sound much deeper',
+            'Add a shake sound every beat', 'Make the snare sound tinny', 'Play a drum fill at the end', 'Make hi-hats sound crunchy', 'Add a cowbell',
+            'Make the drums swing like a dance', 'Add a tambourine', 'Make the kick drum slide down', 'Remove the snare for a bar', 'Add a rimshot sound',
+            'Make the drums sound glitchy', 'Add a woodblock hit', 'Make hi-hats open and close', 'Add a bongo rhythm', 'Make drums sound like they are in a cave',
+            'Add a heavy stomp sound', 'Make the kick drum play a triplet', 'Add a snap instead of a snare', 'Move hi-hats left and right', 'Add a crash cymbal at the start',
+            'Make drums sound old school', 'Add a shaker that never stops', 'Make the kick drum very short', 'Add a drum roll on the toms', 'Make drums sound industrial',
+            'Add a human beatbox sound', 'Make hi-hats sound whispery', 'Add a reverse cymbal sound', 'Make the drums feel lazy and slow', 'Add a whistle on the beat',
+            'Make the kick drum sound boxy', 'Add a triangle ding', 'Make the snare sound fat', 'Add a clink sound like glass', 'Make drums sound futuristic',
+            'Add a conga drum loop', 'Make hi-hats very bright', 'Add a heartbeat kick pattern', 'Make the drums stop and start', 'Add a finger snap',
+            'Make the snare sound wet with echo', 'Add a brush drum sound', 'Make the kick distorted', 'Add a sleigh bell rhythm', 'Make drums sound lo-fi',
+            'Add a gong sound', 'Make hi-hats stutter', 'Add a knock sound', 'Make drums sound muffled', 'Add a clapper sound',
+            'Make the kick drum double up', 'Add a chime on the first beat', 'Make the snare ring out', 'Add a scratchy record sound', 'Make drums jumpy',
+            'Add a pop sound', 'Make hi-hats tick', 'Add a boom sound', 'Make drums smooth', 'Add a clicking beat',
+            'Make the kick drum soft', 'Add a buzz sound', 'Make the snare sharp', 'Add a ticking clock drum', 'Make drums echo',
+            'Add a rim click', 'Make hi-hats fizz', 'Add a thud sound', 'Make drums airy', 'Add a clap on every beat',
+            'Make the kick punchy', 'Add a zip sound', 'Make the snare hollow', 'Add a shimmer drum', 'Make drums heavy',
+            'Add a bell on the off-beat', 'Make hi-hats dark', 'Add a slap sound', 'Make drums clean', 'Add a jingle',
+            'Make the kick fast', 'Add a pulse beat', 'Make the snare loose', 'Add a rattle', 'Make drums tight'
         ],
         songwriting: [
-            'Write a line that rhymes with "Blue"', 'Do not use the word "And" for two lines', 'Write a line that is a question', 'Use a word that starts with the letter "B"', 'Write about a "Rainy Day"',
-            'Use the name of a fruit in a line', 'Write a line about "Time"', 'Use a word that rhymes with "Light"', 'Write a line about "Walking"', 'Use the word "Secret"',
-            'Write a line about a "Friend"', 'Use a word that rhymes with "Play"', 'Write a line about "Home"', 'Use the word "Suddenly"', 'Write a line about a "Dream"',
-            'Use a word that rhymes with "Gold"', 'Write a line about "Fire"', 'Use the word "Wait"', 'Write a line about "Music"', 'Use a word that rhymes with "Door"',
-            'Write a line about the "Moon"', 'Use the word "Believe"', 'Write a line about "Flying"', 'Use a word that rhymes with "Heart"', 'Write a line about "Water"',
-            'Use the word "Forever"', 'Write a line about "Changing"', 'Use a word that rhymes with "Star"', 'Write a line about "Lost"', 'Use the word "Found"',
-            'Write a line about a "City"', 'Use a word that rhymes with "Street"', 'Write a line about "Morning"', 'Use the word "Never"', 'Write a line about "Shadows"',
-            'Use a word that rhymes with "Sky"', 'Write a line about "Colors"', 'Use the word "Memory"', 'Write a line about "Bridges"', 'Use a word that rhymes with "Dance"',
-            'Write a line about "Winter"', 'Use the word "Strong"', 'Write a line about "Flowers"', 'Use a word that rhymes with "Hand"', 'Write a line about "Silence"',
-            'Use the word "Listen"', 'Write a line about "Mountain"', 'Use a word that rhymes with "Tree"', 'Write a line about "Gold"', 'Use the word "Silver"',
-            'Write a line about "Running"', 'Use a word that rhymes with "Cold"', 'Write a line about "Summer"', 'Use the word "Hot"', 'Write a line about "Dust"',
-            'Use a word that rhymes with "Wind"', 'Write a line about "Paper"', 'Use the word "Write"', 'Write a line about "Glass"', 'Use a word that rhymes with "Stone"',
-            'Write a line about "Feathers"', 'Use the word "Soft"', 'Write a line about "Iron"', 'Use a word that rhymes with "Break"', 'Write a line about "Echo"',
-            'Use the word "Voice"', 'Write a line about "Salt"', 'Use a word that rhymes with "Sea"', 'Write a line about "Clouds"', 'Use the word "Rain"',
-            'Write a line about "Grass"', 'Use a word that rhymes with "Green"', 'Write a line about "Sun"', 'Use the word "Bright"', 'Write a line about "Road"',
-            'Use a word that rhymes with "Miles"', 'Write a line about "Sleep"', 'Use the word "Quiet"', 'Write a line about "Storm"', 'Use a word that rhymes with "Dark"',
-            'Write a line about "Light"', 'Use the word "Shadow"', 'Write a line about "Kings"', 'Use a word that rhymes with "Ring"', 'Write a line about "Wings"',
-            'Use the word "High"', 'Write a line about "Deep"', 'Use a word that rhymes with "Sleep"', 'Write a line about "Fast"', 'Use a word that rhymes with "Last"'
+            'Write a line that rhymes with Blue', 'Do not use the word "And" for two lines', 'Write a line that is a question', 'Use a word starting with B', 'Write about a rainy day',
+            'Use a fruit name in a line', 'Write a line about Time', 'Rhyme with the word Light', 'Write a line about walking', 'Use the word Secret',
+            'Write a line about a friend', 'Rhyme with the word Play', 'Write a line about Home', 'Use the word Suddenly', 'Write a line about a dream',
+            'Rhyme with the word Gold', 'Write a line about Fire', 'Use the word Wait', 'Write a line about music', 'Rhyme with the word Door',
+            'Write a line about the moon', 'Use the word Believe', 'Write a line about flying', 'Rhyme with the word Heart', 'Write a line about water',
+            'Use the word Forever', 'Write a line about changing', 'Rhyme with the word Star', 'Write a line about being lost', 'Use the word Found',
+            'Write a line about a city', 'Rhyme with the word Street', 'Write a line about morning', 'Use the word Never', 'Write a line about shadows',
+            'Rhyme with the word Sky', 'Write a line about colors', 'Use the word Memory', 'Write a line about bridges', 'Rhyme with the word Dance',
+            'Write a line about winter', 'Use the word Strong', 'Write a line about flowers', 'Rhyme with the word Hand', 'Write a line about silence',
+            'Use the word Listen', 'Write a line about a mountain', 'Rhyme with the word Tree', 'Write a line about gold', 'Use the word Silver',
+            'Write a line about running', 'Rhyme with the word Cold', 'Write a line about summer', 'Use the word Hot', 'Write a line about dust',
+            'Rhyme with the word Wind', 'Write a line about paper', 'Use the word Write', 'Write a line about glass', 'Rhyme with the word Stone',
+            'Write a line about feathers', 'Use the word Soft', 'Write a line about iron', 'Rhyme with the word Break', 'Write a line about an echo',
+            'Use the word Voice', 'Write a line about salt', 'Rhyme with the word Sea', 'Write a line about clouds', 'Use the word Rain',
+            'Write a line about grass', 'Rhyme with the word Green', 'Write a line about the sun', 'Use the word Bright', 'Write a line about a road',
+            'Rhyme with the word Miles', 'Write a line about sleep', 'Use the word Quiet', 'Write a line about a storm', 'Rhyme with the word Dark',
+            'Write a line about light', 'Use the word Shadow', 'Write a line about kings', 'Rhyme with the word Ring', 'Write a line about wings',
+            'Use the word High', 'Write a line about being deep', 'Rhyme with the word Deep', 'Write a line about being fast', 'Rhyme with the word Last'
         ]
     };
 
     // --- STATE ---
     let clout = 0, timeLeft = 0, timerInterval = null, isPaused = false, selectedMode = '', currentType = '', tasksCompleted = 0;
     let combo = 0, multiplier = 1.0, currentCallsign = "";
-    let lastCard = ""; // Prevention for duplicate cards
+    let lastCard = ""; 
     const API_PATH = "/.netlify/functions";
 
     function showScreen(id) {
@@ -80,7 +80,7 @@
 
     function validateAuth() {
         const name = document.getElementById('username').value.trim().toUpperCase();
-        if (name.length < 2) return alert("IDENTIFICATION REQUIRED");
+        if (name.length < 2) return alert("NAME TOO SHORT");
         currentCallsign = name;
         localStorage.setItem('bb_artist_name', name);
         showScreen('screen-rules');
@@ -92,30 +92,27 @@
         clout = 0;
         combo = 0;
         multiplier = 1.0;
-        document.getElementById('user-tag').innerText = `MUSICIAN: ${currentCallsign}`;
+        document.getElementById('user-tag').innerText = `ARTIST: ${currentCallsign}`;
         showScreen('screen-game');
         drawTask();
     }
 
     function drawTask() {
         if (tasksCompleted >= SET_LIMIT) { endSession(); return; }
-        
-        // CRITICAL FIX: Always clear the previous interval before starting a new one
         if (timerInterval) clearInterval(timerInterval);
         
         isPaused = false;
         document.getElementById('pause-btn').innerText = "PAUSE";
         
         const seconds = paceDecks[Math.floor(Math.random() * paceDecks.length)];
-        
         currentType = selectedMode === 'xtrm' ? ['production', 'songwriting', 'beats'][Math.floor(Math.random() * 3)] : selectedMode;
         const deck = cardDecks[currentType];
         
-        // CRITICAL FIX: Ensure the new card is different from the last card
-        let newCard = deck[Math.floor(Math.random() * deck.length)];
-        while (newCard === lastCard) {
+        // Ensure the next card is always different
+        let newCard;
+        do {
             newCard = deck[Math.floor(Math.random() * deck.length)];
-        }
+        } while (newCard === lastCard);
         lastCard = newCard;
 
         document.getElementById('card-body').innerText = newCard;
@@ -151,7 +148,7 @@
     }
 
     function updateSessionUI() {
-        document.getElementById('task-counter').innerText = `SET: ${tasksCompleted + 1}/${SET_LIMIT}`;
+        document.getElementById('task-counter').innerText = `TASK: ${tasksCompleted + 1}/${SET_LIMIT}`;
         document.getElementById('progress-fill').style.width = `${(tasksCompleted / SET_LIMIT) * 100}%`;
     }
 
@@ -163,12 +160,19 @@
         drawTask();
     }
 
+    function breakCombo() {
+        combo = 0; 
+        multiplier = 1.0;
+        alert("TIME UP! COMBO BROKEN.");
+        drawTask(); // Reset card and timer
+    }
+
     async function endSession() {
         if (timerInterval) clearInterval(timerInterval);
         showScreen('screen-results');
         document.getElementById('result-artist').innerText = `ARTIST: ${currentCallsign}`;
         document.getElementById('result-clout').innerText = clout;
-        document.getElementById('result-footer').innerText = "SYNCING TO GLOBAL RIG...";
+        document.getElementById('result-footer').innerText = "SENDING SCORE...";
         
         try {
             const res = await fetch(`${API_PATH}/save-score`, {
@@ -176,38 +180,44 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username: currentCallsign, score: clout })
             });
-            if (!res.ok) throw new Error("Sync Failed");
-            document.getElementById('result-footer').innerText = "CLOUT BANKED SUCCESSFULLY.";
+            if (res.ok) {
+                document.getElementById('result-footer').innerText = "SCORE SAVED TO LEADERBOARD!";
+            } else {
+                throw new Error();
+            }
         } catch (e) { 
-            document.getElementById('result-footer').innerText = "LOCAL SAVE ONLY. CHECK HUB CONNECTION."; 
+            document.getElementById('result-footer').innerText = "SCORE SAVED LOCALLY ONLY."; 
         }
     }
 
     async function showLeaderboard() {
         const body = document.getElementById('leaderboard-body');
-        body.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px;">ACCESSING SATELLITE...</td></tr>';
+        body.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px;">LOADING...</td></tr>';
         showScreen('screen-board');
         try {
             const res = await fetch(`${API_PATH}/get-scores`);
-            if (!res.ok) throw new Error();
             const data = await res.json();
-            body.innerHTML = data.map((d, i) => `
-                <tr>
-                    <td style="padding:10px 0; border-bottom:1px solid #222;">
-                        <span style="color:var(--yellow)">#${i+1}</span> ${d.username}
-                    </td>
-                    <td style="text-align:right; color:var(--cyan)">${d.clout}</td>
-                </tr>`).join('');
+            if (data && data.length > 0) {
+                body.innerHTML = data.map((d, i) => `
+                    <tr>
+                        <td style="padding:10px 0; border-bottom:1px solid #222;">
+                            <span style="color:var(--yellow)">#${i+1}</span> ${d.username}
+                        </td>
+                        <td style="text-align:right; color:var(--cyan)">${d.clout}</td>
+                    </tr>`).join('');
+            } else {
+                body.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px;">NO SCORES YET</td></tr>';
+            }
         } catch (e) { 
-            body.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px; color:var(--red);">CONNECTION ERROR: RIG OFFLINE</td></tr>'; 
+            body.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px; color:var(--red);">LEADERBOARD OFFLINE</td></tr>'; 
         }
     }
 
     function skipCard() { if(clout >= 10) { clout -= 10; combo = 0; multiplier = 1.0; drawTask(); } }
     function rerollTimer() { if(clout >= 5) { clout -= 5; drawTask(); } }
     function togglePause() { isPaused = !isPaused; document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE"; }
-    function exitGame() { if(confirm("Eject?")) { clearInterval(timerInterval); showScreen('screen-modes'); } }
-    function resetRig() { if(confirm("Wipe data?")) { localStorage.clear(); location.reload(); } }
+    function exitGame() { if(confirm("QUIT GAME?")) { if(timerInterval) clearInterval(timerInterval); showScreen('screen-modes'); } }
+    function resetRig() { if(confirm("DELETE SAVED NAME?")) { localStorage.clear(); location.reload(); } }
 
     window.onload = () => {
         const saved = localStorage.getItem('bb_artist_name');
