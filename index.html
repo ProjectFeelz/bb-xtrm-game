@@ -378,6 +378,14 @@
             <div style="color: #666; font-size: 0.6rem; letter-spacing: 2px; margin-bottom: 5px;">PERSONAL BEST</div>
             <div id="global-rank-display" style="font-size: 2.2rem; color: var(--cyan); font-weight: 900;">0</div>
             <div id="last-score" style="color: #888; font-size: 0.65rem; margin-top: 8px;">0 LIFETIME CLOUT</div>
+            <div id="streak-display" style="margin-top: 10px; padding: 10px; background: #0a0b0e; border-radius: 8px; border: 1px solid var(--border);">
+                <div style="color: var(--magenta); font-size: 0.6rem; letter-spacing: 1px; margin-bottom: 3px;">DAILY STREAK</div>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span style="font-size: 1.8rem; color: var(--yellow); font-weight: 900;">🔥</span>
+                    <span id="streak-count" style="font-size: 1.5rem; color: var(--yellow); font-weight: 900;">0</span>
+                    <span style="font-size: 0.7rem; color: #666;">DAYS</span>
+                </div>
+            </div>
             <div id="career-stats">
                 <div style="color: #444; font-size: 0.55rem; letter-spacing: 1px;">PERFECT SET HISTORY</div>
                 <div id="badge-container" class="badge-row"></div>
@@ -540,9 +548,72 @@
     const SET_LIMIT = 10;
     const TASK_TIME = 30; 
     const cardDecks = {
-        production: ['Filter everything below 200Hz', 'Layer a snare sample', 'Bus melodic elements','Mute lead instrument','Apply 1/8th delay','Saturate the Bass','Pan hats 30% Right', 'Double vocals', 'Reverse reverb tail', 'Bitcrush melody','Add 20% swing to midi', 'Sidechain pad to kick', 'Boost 3k on vocals','Automate a low-pass sweep', 'Add a foley texture', 'Clip the master peak','Stereo widen the chorus', 'Mono the sub-bass', 'Add a 1-bar silent gap','Shift a melody up 1 octave', 'Apply a chorus effect to bass', 'Gating on the pads','Distort the parallel bus', 'Ping-pong delay on hats', 'Shorten all kick decays'],
-        songwriting: ['Rhyme with Stone', 'No I, Me, or My', '3 questions in a row','Start with previous word', 'Weather metaphor', 'Specific color mentioned','4-line mini story', 'Alliterate next line', 'End line with a verb', 'Write about a machine','Describe a smell', 'Use a word with 4+ syllables', 'Reference a 90s movie','Write a 2-line whisper part', 'Change the perspective to "Them"', 'A line about a clock','Rhyme scheme AABB', 'Internal rhyme only', 'Reference a city name','No words ending in "ing"', 'Start a line with "Never"', 'Add a technical term'],
-        beats: ['Replace snare with Clap', 'Nudge hats 5ms late', 'Pitch kick up 2 semitones','1-bar drum break', 'Add shaker loop', 'Reverse the crash','Half-time the hi-hats', 'Velocity humanize kicks', 'Woodblock on the 4', 'Triple hi-hat speed','Delete every 4th kick', 'Add a rimshot on the "and"', 'Ghost note snares','Flanger on the drum bus', 'Pitch down the hats', 'Replace kick with a tom','Add a tambourine on 2 and 4', 'Randomize hat velocities', 'Add a cowbell hit','Filter the drums for 2 bars', 'Roll the snare at the end']
+        production: [
+            'Add reverb to vocals', 'Pan drums left and right', 'Add a hi-pass filter', 'Boost the bass frequencies',
+            'Cut harsh high frequencies', 'Add compression to vocals', 'Layer a pad sound', 'Add delay to lead',
+            'Boost the kick drum', 'Add distortion to bass', 'Pan the hi-hats right', 'Add a low-pass filter',
+            'Boost 1kHz on vocals', 'Add sidechain compression', 'Layer two kick drums', 'Add stereo width',
+            'Cut 200Hz muddiness', 'Boost treble on snare', 'Add a sub bass layer', 'Pan guitar left',
+            'Add tape saturation', 'Boost presence at 3kHz', 'Add a gate to drums', 'Layer vocal harmonies',
+            'Cut boxiness at 500Hz', 'Add chorus to keys', 'Boost air at 10kHz', 'Pan synth right',
+            'Add parallel compression', 'Cut low end rumble', 'Boost attack on drums', 'Add a stereo imager',
+            'Layer ambient noise', 'Pan claps center', 'Add saturation to vocals', 'Boost warmth at 200Hz',
+            'Cut harshness at 4kHz', 'Add a limiter', 'Layer string sounds', 'Pan percussion wide',
+            'Add tube warmth', 'Boost clarity at 5kHz', 'Cut sibilance at 8kHz', 'Layer bass synth',
+            'Pan lead vocal center', 'Add glue compression', 'Boost punch at 100Hz', 'Cut nasal at 1kHz',
+            'Layer background vocals', 'Pan effects left', 'Add analog warmth', 'Boost shine at 12kHz',
+            'Cut mid-range mud', 'Add vocal doubling', 'Layer acoustic guitar', 'Pan string section wide',
+            'Add vintage compression', 'Boost low mids', 'Cut digital harshness', 'Layer electric piano',
+            'Pan shaker right', 'Add console emulation', 'Boost sub frequencies', 'Cut resonance peaks',
+            'Layer brass section', 'Pan tambourine left', 'Add tape delay', 'Boost upper mids',
+            'Cut room resonance', 'Layer synth pad', 'Pan ride cymbal right', 'Add spring reverb',
+            'Boost vocal presence', 'Cut proximity effect', 'Layer orchestral hits', 'Pan toms across stereo',
+            'Add plate reverb', 'Boost drum transients', 'Cut phase issues', 'Layer choir sounds'
+        ],
+        songwriting: [
+            'Write about the weather', 'Use the word "fire"', 'Rhyme the last word', 'Describe a color',
+            'Write about time', 'Use a metaphor', 'Mention a city', 'Write about water',
+            'Use alliteration', 'Write about night', 'Mention an emotion', 'Use repetition',
+            'Write about movement', 'Describe a texture', 'Use a simile', 'Write about light',
+            'Mention a season', 'Write about silence', 'Use contrast', 'Write about sky',
+            'Describe a feeling', 'Use personification', 'Write about speed', 'Mention darkness',
+            'Write about distance', 'Use the word heart', 'Write about memories', 'Describe a sound',
+            'Use imagery', 'Write about hope', 'Mention the moon', 'Write about change',
+            'Use the word soul', 'Write about journey', 'Describe a moment', 'Use rhythm',
+            'Write about freedom', 'Mention the sun', 'Write about truth', 'Use the word dream',
+            'Write about tomorrow', 'Describe a touch', 'Use parallelism', 'Write about home',
+            'Mention a number', 'Write about breaking', 'Use the word eyes', 'Write about forever',
+            'Describe a taste', 'Use contradiction', 'Write about rising', 'Mention a direction',
+            'Write about falling', 'Use the word love', 'Write about yesterday', 'Describe a smell',
+            'Use anaphora', 'Write about hiding', 'Mention the stars', 'Write about searching',
+            'Use the word shadows', 'Write about running', 'Describe temperature', 'Use hyperbole',
+            'Write about waiting', 'Mention the ocean', 'Write about leaving', 'Use the word tears',
+            'Write about finding', 'Describe a place', 'Use juxtaposition', 'Write about wanting',
+            'Mention the wind', 'Write about staying', 'Use the word hands', 'Write about believing',
+            'Describe a person', 'Use epistrophe', 'Write about losing', 'Mention a flower'
+        ],
+        beats: [
+            'Change kick drum sound', 'Speed up the hi-hats', 'Add a clap sound', 'Slow down tempo',
+            'Change snare pitch', 'Add a shaker', 'Make drums louder', 'Add a ride cymbal',
+            'Change hi-hat pattern', 'Add tom fills', 'Make kick punchier', 'Add a crash',
+            'Change snare pattern', 'Add percussion loop', 'Make hi-hats softer', 'Add cowbell',
+            'Swing the rhythm', 'Add rim shots', 'Make drums tighter', 'Add a tambourine',
+            'Change drum spacing', 'Add finger snaps', 'Make kick deeper', 'Add wood blocks',
+            'Shuffle the groove', 'Add hand claps', 'Make snare crisper', 'Add a bell',
+            'Change drum speed', 'Add bongo hits', 'Make hi-hats open', 'Add triangle',
+            'Quantize the drums', 'Add conga drums', 'Make kick faster', 'Add sleigh bells',
+            'Humanize timing', 'Add tabla sounds', 'Make snare deeper', 'Add chimes',
+            'Add drum rolls', 'Add djembe hits', 'Make hi-hats closed', 'Add maracas',
+            'Layer kick drums', 'Add wood block', 'Make drums drier', 'Add güiro',
+            'Add ghost notes', 'Add clave pattern', 'Make snare tighter', 'Add vibraslap',
+            'Change drum tone', 'Add cabasa', 'Make kick tighter', 'Add agogo bells',
+            'Add drum break', 'Add cajón sound', 'Make hi-hats louder', 'Add wind chimes',
+            'Reverse a cymbal', 'Add timbales', 'Make snare shorter', 'Add cuica',
+            'Add triplet hi-hats', 'Add surdo drum', 'Make kick shorter', 'Add berimbau',
+            'Add syncopation', 'Add pandeiro', 'Make drums roomy', 'Add reco-reco',
+            'Add half-time feel', 'Add repinique', 'Make snare longer', 'Add triangle roll',
+            'Add double-time feel', 'Add tamborim', 'Make kick longer', 'Add güira scrape'
+        ]
     };
 
     let sessionClout = 0, timeLeft = 0, timerInterval = null, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
@@ -553,7 +624,11 @@
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         const target = document.getElementById(id);
         if(target) target.classList.add('active-screen');
-        if(id === 'screen-modes') { updateRankDisplay(); renderBadges(); }
+        if(id === 'screen-modes') { 
+            updateRankDisplay(); 
+            renderBadges();
+            updateStreak();
+        }
         playClick();
     }
 
@@ -574,6 +649,39 @@
         
         document.getElementById('global-rank-display').innerText = personalBest;
         document.getElementById('last-score').innerText = `${savedClout} LIFETIME CLOUT`;
+    }
+    
+    function updateStreak() {
+        const today = new Date().toDateString();
+        const lastPlayed = localStorage.getItem(`lastPlayed_${currentCallsign}`);
+        let currentStreak = parseInt(localStorage.getItem(`streak_${currentCallsign}`) || 0);
+        
+        if (lastPlayed) {
+            const lastDate = new Date(lastPlayed);
+            const todayDate = new Date(today);
+            const diffTime = todayDate - lastDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) {
+                // Already played today, keep streak
+            } else if (diffDays === 1) {
+                // Consecutive day, increment streak
+                currentStreak++;
+                localStorage.setItem(`streak_${currentCallsign}`, currentStreak);
+                localStorage.setItem(`lastPlayed_${currentCallsign}`, today);
+            } else {
+                // Streak broken, reset to 0
+                currentStreak = 0;
+                localStorage.setItem(`streak_${currentCallsign}`, currentStreak);
+                localStorage.setItem(`lastPlayed_${currentCallsign}`, today);
+            }
+        } else {
+            // First time playing
+            currentStreak = 0;
+            localStorage.setItem(`lastPlayed_${currentCallsign}`, today);
+        }
+        
+        document.getElementById('streak-count').innerText = currentStreak;
     }
 
     function validateAuth() {
@@ -757,6 +865,33 @@
     async function endSession() {
         clearInterval(timerInterval);
         showScreen('screen-results');
+        
+        // Update last played date when completing a session
+        const today = new Date().toDateString();
+        const lastPlayed = localStorage.getItem(`lastPlayed_${currentCallsign}`);
+        
+        if (lastPlayed !== today) {
+            const lastDate = new Date(lastPlayed || today);
+            const todayDate = new Date(today);
+            const diffTime = todayDate - lastDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            let currentStreak = parseInt(localStorage.getItem(`streak_${currentCallsign}`) || 0);
+            
+            if (diffDays === 1) {
+                // Consecutive day
+                currentStreak++;
+            } else if (diffDays > 1) {
+                // Streak broken
+                currentStreak = 1;
+            } else {
+                // Same day, don't change
+                currentStreak = currentStreak || 1;
+            }
+            
+            localStorage.setItem(`streak_${currentCallsign}`, currentStreak);
+            localStorage.setItem(`lastPlayed_${currentCallsign}`, today);
+        }
         
         // Play celebration fanfare
         playCelebration();
