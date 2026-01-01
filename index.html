@@ -93,7 +93,8 @@
             background: linear-gradient(135deg, var(--cyan), #00a8cc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 30px; 
+            margin-bottom: 40px;
+            margin-top: -40px;
             font-style: italic;
             letter-spacing: 8px;
             line-height: 1;
@@ -354,13 +355,13 @@
 <div id="console">
     <div id="screen-auth" class="screen active-screen">
         <div class="logo-small">BB XTRM</div>
-        <h2>REGISTRY</h2>
+        <h2>SIGN IN</h2>
         <input type="text" id="username" placeholder="ARTIST NAME">
         <button class="btn btn-primary" style="margin-top:20px" onclick="validateAuth()">ENGAGE RIG</button>
     </div>
 
     <div id="screen-manual" class="screen">
-        <div class="logo-small">STUDIO OPS</div>
+        <div style="font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, var(--cyan), #00a8cc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; font-style: italic; letter-spacing: 6px; text-align: center; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)) drop-shadow(0 0 20px rgba(0,217,255,0.6));">HOW TO</div>
         <div style="text-align: left; font-size: 0.75rem; line-height: 1.5; background: #000; padding: 20px; border-radius: 12px; border: 1px solid var(--screen-reflection);">
             <b style="color:var(--red)">• HIGH STAKES:</b> You have exactly 30s to complete each task. If the timer hits zero, the session ends. <br><br>
             <b style="color:var(--cyan)">• 10s SECURITY LOCK:</b> The 'COMPLETE' button is hard-locked for the first 10s of every card. Focus on the craft during this time.<br><br>
@@ -374,9 +375,9 @@
     <div id="screen-modes" class="screen">
         <h2 id="welcome-msg">WELCOME, ARTIST</h2>
         <div id="rank-panel">
-            <div style="color: #666; font-size: 0.6rem; letter-spacing: 2px; margin-bottom: 5px;">CURRENT STATUS</div>
-            <div id="global-rank-display" style="font-size: 2.2rem; color: var(--cyan); font-weight: 900;">RANKING...</div>
-            <div id="last-score" style="color: var(--yellow); font-size: 0.8rem; margin-top: 5px;">0 LIFETIME CLOUT</div>
+            <div style="color: #666; font-size: 0.6rem; letter-spacing: 2px; margin-bottom: 5px;">PERSONAL BEST</div>
+            <div id="global-rank-display" style="font-size: 2.2rem; color: var(--cyan); font-weight: 900;">0</div>
+            <div id="last-score" style="color: #888; font-size: 0.65rem; margin-top: 8px;">0 LIFETIME CLOUT</div>
             <div id="career-stats">
                 <div style="color: #444; font-size: 0.55rem; letter-spacing: 1px;">PERFECT SET HISTORY</div>
                 <div id="badge-container" class="badge-row"></div>
@@ -385,10 +386,7 @@
         <button class="btn" style="margin-bottom:10px" onclick="startGame('production')">ENGINEER</button>
         <button class="btn" style="margin-bottom:10px" onclick="startGame('beats')">BEATS</button>
         <button class="btn" style="margin-bottom:10px" onclick="startGame('songwriting')">WRITER</button>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;">
-            <button class="btn btn-secondary" onclick="showScreen('screen-manual')">MANUAL</button>
-            <button class="btn btn-secondary" onclick="resetAll()">RESET</button>
-        </div>
+        <button class="btn btn-secondary" onclick="showScreen('screen-manual')">MANUAL</button>
     </div>
 
     <div id="screen-game" class="screen">
@@ -434,6 +432,32 @@
         gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
         osc.start();
         osc.stop(audioContext.currentTime + 0.05);
+    }
+    
+    function playTick() {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.frequency.value = 1200;
+        gain.gain.setValueAtTime(0.03, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.03);
+        osc.start();
+        osc.stop(audioContext.currentTime + 0.03);
+    }
+    
+    function playAlarmBuzz(intensity) {
+        // intensity from 0 to 1 (increases as time runs out)
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.type = 'sawtooth';
+        osc.frequency.value = 220 + (intensity * 180); // pitch rises with intensity
+        gain.gain.setValueAtTime(0.08 + (intensity * 0.12), audioContext.currentTime); // volume increases
+        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+        osc.start();
+        osc.stop(audioContext.currentTime + 0.15);
     }
     
     function playCassetteInsert() {
@@ -492,6 +516,25 @@
         osc.start();
         osc.stop(audioContext.currentTime + 0.2);
     }
+    
+    function playCelebration() {
+        // Triumphant ascending fanfare
+        const notes = [392, 494, 587, 698, 784, 880]; // G, B, D, F, G, A
+        notes.forEach((freq, i) => {
+            setTimeout(() => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.12, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.4);
+            }, i * 80);
+        });
+    }
 
     // Game Variables
     const SET_LIMIT = 10;
@@ -527,8 +570,10 @@
 
     async function updateRankDisplay() {
         const savedClout = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
+        const personalBest = parseInt(localStorage.getItem(`best_${currentCallsign}`) || 0);
+        
+        document.getElementById('global-rank-display').innerText = personalBest;
         document.getElementById('last-score').innerText = `${savedClout} LIFETIME CLOUT`;
-        document.getElementById('global-rank-display').innerText = "LOCAL MODE";
     }
 
     function validateAuth() {
@@ -608,7 +653,15 @@
         timerInterval = setInterval(() => {
             timeLeft--;
             if(cooldownLeft > 0) { cooldownLeft--; updateCooldownUI(); }
-            if(timeLeft <= 10) timerEl.classList.add('timer-low');
+            if(timeLeft <= 10) {
+                timerEl.classList.add('timer-low');
+                // Alarm buzz with increasing intensity
+                const intensity = (10 - timeLeft) / 10; // 0 at 10s, 1 at 0s
+                playAlarmBuzz(intensity);
+            } else {
+                // Subtle tick sound
+                playTick();
+            }
             const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
             timerEl.innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
             if(timeLeft <= 0) { 
@@ -705,16 +758,29 @@
         clearInterval(timerInterval);
         showScreen('screen-results');
         
+        // Play celebration fanfare
+        playCelebration();
+        
         if (!rerunUsedInSession && speedDemonCount >= 5) {
             document.getElementById('perfect-badge').style.display = "block";
             sessionClout += 100;
             const perfects = parseInt(localStorage.getItem(`perfect_${currentCallsign}`) || 0);
             localStorage.setItem(`perfect_${currentCallsign}`, perfects + 1);
-            playSuccess();
         }
 
+        // Update lifetime clout
         const currentTotal = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
         localStorage.setItem(`clout_${currentCallsign}`, currentTotal + sessionClout);
+        
+        // Update personal best if this session beat it
+        const currentBest = parseInt(localStorage.getItem(`best_${currentCallsign}`) || 0);
+        if (sessionClout > currentBest) {
+            localStorage.setItem(`best_${currentCallsign}`, sessionClout);
+            document.getElementById('result-header').innerText = "NEW PERSONAL BEST!";
+        } else {
+            document.getElementById('result-header').innerText = "SET COMPLETE";
+        }
+        
         document.getElementById('result-clout').innerText = sessionClout;
         document.getElementById('result-footer').innerText = "SESSION ARCHIVED TO LOCAL RIG.";
     }
@@ -725,8 +791,12 @@
             sessionStorage.clear();
             currentCallsign = "";
             playError();
-            showScreen('screen-auth');
             document.getElementById('username').value = '';
+            document.getElementById('welcome-msg').innerText = 'WELCOME, ARTIST';
+            document.getElementById('global-rank-display').innerText = '0';
+            document.getElementById('last-score').innerText = '0 LIFETIME CLOUT';
+            document.getElementById('badge-container').innerHTML = '';
+            showScreen('screen-auth');
         } 
     }
     
