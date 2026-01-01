@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BB XTRM // PRO STUDIO</title>
+    <title>BB XTRM // PRO STUDIO RIG</title>
     <style>
         :root {
-            --rig-metal: #1a1c1e;
-            --rig-wood: #3d2b1f;
+            --steel-light: #e5e7eb;
+            --steel-mid: #9ca3af;
+            --steel-dark: #374151;
             --tape-black: #050505;
             --cyan: #00f2ff;
             --magenta: #ff00ff;
             --yellow: #f1c40f;
-            --green: #2ecc71;
             --red: #ff4757;
-            --border: #2a2f36;
             --neon-glow: 0 0 15px rgba(0, 242, 255, 0.4);
         }
 
@@ -29,39 +28,48 @@
             overflow: hidden;
         }
 
-        /* THE HARDWARE CHASSIS */
+        /* BRUSHED STAINLESS STEEL CHASSIS */
         #console {
             width: 100%;
             max-width: 420px;
             height: 92vh;
-            background: var(--rig-metal);
-            border: 8px solid #222;
             border-radius: 40px;
             position: relative;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 30px #000;
-            border-left: 12px solid var(--rig-wood);
-            border-right: 12px solid var(--rig-wood);
+            overflow: hidden;
+            border: 4px solid #333;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 40px #000;
+            background: linear-gradient(135deg, #444 0%, #888 50%, #444 100%);
+        }
+
+        #console::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0.12;
+            pointer-events: none;
+            background-image: repeating-linear-gradient(45deg, #fff 0px, #fff 1px, transparent 1px, transparent 2px);
+            z-index: 1;
         }
 
         .screen {
             position: absolute;
-            inset: 15px;
+            inset: 22px;
             background: var(--tape-black);
-            border: 2px solid #222;
-            border-radius: 25px;
+            border: 3px solid #111;
+            border-radius: 20px;
             padding: 25px;
             display: none;
             flex-direction: column;
             align-items: center;
             z-index: 10;
-            overflow-y: auto;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.05);
         }
 
         .active-screen { display: flex !important; }
 
-        /* CRT SCANLINE EFFECT */
+        /* CRT SCANLINE */
         .screen::after {
             content: "";
             position: absolute;
@@ -70,58 +78,144 @@
             background-size: 100% 4px;
             pointer-events: none;
             z-index: 100;
-            border-radius: 25px;
         }
 
-        .logo-small { font-size: 2.2rem; font-weight: 900; color: var(--cyan); text-shadow: var(--neon-glow); font-style: italic; margin-bottom: 10px; }
-        h2 { font-size: 0.7rem; letter-spacing: 4px; color: var(--magenta); text-transform: uppercase; margin-bottom: 20px; text-align: center; }
-
-        /* BUTTONS */
+        .logo-small { font-size: 2.8rem; font-weight: 900; color: var(--cyan); text-shadow: var(--neon-glow); font-style: italic; margin-bottom: 5px; }
+        
+        /* 3D TACTILE BUTTONS */
         .btn {
             width: 100%;
-            padding: 16px;
-            background: #2a2a2a;
+            padding: 18px;
+            background: linear-gradient(180deg, #444 0%, #222 48%, #111 52%, #000 100%);
             color: var(--cyan);
-            border: 1px solid #444;
-            border-bottom: 6px solid #000;
+            border: 1px solid #555;
             border-radius: 12px;
             font-weight: 900;
             cursor: pointer;
             text-transform: uppercase;
-            transition: 0.1s;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 5px 0 #000, inset 0 1px 2px rgba(255,255,255,0.2);
+            position: relative;
+            z-index: 20;
         }
-        .btn:active { transform: translateY(4px); border-bottom: 2px solid #000; }
-        .btn-primary { background: #004444; border-color: var(--cyan); }
-        .btn-secondary { font-size: 0.7rem; color: #888; border-color: #333; }
-        .btn-locked { background: #111 !important; color: #444 !important; border-bottom: 2px solid #000; cursor: not-allowed; opacity: 0.5; }
 
-        /* HUD & GAME ELEMENTS */
-        .game-hud { display: flex; justify-content: space-between; width: 100%; margin-bottom: 10px; font-size: 0.7rem; color: #666; font-weight: bold;}
-        .hud-val { color: var(--cyan); }
-        #timer { font-size: 5rem; color: var(--yellow); font-weight: bold; line-height: 1; margin: 10px 0; }
-        .timer-low { color: var(--red) !important; animation: pulse 0.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #000; }
+        .btn-primary { background: linear-gradient(180deg, #008b8b 0%, #004d4d 48%, #002b2b 52%, #000 100%); border-color: var(--cyan); }
+        .btn-secondary { font-size: 0.75rem; color: #777; background: linear-gradient(180deg, #2a2a2a, #050505); border-color: #333; }
 
-        #card { width: 100%; flex: 1; border: 1px solid #333; background: #0a0a0a; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 20px; text-align: center; margin: 10px 0; font-size: 1.2rem; color: #fff; box-shadow: inset 0 0 15px #000; overflow: hidden; }
+        #timer { font-size: 4rem; color: var(--yellow); font-weight: bold; margin: 10px 0; }
+        #card { width: 100%; flex: 1; border: 1px solid #222; background: #080808; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 25px; color: #eee; text-align: center; margin-bottom: 15px; box-shadow: inset 0 0 20px #000; }
         
-        @keyframes slideIn { 0% { transform: translateX(100%); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
-        @keyframes eject { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(-100%); opacity: 0; } }
-        .card-load { animation: slideIn 0.4s ease-out forwards; }
-        .card-eject { animation: eject 0.3s ease-in forwards; }
+        input { width: 100%; padding: 18px; background: #080808; border: 1px solid #222; color: var(--cyan); border-radius: 10px; text-align: center; font-size: 1.2rem; margin-bottom: 15px; outline: none; box-shadow: inset 0 4px 12px rgba(0,0,0,1); }
 
-        #rank-panel { width: 100%; background: #000; border: 1px solid #222; border-radius: 15px; padding: 15px; margin-bottom: 20px; text-align: center; }
-        .badge-row { display: flex; gap: 5px; justify-content: center; margin-top: 10px; }
-        .mini-badge { width: 12px; height: 12px; background: var(--yellow); border-radius: 50%; box-shadow: 0 0 8px var(--yellow); }
-
-        #cheat-error { color: var(--red); font-size: 0.6rem; font-weight: bold; opacity: 0; transition: 0.2s; height: 10px; text-transform: uppercase; }
-        #combo-alert { color: var(--magenta); font-weight: 900; font-size: 1rem; opacity: 0; height: 20px; transition: 0.3s;}
-
-        input { width: 100%; padding: 15px; background: #000; border: 1px solid var(--cyan); color: var(--cyan); border-radius: 8px; text-align: center; font-size: 1rem; margin-bottom: 10px; outline: none; }
-        .cooldown-text { display: block; font-size: 0.6rem; opacity: 0.7; font-weight: normal; margin-top: 2px; }
+        /* TAPE LOADING ANIMATION */
+        @keyframes tapeIn {
+            0% { transform: scale(0.9) translateY(20px); opacity: 0; }
+            30% { transform: scale(1) translateY(0); opacity: 1; } /* The 'Click' */
+            100% { filter: brightness(1.2); } /* The 'Whirr' */
+        }
+        .tape-sequence { animation: tapeIn 0.6s cubic-bezier(0.2, 0, 0.2, 1); }
     </style>
 </head>
 <body>
+
+<div id="console">
+    <div id="screen-auth" class="screen">
+        <div class="logo-small">BB XTRM</div>
+        <div style="color:var(--magenta); letter-spacing: 3px; font-size: 0.8rem; margin-bottom: 30px;">🔒 SIGN IN</div>
+        <input type="text" id="username" placeholder="ARTIST NAME" spellcheck="false">
+        <button class="btn btn-primary" onclick="validateAuth()">ENGAGE RIG</button>
+    </div>
+
+    <div id="screen-modes" class="screen">
+        <h2 id="welcome-msg" style="color:var(--cyan); font-size: 0.7rem; margin-bottom: 15px;">WELCOME, ARTIST</h2>
+        <div style="width: 100%; background: #000; border: 1px solid #1a1a1a; border-radius: 15px; padding: 20px; margin-bottom: 25px; text-align: center;">
+            <div style="color: #444; font-size: 0.6rem; letter-spacing: 2px;">GLOBAL STATUS</div>
+            <div style="font-size: 2rem; color: var(--cyan); font-weight: 900;">#1 WORLD</div>
+        </div>
+        <button class="btn" onclick="loadTape('ENGINEER')">ENGINEER</button>
+        <button class="btn" onclick="loadTape('BEATS')">BEATS</button>
+        <button class="btn" onclick="loadTape('WRITER')">WRITER</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: auto;">
+            <button class="btn btn-secondary" onclick="location.reload()">RESET</button>
+            <button class="btn btn-secondary">MANUAL</button>
+        </div>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div style="display: flex; justify-content: space-between; width: 100%; font-size: 0.75rem; color: #444;">
+            <span>TASK: <span style="color: var(--cyan)">1/10</span></span>
+            <span>CLOUT: <span style="color: var(--cyan)">0</span></span>
+        </div>
+        <div id="timer">00:30</div>
+        <div id="card">Awaiting Tape...</div>
+        <button class="btn btn-primary">COMPLETE</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%;">
+            <button class="btn btn-secondary">RERUN</button>
+            <button class="btn btn-secondary" onclick="showScreen('screen-modes')">EJECT</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playTapeSound() {
+        // Simulating the "Click-Clack" (Mechanical Load)
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+
+        // Simulating the "Whirr" (Motor start)
+        setTimeout(() => {
+            const whirr = audioCtx.createOscillator();
+            const whirrGain = audioCtx.createGain();
+            whirr.type = 'sawtooth';
+            whirr.frequency.setValueAtTime(60, audioCtx.currentTime);
+            whirr.frequency.linearRampToValueAtTime(80, audioCtx.currentTime + 0.4);
+            whirrGain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+            whirrGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+            whirr.connect(whirrGain);
+            whirrGain.connect(audioCtx.destination);
+            whirr.start();
+            whirr.stop(audioCtx.currentTime + 0.5);
+        }, 150);
+    }
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+        document.getElementById(id).classList.add('active-screen');
+    }
+
+    function validateAuth() {
+        const name = document.getElementById('username').value.trim().toUpperCase();
+        if(name.length < 2) return;
+        document.getElementById('welcome-msg').innerText = `WELCOME, ${name}`;
+        showScreen('screen-modes');
+    }
+
+    function loadTape(mode) {
+        playTapeSound();
+        showScreen('screen-game');
+        const card = document.getElementById('card');
+        card.classList.remove('tape-sequence');
+        void card.offsetWidth; // Trigger reflow
+        card.classList.add('tape-sequence');
+        card.innerText = `LOADING ${mode} DATA...`;
+    }
+
+    window.onload = () => showScreen('screen-auth');
+</script>
+</body>
+</html>
 
 <div id="console">
     <div id="screen-auth" class="screen">
