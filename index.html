@@ -31,22 +31,20 @@
         
         /* Typography */
         .logo-small { font-size: 2rem; font-weight: 900; color: var(--cyan); margin-bottom: 20px; font-style: italic; }
-        .logo-big { font-size: 4.5rem; font-weight: 900; color: var(--cyan); line-height: 0.9; text-align: center; margin-bottom: 10px; font-style: italic; }
         h2 { font-size: 0.7rem; letter-spacing: 3px; color: #666; text-transform: uppercase; margin-bottom: 15px; text-align: center; }
         
-        /* Leaderboard Panel */
+        /* Leaderboard/Stats */
         #leaderboard-panel {
             width: 100%; background: #0a0b0e; border: 1px solid var(--border);
             border-radius: 10px; margin-bottom: 20px; padding: 12px; font-size: 0.75rem;
         }
         .lb-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1a1d23; }
-        .lb-row:last-child { border: none; }
         .lb-name { color: #888; text-transform: uppercase; }
         .lb-score { color: var(--yellow); font-weight: bold; }
 
-        /* Manual List */
-        .manual-box { width: 100%; background: #0a0b0e; border-radius: 10px; padding: 15px; overflow-y: auto; max-height: 450px; text-align: left; }
-        .manual-item { margin-bottom: 15px; font-size: 0.85rem; }
+        /* Manual */
+        .manual-box { width: 100%; background: #0a0b0e; border-radius: 10px; padding: 15px; overflow-y: auto; max-height: 450px; }
+        .manual-item { margin-bottom: 15px; font-size: 0.85rem; text-align: left; }
         .manual-item b { color: var(--cyan); display: block; margin-bottom: 3px; font-size: 0.75rem; letter-spacing: 1px; }
 
         /* UI Elements */
@@ -62,12 +60,14 @@
         .btn-primary { background: var(--cyan); color: black; border: none; }
         .btn-secondary { background: transparent; border: 1px solid var(--border); font-size: 0.8rem; padding: 12px; }
 
+        /* Combo Feedback */
+        #combo-alert { color: var(--magenta); font-weight: 900; font-size: 1rem; position: absolute; top: 110px; opacity: 0; transition: 0.3s; }
+
         /* Game HUD */
         .game-hud { display: flex; justify-content: space-between; width: 100%; margin-bottom: 20px; font-size: 0.8rem; color: #888; }
         .hud-val { color: var(--cyan); font-weight: bold; }
-        
         #timer { font-size: 6rem; color: var(--yellow); font-family: monospace; line-height: 1; margin: 10px 0; }
-        #card { width: 100%; flex: 1; border: 2px solid var(--border); background: #121519; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 25px; text-align: center; margin: 15px 0; font-size: 1.4rem; font-weight: 600; line-height: 1.3; }
+        #card { width: 100%; flex: 1; border: 2px solid var(--border); background: #121519; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 25px; text-align: center; margin: 15px 0; font-size: 1.4rem; font-weight: 600; }
         #game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
     </style>
 </head>
@@ -82,21 +82,17 @@
     </div>
 
     <div id="screen-manual" class="screen">
-        <div class="logo-small">RIG MANUAL</div>
+        <div class="logo-small">STAGING AREA</div>
         <div class="manual-box">
-            <div class="manual-item"><b>OBJECTIVE</b>Complete a deck of 10 tasks as fast as possible to earn Clout.</div>
-            <div class="manual-item"><b>WHAT IS CLOUT?</b>Points earned for completing tasks. +10 Clout per card. It represents your skill level and status in the Rig.</div>
-            <div class="manual-item"><b>ACCUMULATION</b>Scores from single rounds are posted to the "Top Session Records." All Clout earned across all rounds is added to your "Lifetime Clout" bank.</div>
-            <div class="manual-item"><b>RERUN</b>Stuck? Hit Rerun to swap the current task for a new one. No penalty.</div>
-            <div class="manual-item"><b>PAUSE</b>Freezes the timer if you need to step away from the DAW.</div>
-            <div class="manual-item"><b>EJECT</b>Instantly ends the session and returns you to the lobby.</div>
+            <div class="manual-item"><b>XP OVERDRIVE</b>Complete 3 tasks in a row for a +25 XP bonus.</div>
+            <div class="manual-item"><b>CLEAN STREAK</b>Complete 6 tasks without a single RERUN for a random Massive Bonus (50-150 Clout).</div>
+            <div class="manual-item"><b>LIFETIME CLOUT</b>Your total career points. Session records go to the Global Leaderboard.</div>
         </div>
-        <button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">BACK TO RIG</button>
+        <button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">INITIALIZE RIG</button>
     </div>
 
     <div id="screen-modes" class="screen">
         <h2 id="welcome-msg">WELCOME, ARTIST</h2>
-        
         <div id="leaderboard-panel">
             <div style="text-align: center; color: var(--cyan); margin-bottom: 8px; font-size: 0.6rem; letter-spacing: 2px;">TOP SESSION RECORDS</div>
             <div id="lb-content"><div style="text-align:center; color:#444;">SYNCING...</div></div>
@@ -105,7 +101,6 @@
                 <span id="last-score" style="color: var(--cyan);">0</span>
             </div>
         </div>
-
         <button class="btn" style="margin-bottom:10px" onclick="startGame('production')">ENGINEER</button>
         <button class="btn" style="margin-bottom:10px" onclick="startGame('beats')">BEATS</button>
         <button class="btn" style="margin-bottom:10px" onclick="startGame('songwriting')">WRITER</button>
@@ -116,6 +111,7 @@
     </div>
 
     <div id="screen-game" class="screen">
+        <div id="combo-alert">COMBO +25 XP</div>
         <div class="game-hud">
             <span>TASK: <span id="task-count" class="hud-val">1/10</span></span>
             <span>CLOUT: <span id="clout-val" class="hud-val">0</span></span>
@@ -132,7 +128,6 @@
 
     <div id="screen-results" class="screen">
         <h2 id="result-header">SET COMPLETE</h2>
-        <p id="result-artist" style="margin-bottom: 10px; color: var(--cyan);"></p>
         <div id="result-clout" style="font-size: 4rem; color: var(--yellow)">0</div>
         <p id="result-footer" style="margin-top: 20px;">BANKING CLOUT...</p>
         <button class="btn btn-primary" style="margin-top: 20px" onclick="showScreen('screen-modes')">CONTINUE</button>
@@ -148,6 +143,7 @@
     };
 
     let sessionClout = 0, timeLeft = 0, timerInterval = null, isPaused = false, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
+    let comboCount = 0, rerunUsedInSession = false, cleanStreakCount = 0;
     const API_PATH = "/.netlify/functions";
 
     function showScreen(id) {
@@ -168,14 +164,9 @@
             const res = await fetch(`${API_PATH}/get-scores`);
             const data = await res.json();
             lbContent.innerHTML = data.slice(0, 5).map((d, i) => `
-                <div class="lb-row">
-                    <span class="lb-name">#${i+1} ${d.username}</span>
-                    <span class="lb-score">${d.clout}</span>
-                </div>
+                <div class="lb-row"><span class="lb-name">#${i+1} ${d.username}</span><span class="lb-score">${d.clout}</span></div>
             `).join('') || '<div style="text-align:center">NO DATA YET</div>';
-        } catch (e) {
-            lbContent.innerHTML = '<div style="text-align:center; color:var(--red)">OFFLINE</div>';
-        }
+        } catch (e) { lbContent.innerHTML = '<div style="text-align:center; color:var(--red)">OFFLINE</div>'; }
     }
 
     function validateAuth() {
@@ -183,12 +174,19 @@
         if(name.length < 2) return;
         currentCallsign = name;
         document.getElementById('welcome-msg').innerText = `WELCOME, ${currentCallsign}`;
-        showScreen('screen-modes');
+        
+        // Show manual if it's the first time for this session
+        if(!sessionStorage.getItem('manualSeen')) {
+            sessionStorage.setItem('manualSeen', 'true');
+            showScreen('screen-manual');
+        } else {
+            showScreen('screen-modes');
+        }
     }
 
     function startGame(mode) {
-        selectedMode = mode;
-        tasksCompleted = 0; sessionClout = 0; isPaused = false;
+        selectedMode = mode; tasksCompleted = 0; sessionClout = 0; isPaused = false;
+        comboCount = 0; cleanStreakCount = 0; rerunUsedInSession = false;
         document.getElementById('clout-val').innerText = "0";
         showScreen('screen-game');
         drawTask();
@@ -210,18 +208,49 @@
                 timeLeft--;
                 const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
                 document.getElementById('timer').innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
-                if(timeLeft <= 0) { clearInterval(timerInterval); showScreen('screen-modes'); }
+                if(timeLeft <= 0) { 
+                    clearInterval(timerInterval); 
+                    comboCount = 0; // Reset combo if timer runs out
+                    showScreen('screen-modes'); 
+                }
             }
         }, 1000);
     }
 
+    function triggerAlert(text) {
+        const alert = document.getElementById('combo-alert');
+        alert.innerText = text;
+        alert.style.opacity = "1";
+        setTimeout(() => alert.style.opacity = "0", 2000);
+    }
+
     function completeTask() {
-        tasksCompleted++; sessionClout += 10;
+        tasksCompleted++; 
+        sessionClout += 10;
+        comboCount++;
+        cleanStreakCount++;
+
+        // 3-In-A-Row XP Bonus
+        if(comboCount === 3) {
+            sessionClout += 25;
+            triggerAlert("XP OVERDRIVE +25");
+            comboCount = 0;
+        }
+
+        // 6-In-A-Row Clean Streak Bonus
+        if(cleanStreakCount === 6 && !rerunUsedInSession) {
+            const bonus = Math.floor(Math.random() * 101) + 50; // 50-150
+            sessionClout += bonus;
+            triggerAlert(`CLEAN STREAK +${bonus}`);
+        }
+
         document.getElementById('clout-val').innerText = sessionClout;
         drawTask();
     }
 
     function rerollTask() {
+        rerunUsedInSession = true;
+        cleanStreakCount = 0; // Break the clean streak
         const deck = cardDecks[selectedMode] || cardDecks.production;
         document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
     }
@@ -229,7 +258,6 @@
     function togglePause() {
         isPaused = !isPaused;
         document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE";
-        document.getElementById('pause-btn').style.color = isPaused ? "var(--yellow)" : "white";
     }
 
     async function endSession() {
@@ -237,7 +265,6 @@
         showScreen('screen-results');
         const currentTotal = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
         localStorage.setItem(`clout_${currentCallsign}`, currentTotal + sessionClout);
-        document.getElementById('result-artist').innerText = `ARTIST: ${currentCallsign}`;
         document.getElementById('result-clout').innerText = sessionClout;
         const footer = document.getElementById('result-footer');
         footer.innerText = "SYNCING TO GLOBAL RIG...";
