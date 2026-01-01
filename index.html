@@ -37,6 +37,10 @@
             border-radius: 10px; margin-bottom: 20px; padding: 20px; text-align: center;
         }
 
+        #career-stats { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; align-items: center; }
+        .badge-row { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; margin-top: 5px; }
+        .mini-badge { width: 12px; height: 12px; background: var(--yellow); border-radius: 50%; box-shadow: 0 0 5px var(--yellow); }
+
         #cheat-error { color: var(--red); font-weight: bold; font-size: 0.75rem; letter-spacing: 1px; opacity: 0; transition: 0.2s; height: 15px; margin-bottom: 5px; text-transform: uppercase; }
 
         input {
@@ -52,7 +56,7 @@
         .btn-locked { background: #1a1d23 !important; color: #444 !important; border: 1px solid #222 !important; cursor: not-allowed; opacity: 0.5; }
         .btn-secondary { background: transparent; border: 1px solid var(--border); font-size: 0.8rem; padding: 12px; }
 
-        #combo-alert { color: var(--magenta); font-weight: 900; font-size: 1.2rem; margin-top: -10px; margin-bottom: 10px; opacity: 0; transition: 0.3s; z-index: 20; height: 20px; }
+        #combo-alert { color: var(--magenta); font-weight: 900; font-size: 1.2rem; margin-top: -10px; margin-bottom: 10px; opacity: 0; transition: 0.3s; z-index: 20; height: 20px; text-align: center; }
 
         .game-hud { display: flex; justify-content: space-between; width: 100%; margin-bottom: 10px; font-size: 0.8rem; color: #888; }
         .hud-val { color: var(--cyan); font-weight: bold; }
@@ -64,7 +68,6 @@
         #card { width: 100%; flex: 1; border: 2px solid var(--border); background: #121519; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 25px; text-align: center; margin: 15px 0; font-size: 1.4rem; font-weight: 600; }
         #game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
         
-        /* Perfect Set Badge */
         #perfect-badge { 
             display: none; color: var(--yellow); border: 2px solid var(--yellow);
             padding: 10px 20px; border-radius: 50px; font-size: 0.8rem; font-weight: 900;
@@ -87,11 +90,12 @@
 
     <div id="screen-manual" class="screen">
         <div class="logo-small">STUDIO OPS</div>
-        <div style="text-align: left; font-size: 0.8rem; line-height: 1.6; background: #0a0b0e; padding: 15px; border-radius: 10px;">
-            <b style="color:var(--red)">• HIGH STAKES:</b> 30s per task.<br>
-            <b>• 10s LOCK:</b> You must work for at least 10s.<br>
-            <b style="color:var(--green)">• SPEED DEMON:</b> Finish with >15s left for +5 Clout.<br>
-            <b style="color:var(--yellow)">• PERFECT SET:</b> 0 Reruns + 5 Speed Bonuses = GOLD BADGE.
+        <div style="text-align: left; font-size: 0.75rem; line-height: 1.5; background: #0a0b0e; padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+            <b style="color:var(--red)">• HIGH STAKES:</b> You have exactly 30s to complete each task. If the timer hits zero, the session ends. <br><br>
+            <b style="color:var(--cyan)">• 10s SECURITY LOCK:</b> The 'COMPLETE' button is hard-locked for the first 10s of every card. Focus on the craft during this time.<br><br>
+            <b style="color:var(--green)">• SPEED DEMON:</b> Submit your task with more than 15s left on the clock to earn +5 bonus Clout.<br><br>
+            <b style="color:var(--magenta)">• XP COMBO:</b> Chain 3 tasks without a RERUN or failure to trigger +25 XP Overdrive.<br><br>
+            <b style="color:var(--yellow)">• PERFECT SET:</b> Complete all 10 tasks with 0 RERUNS and 5+ SPEED bonuses to earn a Career Trophy and +100 Clout.
         </div>
         <button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">INITIALIZE RIG</button>
     </div>
@@ -102,13 +106,17 @@
             <div style="color: #666; font-size: 0.6rem; letter-spacing: 2px; margin-bottom: 5px;">CURRENT STATUS</div>
             <div id="global-rank-display" style="font-size: 2.2rem; color: var(--cyan); font-weight: 900;">RANKING...</div>
             <div id="last-score" style="color: var(--yellow); font-size: 0.8rem; margin-top: 5px;">0 LIFETIME CLOUT</div>
+            <div id="career-stats">
+                <div style="color: #444; font-size: 0.55rem; letter-spacing: 1px;">PERFECT SET HISTORY</div>
+                <div id="badge-container" class="badge-row"></div>
+            </div>
         </div>
         <button class="btn" style="margin-bottom:10px" onclick="startGame('production')">ENGINEER</button>
         <button class="btn" style="margin-bottom:10px" onclick="startGame('beats')">BEATS</button>
         <button class="btn" style="margin-bottom:10px" onclick="startGame('songwriting')">WRITER</button>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;">
-            <button class="btn btn-secondary" onclick="showScreen('screen-manual')">INFO</button>
-            <button class="btn btn-secondary" onclick="localStorage.clear(); location.reload();">RESET</button>
+            <button class="btn btn-secondary" onclick="showScreen('screen-manual')">MANUAL</button>
+            <button class="btn btn-secondary" onclick="resetAll()">RESET</button>
         </div>
     </div>
 
@@ -158,7 +166,18 @@
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         const target = document.getElementById(id);
         if(target) target.classList.add('active-screen');
-        if(id === 'screen-modes') { updateRankDisplay(); }
+        if(id === 'screen-modes') { updateRankDisplay(); renderBadges(); }
+    }
+
+    function renderBadges() {
+        const count = parseInt(localStorage.getItem(`perfect_${currentCallsign}`) || 0);
+        const container = document.getElementById('badge-container');
+        container.innerHTML = '';
+        for(let i=0; i<count; i++) {
+            const b = document.createElement('div');
+            b.className = 'mini-badge';
+            container.appendChild(b);
+        }
     }
 
     async function updateRankDisplay() {
@@ -193,11 +212,14 @@
         drawTask();
     }
 
+    // FIX: Shuffle card text correctly every time
     function drawTask() {
         if(tasksCompleted >= SET_LIMIT) { endSession(); return; }
+        
         document.getElementById('task-count').innerText = `${tasksCompleted + 1}/${SET_LIMIT}`;
         const deck = cardDecks[selectedMode] || cardDecks.production;
-        document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
+        const randomCard = deck[Math.floor(Math.random() * deck.length)];
+        document.getElementById('card-body').innerText = randomCard;
         
         timeLeft = TASK_TIME;
         cooldownLeft = 10; 
@@ -221,14 +243,10 @@
         clearInterval(timerInterval);
         const timerEl = document.getElementById('timer');
         timerEl.classList.remove('timer-low');
-
         timerInterval = setInterval(() => {
             if(!isPaused) {
                 timeLeft--;
-                if(cooldownLeft > 0) {
-                    cooldownLeft--;
-                    updateCooldownUI();
-                }
+                if(cooldownLeft > 0) { cooldownLeft--; updateCooldownUI(); }
                 if(timeLeft <= 10) timerEl.classList.add('timer-low');
                 const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
                 timerEl.innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
@@ -250,31 +268,19 @@
 
     function completeTask() {
         let currentBonus = 0;
-        if (timeLeft > 15) {
-            currentBonus += 5;
-            speedDemonCount++;
-            triggerAlert("SPEED DEMON +5");
-        }
-
+        if (timeLeft > 15) { currentBonus += 5; speedDemonCount++; triggerAlert("SPEED DEMON +5"); }
         tasksCompleted++; 
         sessionClout += (10 + currentBonus);
-        comboCount++;
-        cleanStreakCount++;
-
-        if(comboCount === 3) { 
-            sessionClout += 25; 
-            setTimeout(() => triggerAlert("XP OVERDRIVE +25"), 800); 
-            comboCount = 0; 
-        }
+        comboCount++; cleanStreakCount++;
         
+        if(comboCount === 3) { sessionClout += 25; setTimeout(() => triggerAlert("XP OVERDRIVE +25"), 800); comboCount = 0; }
         if(cleanStreakCount === 6 && !rerunUsedInSession) {
             const bonus = Math.floor(Math.random() * 101) + 50; 
             sessionClout += bonus;
             setTimeout(() => triggerAlert(`CLEAN STREAK +${bonus}`), 1600);
         }
-
         document.getElementById('clout-val').innerText = sessionClout;
-        drawTask();
+        drawTask(); // Shuffle next card
     }
 
     function triggerAlert(text) {
@@ -283,8 +289,9 @@
         setTimeout(() => alert.style.opacity = "0", 2000);
     }
 
-    function rerollTask() {
-        rerunUsedInSession = true; cleanStreakCount = 0; 
+    function rerollTask() { 
+        rerunUsedInSession = true; 
+        cleanStreakCount = 0; 
         const deck = cardDecks[selectedMode] || cardDecks.production;
         document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
     }
@@ -293,15 +300,15 @@
         clearInterval(timerInterval);
         showScreen('screen-results');
         
-        // Perfect Set Check
         if (!rerunUsedInSession && speedDemonCount >= 5) {
             document.getElementById('perfect-badge').style.display = "block";
-            sessionClout += 100; // Secret 100pt bonus for Perfect Set
+            sessionClout += 100;
+            const perfects = parseInt(localStorage.getItem(`perfect_${currentCallsign}`) || 0);
+            localStorage.setItem(`perfect_${currentCallsign}`, perfects + 1);
         }
 
         const currentTotal = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
         localStorage.setItem(`clout_${currentCallsign}`, currentTotal + sessionClout);
-        
         document.getElementById('result-clout').innerText = sessionClout;
         const footer = document.getElementById('result-footer');
         footer.innerText = "SYNCING TO GLOBAL RIG...";
@@ -315,6 +322,7 @@
         } catch (e) { footer.innerText = "OFFLINE: SAVED TO LOCAL RIG."; }
     }
 
+    function resetAll() { if(confirm("ERASE ALL CAREER PROGRESS?")) { localStorage.clear(); location.reload(); } }
     function togglePause() { isPaused = !isPaused; document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE"; }
     function exitGame() { clearInterval(timerInterval); showScreen('screen-modes'); }
     window.onload = () => showScreen('screen-auth');
