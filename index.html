@@ -27,43 +27,86 @@
     let clout = 0, timeLeft = 0, timerInterval = null, isPaused = false, selectedMode = '', currentType = '', tasksCompleted = 0;
     let combo = 0, multiplier = 1.0, currentCallsign = "";
     let lastCardText = ""; 
+    let isSyncing = false; // Guard to prevent duplicate API calls
     const API_PATH = "/.netlify/functions";
 
-    // --- CORE FUNCTIONS (IDENTICAL LOGIC) ---
+    // --- CORE FUNCTIONS ---
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         const target = document.getElementById(id);
         if(target) target.classList.add('active-screen');
     }
 
-    /* ... REST OF YOUR STARTGAME, DRAWING, AND TIMER LOGIC REMAINS UNCHANGED ... */
+    /* ... REST OF YOUR STARTGAME, DRAWING, AND TIMER LOGIC UNCHANGED ... */
 
-    // --- FIXED SYNC FUNCTIONS (TO WORK WITH YOUR NEW SUPABASE KEYS) ---
+    // --- UPDATED EFFICIENT SYNC FUNCTIONS ---
     async function endSession() {
+        if (isSyncing) return; // Prevent multiple clicks from wasting credits
+        
         clearInterval(timerInterval);
         showScreen('screen-results');
+        
+        const footer = document.getElementById('result-footer');
         document.getElementById('result-artist').innerText = `ARTIST: ${currentCallsign}`;
         document.getElementById('result-clout').innerText = clout;
-        document.getElementById('result-footer').innerText = "SYNCING TO GLOBAL RIG...";
+        footer.innerText = "SYNCING TO GLOBAL RIG...";
+        
+        isSyncing = true;
+
         try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout guard
+
             const res = await fetch(`${API_PATH}/save-score`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: currentCallsign, score: clout })
+                body: JSON.stringify({ username: currentCallsign, score: clout }),
+                signal: controller.signal
             });
-            if(res.ok) document.getElementById('result-footer').innerText = "CLOUT BANKED SUCCESSFULLY.";
-        } catch (e) { document.getElementById('result-footer').innerText = "LOCAL SAVE ONLY."; }
+            
+            clearTimeout(timeoutId);
+
+            if(res.ok) {
+                footer.innerText = "CLOUT BANKED SUCCESSFULLY.";
+            } else {
+                throw new Error('Server Error');
+            }
+        } catch (e) { 
+            footer.innerText = "LOCAL SAVE ONLY. CHECK CONNECTION.";
+            console.warn("Sync blocked to save credits:", e.name);
+        } finally {
+            isSyncing = false;
+        }
     }
 
     async function showLeaderboard() {
         const body = document.getElementById('leaderboard-body');
+        
+        // Don't re-fetch if we are already fetching
+        if (body.innerText.includes("FETCHING")) return;
+
         body.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px;">FETCHING SATELLITE...</td></tr>';
         showScreen('screen-board');
+
         try {
-            const res = await fetch(`${API_PATH}/get-scores`);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+            const res = await fetch(`${API_PATH}/get-scores`, { signal: controller.signal });
             const data = await res.json();
-            body.innerHTML = data.map((d, i) => `<tr><td style="padding:15px 0; border-bottom:1px solid #222;"><span style="color:var(--yellow)">#${i+1}</span> ${d.username}</td><td style="text-align:right; color:var(--yellow)">${d.clout}</td></tr>`).join('');
-        } catch (e) { body.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px; color:var(--red);">OFFLINE MODE</td></tr>'; }
+            
+            clearTimeout(timeoutId);
+            
+            body.innerHTML = data.map((d, i) => `
+                <tr>
+                    <td style="padding:15px 0; border-bottom:1px solid #222;">
+                        <span style="color:var(--yellow)">#${i+1}</span> ${d.username}
+                    </td>
+                    <td style="text-align:right; color:var(--yellow)">${d.clout}</td>
+                </tr>`).join('');
+        } catch (e) { 
+            body.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px; color:var(--red);">OFFLINE MODE</td></tr>'; 
+        }
     }
     
     /* ... REMAINING UTILS (SKIP, REROLL, PAUSE) ARE UNCHANGED ... */
