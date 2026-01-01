@@ -29,11 +29,9 @@
         }
         .active-screen { display: flex !important; }
         
-        /* Typography */
         .logo-small { font-size: 2rem; font-weight: 900; color: var(--cyan); margin-bottom: 20px; font-style: italic; }
         h2 { font-size: 0.7rem; letter-spacing: 3px; color: #666; text-transform: uppercase; margin-bottom: 15px; text-align: center; }
         
-        /* Leaderboard/Stats */
         #leaderboard-panel {
             width: 100%; background: #0a0b0e; border: 1px solid var(--border);
             border-radius: 10px; margin-bottom: 20px; padding: 12px; font-size: 0.75rem;
@@ -42,13 +40,10 @@
         .lb-name { color: #888; text-transform: uppercase; }
         .lb-score { color: var(--yellow); font-weight: bold; }
 
-        /* Manual Styling */
         .manual-box { width: 100%; background: #0a0b0e; border-radius: 10px; padding: 15px; overflow-y: auto; max-height: 500px; border: 1px solid var(--border); }
         .manual-item { margin-bottom: 18px; font-size: 0.8rem; text-align: left; line-height: 1.4; }
         .manual-item b { color: var(--cyan); display: block; margin-bottom: 4px; font-size: 0.7rem; letter-spacing: 1.5px; text-transform: uppercase; }
-        .manual-divider { height: 1px; background: var(--border); margin: 15px 0; }
 
-        /* UI Elements */
         input {
             width: 100%; padding: 16px; background: #0a0b0e; border: 1px solid var(--border);
             color: var(--cyan); border-radius: 8px; outline: none; font-size: 1.1rem; text-align: center;
@@ -59,17 +54,18 @@
             cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.2s;
         }
         .btn-primary { background: var(--cyan); color: black; border: none; }
+        .btn-primary:disabled { background: #1a3d42; color: #00828a; cursor: not-allowed; }
         .btn-secondary { background: transparent; border: 1px solid var(--border); font-size: 0.8rem; padding: 12px; }
 
-        /* Combo Feedback */
         #combo-alert { color: var(--magenta); font-weight: 900; font-size: 1rem; position: absolute; top: 110px; opacity: 0; transition: 0.3s; z-index: 20; pointer-events: none; }
 
-        /* Game HUD */
         .game-hud { display: flex; justify-content: space-between; width: 100%; margin-bottom: 20px; font-size: 0.8rem; color: #888; }
         .hud-val { color: var(--cyan); font-weight: bold; }
         #timer { font-size: 6rem; color: var(--yellow); font-family: monospace; line-height: 1; margin: 10px 0; }
         #card { width: 100%; flex: 1; border: 2px solid var(--border); background: #121519; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 25px; text-align: center; margin: 15px 0; font-size: 1.4rem; font-weight: 600; }
         #game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+        
+        .cooldown-text { font-size: 0.6rem; display: block; margin-top: 4px; opacity: 0.7; }
     </style>
 </head>
 <body>
@@ -85,15 +81,11 @@
     <div id="screen-manual" class="screen">
         <div class="logo-small">STUDIO OPS</div>
         <div class="manual-box">
-            <div class="manual-item"><b>1. CHOOSE YOUR WORKFLOW</b>Select a field (Engineer, Beats, or Writer). Each field presents specialized tasks designed to break creative blocks.</div>
-            <div class="manual-item"><b>2. COMPLETE THE DECK</b>You are issued 10 tasks. You have 60 seconds per task. Perform the task in your DAW and hit "COMPLETE" to move forward.</div>
-            <div class="manual-item"><b>3. BASE CLOUT</b>Each card completed = +10 Clout.</div>
-            
-            <div class="manual-divider"></div>
-            
-            <div class="manual-item"><b>XP OVERDRIVE</b>Complete 3 tasks in a row (without the timer hitting zero) for a +25 bonus.</div>
-            <div class="manual-item"><b>CLEAN STREAK</b>Complete 6 tasks without using a single RERUN for a random Massive Bonus (50-150 Clout).</div>
-            <div class="manual-item"><b>LIFETIME CLOUT</b>Your total career points accumulated across all sessions. Session records go to the Global Leaderboard.</div>
+            <div class="manual-item"><b>1. CHOOSE YOUR WORKFLOW</b>Select a field (Engineer, Beats, or Writer).</div>
+            <div class="manual-item"><b>2. 10s LOCK</b>The "COMPLETE" button is locked for the first 10s of every task. You must actually perform the move in your DAW.</div>
+            <div class="manual-item"><b>3. BASE CLOUT</b>Each card = +10 Clout.</div>
+            <div class="manual-item"><b>XP OVERDRIVE</b>3 tasks in a row = +25 bonus.</div>
+            <div class="manual-item"><b>CLEAN STREAK</b>6 tasks without RERUN = Random Massive Bonus (50-150).</div>
         </div>
         <button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">INITIALIZE RIG</button>
     </div>
@@ -126,7 +118,10 @@
         <div id="timer">01:00</div>
         <div id="card"><div id="card-body">Awaiting sync...</div></div>
         <div id="game-controls">
-            <button class="btn btn-primary" style="grid-column: span 2" onclick="completeTask()">COMPLETE</button>
+            <button id="complete-btn" class="btn btn-primary" style="grid-column: span 2" onclick="completeTask()">
+                COMPLETE
+                <span id="cooldown-timer" class="cooldown-text"></span>
+            </button>
             <button class="btn btn-secondary" onclick="rerollTask()">RERUN</button>
             <button id="pause-btn" class="btn btn-secondary" onclick="togglePause()">PAUSE</button>
             <button class="btn btn-secondary" style="grid-column: span 2; color: var(--red); border-color: #400;" onclick="exitGame()">EJECT</button>
@@ -150,7 +145,7 @@
     };
 
     let sessionClout = 0, timeLeft = 0, timerInterval = null, isPaused = false, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
-    let comboCount = 0, rerunUsedInSession = false, cleanStreakCount = 0;
+    let comboCount = 0, rerunUsedInSession = false, cleanStreakCount = 0, cooldownLeft = 0;
     const API_PATH = "/.netlify/functions";
 
     function showScreen(id) {
@@ -168,12 +163,16 @@
     async function loadLeaderboard() {
         const lbContent = document.getElementById('lb-content');
         try {
-            const res = await fetch(`${API_PATH}/get-scores`);
+            // Added Cache Busting to fix the "Offline" issue
+            const res = await fetch(`${API_PATH}/get-scores?t=${Date.now()}`);
+            if (!res.ok) throw new Error();
             const data = await res.json();
             lbContent.innerHTML = data.slice(0, 5).map((d, i) => `
                 <div class="lb-row"><span class="lb-name">#${i+1} ${d.username}</span><span class="lb-score">${d.clout}</span></div>
             `).join('') || '<div style="text-align:center">NO DATA YET</div>';
-        } catch (e) { lbContent.innerHTML = '<div style="text-align:center; color:var(--red)">OFFLINE</div>'; }
+        } catch (e) { 
+            lbContent.innerHTML = '<div style="text-align:center; color:var(--red)">OFFLINE - SYNC FAILED</div>'; 
+        }
     }
 
     function validateAuth() {
@@ -181,8 +180,6 @@
         if(name.length < 2) return;
         currentCallsign = name;
         document.getElementById('welcome-msg').innerText = `WELCOME, ${currentCallsign}`;
-        
-        // Show manual if it's the first time for this session
         if(!sessionStorage.getItem('manualSeen')) {
             sessionStorage.setItem('manualSeen', 'true');
             showScreen('screen-manual');
@@ -204,8 +201,23 @@
         document.getElementById('task-count').innerText = `${tasksCompleted + 1}/${SET_LIMIT}`;
         const deck = cardDecks[selectedMode] || cardDecks.production;
         document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
+        
         timeLeft = 60;
+        cooldownLeft = 10; // 10 Second Cheat-Gate
+        updateCooldown();
         startTimer();
+    }
+
+    function updateCooldown() {
+        const btn = document.getElementById('complete-btn');
+        const timerTxt = document.getElementById('cooldown-timer');
+        if (cooldownLeft > 0) {
+            btn.disabled = true;
+            timerTxt.innerText = `LOCKED: ${cooldownLeft}s`;
+        } else {
+            btn.disabled = false;
+            timerTxt.innerText = "READY";
+        }
     }
 
     function startTimer() {
@@ -213,22 +225,16 @@
         timerInterval = setInterval(() => {
             if(!isPaused) {
                 timeLeft--;
+                if(cooldownLeft > 0) {
+                    cooldownLeft--;
+                    updateCooldown();
+                }
+                
                 const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
                 document.getElementById('timer').innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
-                if(timeLeft <= 0) { 
-                    clearInterval(timerInterval); 
-                    comboCount = 0; 
-                    showScreen('screen-modes'); 
-                }
+                if(timeLeft <= 0) { clearInterval(timerInterval); comboCount = 0; showScreen('screen-modes'); }
             }
         }, 1000);
-    }
-
-    function triggerAlert(text) {
-        const alert = document.getElementById('combo-alert');
-        alert.innerText = text;
-        alert.style.opacity = "1";
-        setTimeout(() => alert.style.opacity = "0", 2000);
     }
 
     function completeTask() {
@@ -237,12 +243,7 @@
         comboCount++;
         cleanStreakCount++;
 
-        if(comboCount === 3) {
-            sessionClout += 25;
-            triggerAlert("XP OVERDRIVE +25");
-            comboCount = 0;
-        }
-
+        if(comboCount === 3) { sessionClout += 25; triggerAlert("XP OVERDRIVE +25"); comboCount = 0; }
         if(cleanStreakCount === 6 && !rerunUsedInSession) {
             const bonus = Math.floor(Math.random() * 101) + 50; 
             sessionClout += bonus;
@@ -253,11 +254,18 @@
         drawTask();
     }
 
+    function triggerAlert(text) {
+        const alert = document.getElementById('combo-alert');
+        alert.innerText = text; alert.style.opacity = "1";
+        setTimeout(() => alert.style.opacity = "0", 2000);
+    }
+
     function rerollTask() {
         rerunUsedInSession = true;
         cleanStreakCount = 0; 
         const deck = cardDecks[selectedMode] || cardDecks.production;
         document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
+        // Reroll does NOT reset the 10s cooldown to keep gameplay fluid
     }
 
     function togglePause() {
@@ -280,7 +288,7 @@
                 body: JSON.stringify({ username: currentCallsign, score: sessionClout })
             });
             footer.innerText = "CLOUT BANKED SUCCESSFULLY.";
-        } catch (e) { footer.innerText = "LOCAL SAVE ONLY."; }
+        } catch (e) { footer.innerText = "OFFLINE: SAVED TO LOCAL RIG."; }
     }
 
     function exitGame() { clearInterval(timerInterval); showScreen('screen-modes'); }
