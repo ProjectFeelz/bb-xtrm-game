@@ -88,13 +88,30 @@
 
     <div id="screen-manual" class="screen">
         <div class="logo-small">STUDIO OPS</div>
-        <div style="text-align: left; font-size: 0.75rem; line-height: 1.5; background: #0a0b0e; padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-            <b style="color:var(--red)">• NO PAUSE:</b> Real-time session. No breaks allowed. <br><br>
-            <b style="color:var(--cyan)">• DYNAMIC TENSION:</b> Audio intensity rises with the clock.<br><br>
-            <b style="color:var(--green)">• SPEED DEMON:</b> Submit with >15s left for +5 Clout.<br><br>
-            <b style="color:var(--yellow)">• PERFECT SET:</b> 0 Reruns + 5 Speed Bonuses = GOLD STATUS.
-        </div>
-        <button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">INITIALIZE RIG</button>
+<div style="text-align: left; font-size: 0.75rem; line-height: 1.4; background: #0a0b0e; padding: 15px; border-radius: 12px; border: 1px solid var(--border); overflow-y: auto; max-height: 60vh;">
+    <b style="color:var(--cyan); font-size: 0.8rem;">1. INITIALIZATION</b><br>
+    Select a field (ENGINEER, BEATS, or WRITER) to begin. Each session consists of 10 rapid-fire tasks tailored to that discipline.
+    <br><br>
+
+    <b style="color:var(--red); font-size: 0.8rem;">2. THE CLOCK</b><br>
+    You have 30s per task. Audio intensity increases as time runs out. If the timer hits zero, the session is terminated immediately. There is **NO PAUSE**; once you start, the clock never stops.
+    <br><br>
+
+    <b style="color:var(--green); font-size: 0.8rem;">3. CLOUT (POINTS)</b><br>
+    • <b>Base Task:</b> +10 Clout per completion.<br>
+    • <b>Speed Demon:</b> +5 Bonus if submitted with >15s remaining.<br>
+    • <b>XP Overdrive:</b> Complete 3 tasks in a row without rerunning for a +25 Combo.
+    <br><br>
+
+    <b style="color:var(--yellow); font-size: 0.8rem;">4. RIG MECHANICS</b><br>
+    • <b>RERUN:</b> Use this to swap a difficult task. It resets your task timer to 30s but <b>disqualifies</b> you from a Perfect Set.<br>
+    • <b>SECURITY LOCK:</b> Every task has a 10s cooldown. You cannot "Complete" a task instantly; you must put in the work.
+    <br><br>
+
+    <b style="color:var(--magenta); font-size: 0.8rem;">5. GOLD STATUS</b><br>
+    To achieve a <b>PERFECT SET</b> and earn a career trophy, you must complete all 10 tasks with 0 Reruns and at least 5 Speed Demon bonuses.
+</div>
+<button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">INITIALIZE RIG</button>
     </div>
 
     <div id="screen-modes" class="screen">
