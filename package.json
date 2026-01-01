@@ -1,5 +1,13 @@
 {
+  "name": "bb-xtrm-pro-studio",
+  "version": "1.0.0",
+  "description": "Studio workflow engine",
+  "main": "index.html",
   "dependencies": {
-    "@supabase/supabase-js": "^2.0.0"
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
