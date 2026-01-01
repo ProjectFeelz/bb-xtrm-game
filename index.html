@@ -1,125 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BB XTRM // PRO STUDIO</title>
-    <style>
-        :root {
-            --bg: #0a0b0e; --panel: #161a1f; --border: #2a2f36;
-            --cyan: #00f2ff; --magenta: #ff00ff; --yellow: #f1c40f;
-            --green: #2ecc71; --red: #ff4757;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', monospace; }
-        body {
-            background-color: var(--bg); color: #e0e0e0; height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            overflow: hidden; background: radial-gradient(circle at center, #1a1d23 0%, #0a0b0e 100%);
-        }
-        #console {
-            width: 100%; max-width: 420px; height: 100vh; max-height: 850px;
-            background: var(--panel); border: 2px solid var(--border);
-            border-radius: 20px; position: relative; overflow: hidden;
-            display: flex; flex-direction: column;
-        }
-        .screen {
-            position: absolute; inset: 0; padding: 30px;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            background: var(--panel); z-index: 10;
-        }
-        .active-screen { display: flex !important; }
-        
-        /* Typography */
-        .logo-small { font-size: 2rem; font-weight: 900; color: var(--cyan); margin-bottom: 20px; font-style: italic; }
-        .logo-big { font-size: 4.5rem; font-weight: 900; color: var(--cyan); line-height: 0.9; text-align: center; margin-bottom: 10px; font-style: italic; }
-        h2 { font-size: 0.7rem; letter-spacing: 3px; color: #666; text-transform: uppercase; margin-bottom: 15px; text-align: center; }
-        
-        /* Leaderboard Panel */
-        #leaderboard-panel {
-            width: 100%; background: #0a0b0e; border: 1px solid var(--border);
-            border-radius: 10px; margin-bottom: 20px; padding: 10px; font-size: 0.75rem;
-        }
-        .lb-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #1a1d23; }
-        .lb-row:last-child { border: none; }
-        .lb-name { color: #888; }
-        .lb-score { color: var(--yellow); font-weight: bold; }
-
-        /* UI Elements */
-        input {
-            width: 100%; padding: 16px; background: #0a0b0e; border: 1px solid var(--border);
-            color: var(--cyan); border-radius: 8px; outline: none; font-size: 1.1rem; text-align: center;
-        }
-        .btn {
-            width: 100%; padding: 18px; border: 1px solid var(--border); border-radius: 12px;
-            background: rgba(255,255,255,0.03); color: white; font-weight: bold;
-            cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.2s;
-        }
-        .btn-primary { background: var(--cyan); color: black; border: none; }
-        .btn-secondary { background: transparent; border: 1px solid var(--border); font-size: 0.8rem; padding: 12px; }
-
-        /* Game HUD */
-        .game-hud { display: flex; justify-content: space-between; width: 100%; margin-bottom: 20px; font-size: 0.8rem; color: #888; }
-        .hud-val { color: var(--cyan); font-weight: bold; }
-        
-        #timer { font-size: 6rem; color: var(--yellow); font-family: monospace; line-height: 1; margin: 10px 0; }
-        #card { width: 100%; flex: 1; border: 2px solid var(--border); background: #121519; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 25px; text-align: center; margin: 15px 0; font-size: 1.4rem; font-weight: 600; }
-        #game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
-    </style>
-</head>
-<body>
-
-<div id="console">
-    <div id="screen-auth" class="screen">
-        <div class="logo-small">BB XTRM</div>
-        <h2>Registry</h2>
-        <input type="text" id="username" placeholder="ARTIST NAME">
-        <button class="btn btn-primary" style="margin-top:20px" onclick="validateAuth()">LOGIN</button>
-    </div>
-
-    <div id="screen-modes" class="screen">
-        <h2 id="welcome-msg">WELCOME, ARTIST</h2>
-        
-        <div id="leaderboard-panel">
-            <div style="text-align: center; color: var(--cyan); margin-bottom: 8px; font-size: 0.6rem; letter-spacing: 2px;">GLOBAL RIG STANDINGS</div>
-            <div id="lb-content">
-                <div style="text-align:center; color:#444;">SYNCING DATA...</div>
-            </div>
-            <div id="user-stats" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); display: flex; justify-content: space-between;">
-                <span style="color: #666;">YOUR BANK:</span>
-                <span id="last-score" style="color: var(--cyan);">0 CLOUT</span>
-            </div>
-        </div>
-
-        <button class="btn" style="margin-bottom:10px" onclick="startGame('production')">ENGINEER</button>
-        <button class="btn" style="margin-bottom:10px" onclick="startGame('beats')">BEATS</button>
-        <button class="btn" style="margin-bottom:10px" onclick="startGame('songwriting')">WRITER</button>
-        <button class="btn btn-secondary" onclick="localStorage.clear(); location.reload();">RESET RIG</button>
-    </div>
-
-    <div id="screen-game" class="screen">
-        <div class="game-hud">
-            <span>TASK: <span id="task-count" class="hud-val">1/10</span></span>
-            <span>CLOUT: <span id="clout-val" class="hud-val">0</span></span>
-        </div>
-        <div id="timer">01:00</div>
-        <div id="card"><div id="card-body">Awaiting sync...</div></div>
-        <div id="game-controls">
-            <button class="btn btn-primary" style="grid-column: span 2" onclick="completeTask()">COMPLETE</button>
-            <button class="btn btn-secondary" onclick="rerollTask()">RERUN</button>
-            <button id="pause-btn" class="btn btn-secondary" onclick="togglePause()">PAUSE</button>
-            <button class="btn btn-secondary" style="grid-column: span 2; color: var(--red); border-color: #400;" onclick="exitGame()">EJECT</button>
-        </div>
-    </div>
-
-    <div id="screen-results" class="screen">
-        <h2 id="result-header">SET COMPLETE</h2>
-        <p id="result-artist" style="margin-bottom: 10px; color: var(--cyan);"></p>
-        <div id="result-clout" style="font-size: 4rem; color: var(--yellow)">0</div>
-        <p id="result-footer" style="margin-top: 20px;">BANKING CLOUT...</p>
-        <button class="btn btn-primary" style="margin-top: 20px" onclick="showScreen('screen-modes')">CONTINUE</button>
-    </div>
-</div>
-
 <script>
     const SET_LIMIT = 10;
     const cardDecks = {
@@ -128,14 +6,24 @@
         beats: ['Replace snare with Clap', 'Nudge hats late', 'Pitch kick up', '1-bar drum break', 'Add shaker loop', 'Reverse crash', 'Half-time hats', 'Velocity humanize kicks', 'Woodblock on 4', 'Triple hi-hat speed']
     };
 
-    let clout = 0, timeLeft = 0, timerInterval = null, isPaused = false, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
+    let sessionClout = 0, timeLeft = 0, timerInterval = null, isPaused = false, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
     const API_PATH = "/.netlify/functions";
 
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         const target = document.getElementById(id);
         if(target) target.classList.add('active-screen');
-        if(id === 'screen-modes') loadLeaderboard();
+        if(id === 'screen-modes') {
+            loadLeaderboard();
+            updateLocalDisplay();
+        }
+    }
+
+    // --- NEW: PERSISTENCE LOGIC ---
+    function updateLocalDisplay() {
+        // Get total clout from localStorage for this specific artist
+        const savedClout = localStorage.getItem(`clout_${currentCallsign}`) || 0;
+        document.getElementById('last-score').innerText = savedClout + " TOTAL CLOUT";
     }
 
     async function loadLeaderboard() {
@@ -164,70 +52,48 @@
 
     function startGame(mode) {
         selectedMode = mode;
-        tasksCompleted = 0; clout = 0; isPaused = false;
+        tasksCompleted = 0; 
+        sessionClout = 0; // Score for THIS session
+        isPaused = false;
         document.getElementById('clout-val').innerText = "0";
         showScreen('screen-game');
         drawTask();
     }
 
-    function drawTask() {
-        if(tasksCompleted >= SET_LIMIT) { endSession(); return; }
-        document.getElementById('task-count').innerText = `${tasksCompleted + 1}/${SET_LIMIT}`;
-        const deck = cardDecks[selectedMode] || cardDecks.production;
-        document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
-        timeLeft = 60;
-        startTimer();
-    }
-
-    function startTimer() {
-        clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            if(!isPaused) {
-                timeLeft--;
-                const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-                document.getElementById('timer').innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
-                if(timeLeft <= 0) { clearInterval(timerInterval); showScreen('screen-modes'); }
-            }
-        }, 1000);
-    }
-
     function completeTask() {
-        tasksCompleted++; clout += 10;
-        document.getElementById('clout-val').innerText = clout;
+        tasksCompleted++; 
+        sessionClout += 10;
+        document.getElementById('clout-val').innerText = sessionClout;
         drawTask();
     }
 
     async function endSession() {
         clearInterval(timerInterval);
         showScreen('screen-results');
+        
+        // Update Local Storage (All-time total)
+        const currentTotal = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
+        const newTotal = currentTotal + sessionClout;
+        localStorage.setItem(`clout_${currentCallsign}`, newTotal);
+
         document.getElementById('result-artist').innerText = `ARTIST: ${currentCallsign}`;
-        document.getElementById('result-clout').innerText = clout;
-        document.getElementById('last-score').innerText = clout + " CLOUT";
+        document.getElementById('result-clout').innerText = sessionClout;
+        
         const footer = document.getElementById('result-footer');
         footer.innerText = "SYNCING TO GLOBAL RIG...";
+        
         try {
+            // Note: Sending the sessionClout to Supabase, but you could also send 'newTotal'
             await fetch(`${API_PATH}/save-score`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: currentCallsign, score: clout })
+                body: JSON.stringify({ username: currentCallsign, score: sessionClout })
             });
             footer.innerText = "CLOUT BANKED SUCCESSFULLY.";
-        } catch (e) { footer.innerText = "LOCAL SAVE ONLY."; }
+        } catch (e) { 
+            footer.innerText = "LOCAL SAVE ONLY."; 
+        }
     }
-
-    function rerollTask() {
-        const deck = cardDecks[selectedMode] || cardDecks.production;
-        document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
-    }
-
-    function togglePause() {
-        isPaused = !isPaused;
-        document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE";
-    }
-
-    function exitGame() { clearInterval(timerInterval); showScreen('screen-modes'); }
-
-    window.onload = () => showScreen('screen-auth');
+    
+    // ... rest of your timer, drawTask, and reroll functions ...
 </script>
-</body>
-</html>
