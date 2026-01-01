@@ -89,10 +89,10 @@
     <div id="screen-manual" class="screen">
         <div class="logo-small">STUDIO OPS</div>
         <div style="text-align: left; font-size: 0.75rem; line-height: 1.5; background: #0a0b0e; padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-            <b style="color:var(--red)">• HIGH STAKES:</b> 30s per task. <br><br>
-            <b style="color:var(--cyan)">• DYNAMIC TENSION:</b> Audio intensity increases as time runs out.<br><br>
+            <b style="color:var(--red)">• NO PAUSE:</b> Real-time session. No breaks allowed. <br><br>
+            <b style="color:var(--cyan)">• DYNAMIC TENSION:</b> Audio intensity rises with the clock.<br><br>
             <b style="color:var(--green)">• SPEED DEMON:</b> Submit with >15s left for +5 Clout.<br><br>
-            <b style="color:var(--yellow)">• PERFECT SET:</b> 0 Reruns + 5 Speed Bonuses = Career Trophy.
+            <b style="color:var(--yellow)">• PERFECT SET:</b> 0 Reruns + 5 Speed Bonuses = GOLD STATUS.
         </div>
         <button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">INITIALIZE RIG</button>
     </div>
@@ -112,7 +112,7 @@
         <button class="btn" style="margin-bottom:10px" onclick="startGame('songwriting')">WRITER</button>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;">
             <button class="btn btn-secondary" onclick="showScreen('screen-manual')">MANUAL</button>
-            <button class="btn btn-secondary" onclick="resetAll()">RESET</button>
+            <button class="btn btn-secondary" onclick="resetCareer()">ERASE DATA</button>
         </div>
     </div>
 
@@ -131,7 +131,7 @@
                 <span id="cooldown-timer" class="cooldown-text">LOCKED</span>
             </button>
             <button class="btn btn-secondary" onclick="rerollTask()">RERUN</button>
-            <button id="pause-btn" class="btn btn-secondary" onclick="togglePause()">PAUSE</button>
+            <button class="btn btn-secondary" onclick="restartSession()">RESTART</button>
             <button class="btn btn-secondary" style="grid-column: span 2; color: var(--red); border-color: #400;" onclick="exitGame()">EJECT</button>
         </div>
     </div>
@@ -149,6 +149,7 @@
     // --- ADVANCED AUDIO ENGINE ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let musicInterval = null;
+    let gameRunning = false;
 
     function playSfx(freq, type, duration, vol, ramp = true) {
         if(audioCtx.state === 'suspended') audioCtx.resume();
@@ -164,18 +165,13 @@
         osc.stop(audioCtx.currentTime + duration);
     }
 
-    // Dynamic Loop Generator
     function tickMusic() {
-        if (isPaused || !timerInterval) return;
-        
-        // Music intensifies as timeLeft decreases
-        const intensity = (30 - timeLeft) / 30; // 0 to 1
-        const tempo = Math.max(200, 600 - (intensity * 450)); // Fast ticks
-        const freq = 60 + (intensity * 140); // Base pitch rises
-        
+        if (!gameRunning) return;
+        const intensity = (30 - timeLeft) / 30; 
+        const tempo = Math.max(200, 600 - (intensity * 450)); 
+        const freq = 60 + (intensity * 140); 
         playSfx(freq, 'sine', 0.1, 0.05);
-        if(timeLeft < 10) playSfx(freq * 2, 'triangle', 0.05, 0.02); // Add high-pitched stress
-
+        if(timeLeft < 10) playSfx(freq * 2, 'triangle', 0.05, 0.02); 
         musicInterval = setTimeout(tickMusic, tempo);
     }
 
@@ -196,14 +192,14 @@
         beats: ['Replace snare with Clap', 'Nudge hats 5ms late', 'Pitch kick up 2 semitones','1-bar drum break', 'Add shaker loop', 'Reverse the crash','Half-time the hi-hats', 'Velocity humanize kicks', 'Woodblock on the 4', 'Triple hi-hat speed','Delete every 4th kick', 'Add a rimshot on the "and"', 'Ghost note snares','Flanger on the drum bus', 'Pitch down the hats', 'Replace kick with a tom','Add a tambourine on 2 and 4', 'Randomize hat velocities', 'Add a cowbell hit','Filter the drums for 2 bars', 'Roll the snare at the end']
     };
 
-    let sessionClout = 0, timeLeft = 0, timerInterval = null, isPaused = false, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
-    let comboCount = 0, rerunUsedInSession = false, cleanStreakCount = 0, cooldownLeft = 0, speedDemonCount = 0;
+    let sessionClout = 0, timeLeft = 0, timerInterval = null, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
+    let comboCount = 0, rerunUsedInSession = false, cooldownLeft = 0, speedDemonCount = 0;
 
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         const target = document.getElementById(id);
         if(target) target.classList.add('active-screen');
-        if(id === 'screen-modes') { updateRankDisplay(); renderBadges(); clearTimeout(musicInterval); }
+        if(id === 'screen-modes') { updateRankDisplay(); renderBadges(); clearTimeout(musicInterval); gameRunning = false; }
     }
 
     function renderBadges() {
@@ -233,13 +229,13 @@
 
     function startGame(mode) {
         sfx.click();
-        selectedMode = mode; tasksCompleted = 0; sessionClout = 0; isPaused = false;
-        comboCount = 0; cleanStreakCount = 0; rerunUsedInSession = false; speedDemonCount = 0;
+        selectedMode = mode; tasksCompleted = 0; sessionClout = 0; gameRunning = true;
+        comboCount = 0; rerunUsedInSession = false; speedDemonCount = 0;
         document.getElementById('clout-val').innerText = "0";
         document.getElementById('perfect-badge').style.display = "none";
         showScreen('screen-game');
         drawTask();
-        tickMusic(); // Start dynamic music
+        tickMusic();
     }
 
     function drawTask() {
@@ -270,14 +266,12 @@
         const timerEl = document.getElementById('timer');
         timerEl.classList.remove('timer-low');
         timerInterval = setInterval(() => {
-            if(!isPaused) {
-                timeLeft--;
-                if(cooldownLeft > 0) { cooldownLeft--; updateCooldownUI(); }
-                if(timeLeft <= 10) { timerEl.classList.add('timer-low'); }
-                const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-                timerEl.innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
-                if(timeLeft <= 0) { sfx.error(); clearInterval(timerInterval); showScreen('screen-modes'); }
-            }
+            timeLeft--;
+            if(cooldownLeft > 0) { cooldownLeft--; updateCooldownUI(); }
+            if(timeLeft <= 10) { timerEl.classList.add('timer-low'); }
+            const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+            timerEl.innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
+            if(timeLeft <= 0) { sfx.error(); clearInterval(timerInterval); showScreen('screen-modes'); }
         }, 1000);
     }
 
@@ -305,29 +299,28 @@
     }
 
     function rerollTask() { 
-        sfx.click(); 
-        rerunUsedInSession = true; 
-        
-        // Pick new card
+        sfx.click(); rerunUsedInSession = true; 
         const deck = cardDecks[selectedMode] || cardDecks.production;
         document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
-        
-        // FULL RESET of timers for this task
         timeLeft = TASK_TIME;
         cooldownLeft = 10;
-        
-        // Update UI immediately
         const timerEl = document.getElementById('timer');
         timerEl.innerText = "00:30";
         timerEl.classList.remove('timer-low');
         updateCooldownUI();
-        
-        // Re-sync the audio heartbeat to the new time
         clearTimeout(musicInterval);
         tickMusic();
     }
 
+    function restartSession() {
+        if(confirm("RESTART CURRENT SESSION? (All clout from this set will be lost)")) {
+            sfx.click();
+            startGame(selectedMode);
+        }
+    }
+
     function endSession() {
+        gameRunning = false;
         clearInterval(timerInterval);
         clearTimeout(musicInterval);
         sfx.rankUp();
@@ -342,16 +335,9 @@
         localStorage.setItem(`clout_${currentCallsign}`, currentTotal + sessionClout);
         document.getElementById('result-clout').innerText = sessionClout;
     }
-
-    function togglePause() { 
-        sfx.click(); 
-        isPaused = !isPaused; 
-        document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE"; 
-        if(!isPaused) tickMusic(); // Resume music
-    }
     
-    function resetAll() { if(confirm("ERASE CAREER?")) { localStorage.clear(); location.reload(); } }
-    function exitGame() { clearTimeout(musicInterval); clearInterval(timerInterval); showScreen('screen-modes'); }
+    function resetCareer() { if(confirm("ERASE ALL CAREER PROGRESS?")) { localStorage.clear(); location.reload(); } }
+    function exitGame() { gameRunning = false; clearTimeout(musicInterval); clearInterval(timerInterval); showScreen('screen-modes'); }
     window.onload = () => showScreen('screen-auth');
 </script>
 </body>
