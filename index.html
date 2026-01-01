@@ -28,9 +28,13 @@
             background: var(--panel); z-index: 10;
         }
         .active-screen { display: flex !important; }
+        
+        /* Typography */
         .logo-small { font-size: 2rem; font-weight: 900; color: var(--cyan); margin-bottom: 20px; font-style: italic; }
         .logo-big { font-size: 4.5rem; font-weight: 900; color: var(--cyan); line-height: 0.9; text-align: center; margin-bottom: 10px; font-style: italic; }
         h2 { font-size: 0.7rem; letter-spacing: 3px; color: #666; text-transform: uppercase; margin-bottom: 25px; text-align: center; }
+        
+        /* UI Elements */
         input {
             width: 100%; padding: 16px; background: #0a0b0e; border: 1px solid var(--border);
             color: var(--cyan); border-radius: 8px; outline: none; font-size: 1.1rem; text-align: center;
@@ -38,12 +42,25 @@
         .btn {
             width: 100%; padding: 18px; border: 1px solid var(--border); border-radius: 12px;
             background: rgba(255,255,255,0.03); color: white; font-weight: bold;
-            cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.2s;
         }
         .btn-primary { background: var(--cyan); color: black; border: none; }
-        #timer { font-size: 6.5rem; color: var(--yellow); font-family: monospace; }
-        #card { width: 100%; flex: 1; border: 2px solid var(--border); background: #121519; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 20px; text-align: center; margin: 15px 0; }
-        #game-controls { display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; padding: 10px; }
+        .btn-secondary { background: transparent; border: 1px solid var(--border); font-size: 0.8rem; padding: 12px; }
+
+        /* Game HUD */
+        .game-hud {
+            display: flex; justify-content: space-between; width: 100%; 
+            margin-bottom: 20px; font-size: 0.8rem; color: #888; letter-spacing: 1px;
+        }
+        .hud-val { color: var(--cyan); font-weight: bold; }
+        
+        #timer { font-size: 6rem; color: var(--yellow); font-family: monospace; line-height: 1; margin: 10px 0; }
+        #card { 
+            width: 100%; flex: 1; border: 2px solid var(--border); background: #121519; 
+            border-radius: 15px; display: flex; align-items: center; justify-content: center; 
+            padding: 25px; text-align: center; margin: 15px 0; font-size: 1.4rem; font-weight: 600;
+        }
+        #game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
     </style>
 </head>
 <body>
@@ -66,11 +83,20 @@
     </div>
 
     <div id="screen-game" class="screen">
+        <div class="game-hud">
+            <span>TASK: <span id="task-count" class="hud-val">1/10</span></span>
+            <span>CLOUT: <span id="clout-val" class="hud-val">0</span></span>
+        </div>
+        
         <div id="timer">01:00</div>
+        
         <div id="card"><div id="card-body">Awaiting sync...</div></div>
+        
         <div id="game-controls">
-            <button class="btn btn-primary" onclick="completeTask()">COMPLETE</button>
-            <button class="btn" onclick="exitGame()">EJECT</button>
+            <button class="btn btn-primary" style="grid-column: span 2" onclick="completeTask()">COMPLETE</button>
+            <button class="btn btn-secondary" onclick="rerollTask()">RERUN</button>
+            <button id="pause-btn" class="btn btn-secondary" onclick="togglePause()">PAUSE</button>
+            <button class="btn btn-secondary" style="grid-column: span 2; color: var(--red); border-color: #400;" onclick="exitGame()">EJECT</button>
         </div>
     </div>
 
@@ -101,7 +127,7 @@
         ]
     };
 
-    let clout = 0, timeLeft = 0, timerInterval = null, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
+    let clout = 0, timeLeft = 0, timerInterval = null, isPaused = false, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
     const API_PATH = "/.netlify/functions";
 
     function showScreen(id) {
@@ -122,31 +148,55 @@
         selectedMode = mode;
         tasksCompleted = 0;
         clout = 0;
+        isPaused = false;
+        document.getElementById('clout-val').innerText = "0";
         showScreen('screen-game');
         drawTask();
     }
 
     function drawTask() {
         if(tasksCompleted >= SET_LIMIT) { endSession(); return; }
+        
+        // Update HUD
+        document.getElementById('task-count').innerText = `${tasksCompleted + 1}/${SET_LIMIT}`;
+        
         const deck = cardDecks[selectedMode] || cardDecks.production;
         document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
+        
         timeLeft = 60;
         startTimer();
+    }
+
+    function rerollTask() {
+        const deck = cardDecks[selectedMode] || cardDecks.production;
+        document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
+    }
+
+    function togglePause() {
+        isPaused = !isPaused;
+        document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE";
+        document.getElementById('pause-btn').style.color = isPaused ? "var(--yellow)" : "white";
     }
 
     function startTimer() {
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
-            timeLeft--;
-            const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-            document.getElementById('timer').innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
-            if(timeLeft <= 0) { clearInterval(timerInterval); showScreen('screen-modes'); }
+            if(!isPaused) {
+                timeLeft--;
+                const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+                document.getElementById('timer').innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
+                if(timeLeft <= 0) { 
+                    clearInterval(timerInterval); 
+                    showScreen('screen-modes'); 
+                }
+            }
         }, 1000);
     }
 
     function completeTask() {
         tasksCompleted++;
         clout += 10;
+        document.getElementById('clout-val').innerText = clout;
         drawTask();
     }
 
@@ -169,7 +219,6 @@
 
     function exitGame() { clearInterval(timerInterval); showScreen('screen-modes'); }
 
-    // This triggers the first screen
     window.onload = () => showScreen('screen-auth');
 </script>
 </body>
