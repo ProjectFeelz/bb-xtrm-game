@@ -45,6 +45,12 @@
         #card { width: 100%; flex: 1; border: 2px solid var(--border); background: #121519; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 20px; text-align: center; margin: 15px 0; }
         #game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; padding: 10px; }
         #debug-log { position: fixed; bottom: 0; width: 100%; background: rgba(255,0,0,0.9); color: white; font-size: 10px; padding: 5px; z-index: 9999; display: none; }
+        
+        /* Rankings Table Styling */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        td { padding: 10px; border-bottom: 1px solid #222; font-size: 0.9rem; }
+        .rank-name { color: white; text-align: left; }
+        .rank-score { color: var(--cyan); text-align: right; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -69,7 +75,7 @@
     </div>
 
     <div id="screen-game" class="screen">
-        <div id="timer">00:00</div>
+        <div id="timer">01:00</div>
         <div id="card"><div id="card-body">Awaiting sync...</div></div>
         <div id="game-controls">
             <button class="btn btn-primary" style="grid-column: span 2" onclick="completeTask()">COMPLETE</button>
@@ -81,13 +87,15 @@
         <h2 id="result-header">SET COMPLETE</h2>
         <div id="result-clout" style="font-size: 3rem; color: var(--yellow)">0</div>
         <p id="result-footer">Syncing...</p>
-        <button class="btn btn-primary" onclick="showScreen('screen-modes')">CONTINUE</button>
+        <button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">CONTINUE</button>
     </div>
 
     <div id="screen-board" class="screen">
         <h2>Global Rankings</h2>
-        <table style="width:100%"><tbody id="leaderboard-body"></tbody></table>
-        <button class="btn" onclick="showScreen('screen-modes')">BACK</button>
+        <div style="width:100%; flex:1; overflow-y:auto;">
+            <table><tbody id="leaderboard-body"></tbody></table>
+        </div>
+        <button class="btn" style="margin-top:10px" onclick="showScreen('screen-modes')">BACK</button>
     </div>
 </div>
 
@@ -110,13 +118,15 @@
 
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
-        document.getElementById(id).classList.add('active-screen');
+        const target = document.getElementById(id);
+        if(target) target.classList.add('active-screen');
     }
 
     function validateAuth() {
         const name = document.getElementById('username').value.trim().toUpperCase();
         if(name.length < 2) return;
         currentCallsign = name;
+        document.getElementById('welcome-msg').innerText = "WELCOME, " + currentCallsign;
         showScreen('screen-modes');
     }
 
@@ -141,8 +151,11 @@
         timerInterval = setInterval(() => {
             timeLeft--;
             const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-            document.getElementById('timer').innerText = m + ":" + (s < 10 ? "0"+s : s);
-            if(timeLeft <= 0) { clearInterval(timerInterval); showScreen('screen-modes'); }
+            document.getElementById('timer').innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
+            if(timeLeft <= 0) { 
+                clearInterval(timerInterval); 
+                showScreen('screen-modes'); 
+            }
         }, 1000);
     }
 
@@ -157,30 +170,47 @@
         clearInterval(timerInterval);
         showScreen('screen-results');
         document.getElementById('result-clout').innerText = clout;
+        const footer = document.getElementById('result-footer');
+        footer.innerText = "SYNCING TO GLOBAL RIG...";
         isSyncing = true;
+        
         try {
-            await fetch('/.netlify/functions/save-score', {
+            const res = await fetch('/.netlify/functions/save-score', {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username: currentCallsign, score: clout })
             });
-            document.getElementById('result-footer').innerText = "CLOUT BANKED.";
+            if(res.ok) footer.innerText = "CLOUT BANKED SUCCESSFULLY.";
+            else footer.innerText = "SERVER ERROR (502).";
         } catch(e) { 
-            document.getElementById('result-footer').innerText = "OFFLINE SAVE."; 
+            footer.innerText = "OFFLINE SAVE."; 
         } finally { isSyncing = false; }
     }
 
     async function showLeaderboard() {
         showScreen('screen-board');
         const body = document.getElementById('leaderboard-body');
-        body.innerHTML = "Fetching...";
+        body.innerHTML = "<tr><td colspan='2' style='text-align:center'>Fetching...</td></tr>";
         try {
             const res = await fetch('/.netlify/functions/get-scores');
             const data = await res.json();
-            body.innerHTML = data.map(d => `<tr><td>${d.username}</td><td>${d.clout}</td></tr>`).join('');
-        } catch(e) { body.innerHTML = "Offline"; }
+            body.innerHTML = data.map(d => `
+                <tr>
+                    <td class="rank-name">${d.username}</td>
+                    <td class="rank-score">${d.clout}</td>
+                </tr>`).join('');
+        } catch(e) { body.innerHTML = "<tr><td colspan='2' style='text-align:center'>Offline</td></tr>"; }
     }
 
-    function exitGame() { clearInterval(timerInterval); showScreen('screen-modes'); }
+    function exitGame() { 
+        clearInterval(timerInterval); 
+        showScreen('screen-modes'); 
+    }
+
+    // Force initialization to prevent blank screen
+    window.onload = () => {
+        showScreen('screen-auth');
+    };
 </script>
 </body>
 </html>
