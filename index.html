@@ -3,118 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BB XTRM // PRO STUDIO RIG</title>
+    <title>BB XTRM // PRO STUDIO</title>
     <style>
         :root {
-            --steel-light: #e5e7eb;
-            --steel-mid: #9ca3af;
-            --steel-dark: #374151;
-            --tape-black: #050505;
-            --cyan: #00f2ff;
-            --magenta: #ff00ff;
-            --yellow: #f1c40f;
-            --red: #ff4757;
-            --neon-glow: 0 0 15px rgba(0, 242, 255, 0.4);
+            --bg: #0a0b0e; --panel: #161a1f; --border: #2a2f36;
+            --cyan: #00f2ff; --magenta: #ff00ff; --yellow: #f1c40f;
+            --green: #2ecc71; --red: #ff4757;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', monospace; }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', monospace; }
         body {
-            background-color: #000;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+            background-color: var(--bg); color: #e0e0e0; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; background: radial-gradient(circle at center, #1a1d23 0%, #0a0b0e 100%);
         }
-
-        /* BRUSHED STAINLESS STEEL CHASSIS */
         #console {
-            width: 100%;
-            max-width: 420px;
-            height: 92vh;
-            border-radius: 40px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border: 4px solid #333;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 40px #000;
-            background: linear-gradient(135deg, #444 0%, #888 50%, #444 100%);
+            width: 100%; max-width: 420px; height: 100vh; max-height: 850px;
+            background: var(--panel); border: 2px solid var(--border);
+            border-radius: 20px; position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
         }
-
-        #console::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            opacity: 0.12;
-            pointer-events: none;
-            background-image: repeating-linear-gradient(45deg, #fff 0px, #fff 1px, transparent 1px, transparent 2px);
-            z-index: 1;
-        }
-
         .screen {
-            position: absolute;
-            inset: 22px;
-            background: var(--tape-black);
-            border: 3px solid #111;
-            border-radius: 20px;
-            padding: 25px;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            z-index: 10;
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.05);
+            position: absolute; inset: 0; padding: 30px;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            background: var(--panel); z-index: 10;
         }
-
         .active-screen { display: flex !important; }
-
-        /* CRT SCANLINE */
-        .screen::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 100;
+        
+        .logo-small { font-size: 2rem; font-weight: 900; color: var(--cyan); margin-bottom: 20px; font-style: italic; }
+        h2 { font-size: 0.7rem; letter-spacing: 3px; color: #666; text-transform: uppercase; margin-bottom: 15px; text-align: center; }
+        
+        #rank-panel {
+            width: 100%; background: #0a0b0e; border: 1px solid var(--border);
+            border-radius: 10px; margin-bottom: 20px; padding: 20px; text-align: center;
         }
 
-        .logo-small { font-size: 2.8rem; font-weight: 900; color: var(--cyan); text-shadow: var(--neon-glow); font-style: italic; margin-bottom: 5px; }
-        
-        /* 3D TACTILE BUTTONS */
+        #career-stats { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; align-items: center; }
+        .badge-row { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; margin-top: 5px; }
+        .mini-badge { width: 12px; height: 12px; background: var(--yellow); border-radius: 50%; box-shadow: 0 0 5px var(--yellow); }
+
+        #cheat-error { color: var(--red); font-weight: bold; font-size: 0.75rem; letter-spacing: 1px; opacity: 0; transition: 0.2s; height: 15px; margin-bottom: 5px; text-transform: uppercase; }
+
+        input {
+            width: 100%; padding: 16px; background: #0a0b0e; border: 1px solid var(--border);
+            color: var(--cyan); border-radius: 8px; outline: none; font-size: 1.1rem; text-align: center;
+        }
         .btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(180deg, #444 0%, #222 48%, #111 52%, #000 100%);
-            color: var(--cyan);
-            border: 1px solid #555;
-            border-radius: 12px;
-            font-weight: 900;
-            cursor: pointer;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-            box-shadow: 0 5px 0 #000, inset 0 1px 2px rgba(255,255,255,0.2);
-            position: relative;
-            z-index: 20;
+            width: 100%; padding: 18px; border: 1px solid var(--border); border-radius: 12px;
+            background: rgba(255,255,255,0.03); color: white; font-weight: bold;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.2s;
         }
+        .btn-primary { background: var(--cyan); color: black; border: none; }
+        .btn-locked { background: #1a1d23 !important; color: #444 !important; border: 1px solid #222 !important; cursor: not-allowed; opacity: 0.5; }
+        .btn-secondary { background: transparent; border: 1px solid var(--border); font-size: 0.8rem; padding: 12px; }
 
-        .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #000; }
-        .btn-primary { background: linear-gradient(180deg, #008b8b 0%, #004d4d 48%, #002b2b 52%, #000 100%); border-color: var(--cyan); }
-        .btn-secondary { font-size: 0.75rem; color: #777; background: linear-gradient(180deg, #2a2a2a, #050505); border-color: #333; }
+        #combo-alert { color: var(--magenta); font-weight: 900; font-size: 1.2rem; margin-top: -10px; margin-bottom: 10px; opacity: 0; transition: 0.3s; z-index: 20; height: 20px; text-align: center; }
 
-        #timer { font-size: 4rem; color: var(--yellow); font-weight: bold; margin: 10px 0; }
-        #card { width: 100%; flex: 1; border: 1px solid #222; background: #080808; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 25px; color: #eee; text-align: center; margin-bottom: 15px; box-shadow: inset 0 0 20px #000; }
+        .game-hud { display: flex; justify-content: space-between; width: 100%; margin-bottom: 10px; font-size: 0.8rem; color: #888; }
+        .hud-val { color: var(--cyan); font-weight: bold; }
         
-        input { width: 100%; padding: 18px; background: #080808; border: 1px solid #222; color: var(--cyan); border-radius: 10px; text-align: center; font-size: 1.2rem; margin-bottom: 15px; outline: none; box-shadow: inset 0 4px 12px rgba(0,0,0,1); }
+        #timer { font-size: 6rem; color: var(--yellow); font-family: monospace; line-height: 1; margin: 0; }
+        .timer-low { color: var(--red) !important; animation: pulse 0.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
-        /* TAPE LOADING ANIMATION */
-        @keyframes tapeIn {
-            0% { transform: scale(0.9) translateY(20px); opacity: 0; }
-            30% { transform: scale(1) translateY(0); opacity: 1; } /* The 'Click' */
-            100% { filter: brightness(1.2); } /* The 'Whirr' */
+        #card { width: 100%; flex: 1; border: 2px solid var(--border); background: #121519; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 25px; text-align: center; margin: 15px 0; font-size: 1.4rem; font-weight: 600; }
+        #game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+        
+        #perfect-badge { 
+            display: none; color: var(--yellow); border: 2px solid var(--yellow);
+            padding: 10px 20px; border-radius: 50px; font-size: 0.8rem; font-weight: 900;
+            margin-top: 15px; animation: glow 1.5s infinite alternate;
         }
-        .tape-sequence { animation: tapeIn 0.6s cubic-bezier(0.2, 0, 0.2, 1); }
+        @keyframes glow { from { box-shadow: 0 0 5px var(--yellow); } to { box-shadow: 0 0 20px var(--yellow); } }
+
+        .cooldown-text { font-size: 0.6rem; display: block; margin-top: 4px; opacity: 0.7; font-weight: normal; }
     </style>
 </head>
 <body>
@@ -122,194 +83,73 @@
 <div id="console">
     <div id="screen-auth" class="screen">
         <div class="logo-small">BB XTRM</div>
-        <div style="color:var(--magenta); letter-spacing: 3px; font-size: 0.8rem; margin-bottom: 30px;">🔒 SIGN IN</div>
-        <input type="text" id="username" placeholder="ARTIST NAME" spellcheck="false">
-        <button class="btn btn-primary" onclick="validateAuth()">ENGAGE RIG</button>
-    </div>
-
-    <div id="screen-modes" class="screen">
-        <h2 id="welcome-msg" style="color:var(--cyan); font-size: 0.7rem; margin-bottom: 15px;">WELCOME, ARTIST</h2>
-        <div style="width: 100%; background: #000; border: 1px solid #1a1a1a; border-radius: 15px; padding: 20px; margin-bottom: 25px; text-align: center;">
-            <div style="color: #444; font-size: 0.6rem; letter-spacing: 2px;">GLOBAL STATUS</div>
-            <div style="font-size: 2rem; color: var(--cyan); font-weight: 900;">#1 WORLD</div>
-        </div>
-        <button class="btn" onclick="loadTape('ENGINEER')">ENGINEER</button>
-        <button class="btn" onclick="loadTape('BEATS')">BEATS</button>
-        <button class="btn" onclick="loadTape('WRITER')">WRITER</button>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: auto;">
-            <button class="btn btn-secondary" onclick="location.reload()">RESET</button>
-            <button class="btn btn-secondary">MANUAL</button>
-        </div>
-    </div>
-
-    <div id="screen-game" class="screen">
-        <div style="display: flex; justify-content: space-between; width: 100%; font-size: 0.75rem; color: #444;">
-            <span>TASK: <span style="color: var(--cyan)">1/10</span></span>
-            <span>CLOUT: <span style="color: var(--cyan)">0</span></span>
-        </div>
-        <div id="timer">00:30</div>
-        <div id="card">Awaiting Tape...</div>
-        <button class="btn btn-primary">COMPLETE</button>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%;">
-            <button class="btn btn-secondary">RERUN</button>
-            <button class="btn btn-secondary" onclick="showScreen('screen-modes')">EJECT</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    function playTapeSound() {
-        // Simulating the "Click-Clack" (Mechanical Load)
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.1);
-
-        // Simulating the "Whirr" (Motor start)
-        setTimeout(() => {
-            const whirr = audioCtx.createOscillator();
-            const whirrGain = audioCtx.createGain();
-            whirr.type = 'sawtooth';
-            whirr.frequency.setValueAtTime(60, audioCtx.currentTime);
-            whirr.frequency.linearRampToValueAtTime(80, audioCtx.currentTime + 0.4);
-            whirrGain.gain.setValueAtTime(0.03, audioCtx.currentTime);
-            whirrGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
-            whirr.connect(whirrGain);
-            whirrGain.connect(audioCtx.destination);
-            whirr.start();
-            whirr.stop(audioCtx.currentTime + 0.5);
-        }, 150);
-    }
-
-    function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
-        document.getElementById(id).classList.add('active-screen');
-    }
-
-    function validateAuth() {
-        const name = document.getElementById('username').value.trim().toUpperCase();
-        if(name.length < 2) return;
-        document.getElementById('welcome-msg').innerText = `WELCOME, ${name}`;
-        showScreen('screen-modes');
-    }
-
-    function loadTape(mode) {
-        playTapeSound();
-        showScreen('screen-game');
-        const card = document.getElementById('card');
-        card.classList.remove('tape-sequence');
-        void card.offsetWidth; // Trigger reflow
-        card.classList.add('tape-sequence');
-        card.innerText = `LOADING ${mode} DATA...`;
-    }
-
-    window.onload = () => showScreen('screen-auth');
-</script>
-</body>
-</html>
-
-<div id="console">
-    <div id="screen-auth" class="screen">
-        <div class="logo-small">BB XTRM</div>
         <h2>Registry</h2>
         <input type="text" id="username" placeholder="ARTIST NAME">
-        <button class="btn btn-primary" onclick="validateAuth()">ENGAGE RIG</button>
+        <button class="btn btn-primary" style="margin-top:20px" onclick="validateAuth()">LOGIN</button>
     </div>
 
     <div id="screen-manual" class="screen">
-        <div class="logo-small" style="font-size: 1.5rem; color:var(--magenta)">STUDIO OPS</div>
-        <div style="text-align: left; font-size: 0.7rem; line-height: 1.4; background: #000; padding: 15px; border: 1px solid #333; border-radius: 10px;">
-            <b style="color:var(--red)">• HIGH STAKES:</b> 30s per task. Timer hits zero = Session Over.<br><br>
-            <b style="color:var(--cyan)">• SECURITY LOCK:</b> 'COMPLETE' is locked for the first 10s.<br><br>
-            <b style="color:var(--green)">• SPEED DEMON:</b> Submit with >15s left for +5 Clout.<br><br>
-            <b style="color:var(--yellow)">• PERFECT SET:</b> 0 Reruns + 5 Speed bonuses = GOLD STATUS.
+        <div class="logo-small">STUDIO OPS</div>
+        <div style="text-align: left; font-size: 0.75rem; line-height: 1.5; background: #0a0b0e; padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+            <b style="color:var(--red)">• HIGH STAKES:</b> You have exactly 30s to complete each task. If the timer hits zero, the session ends. <br><br>
+            <b style="color:var(--cyan)">• 10s SECURITY LOCK:</b> The 'COMPLETE' button is hard-locked for the first 10s of every card. Focus on the craft during this time.<br><br>
+            <b style="color:var(--green)">• SPEED DEMON:</b> Submit your task with more than 15s left on the clock to earn +5 bonus Clout.<br><br>
+            <b style="color:var(--magenta)">• XP COMBO:</b> Chain 3 tasks without a RERUN or failure to trigger +25 XP Overdrive.<br><br>
+            <b style="color:var(--yellow)">• PERFECT SET:</b> Complete all 10 tasks with 0 RERUNS and 5+ SPEED bonuses to earn a Career Trophy and +100 Clout.
         </div>
         <button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">INITIALIZE RIG</button>
     </div>
 
     <div id="screen-modes" class="screen">
-        <h2 id="welcome-msg" style="color:var(--cyan)">WELCOME, ARTIST</h2>
+        <h2 id="welcome-msg">WELCOME, ARTIST</h2>
         <div id="rank-panel">
-            <div style="color: #444; font-size: 0.6rem; letter-spacing: 2px;">GLOBAL STATUS</div>
-            <div id="global-rank-display" style="font-size: 1.8rem; color: var(--cyan); font-weight: 900;">RANKING...</div>
-            <div id="last-score" style="color: var(--yellow); font-size: 0.7rem;">0 LIFETIME CLOUT</div>
-            <div id="badge-container" class="badge-row"></div>
+            <div style="color: #666; font-size: 0.6rem; letter-spacing: 2px; margin-bottom: 5px;">CURRENT STATUS</div>
+            <div id="global-rank-display" style="font-size: 2.2rem; color: var(--cyan); font-weight: 900;">RANKING...</div>
+            <div id="last-score" style="color: var(--yellow); font-size: 0.8rem; margin-top: 5px;">0 LIFETIME CLOUT</div>
+            <div id="career-stats">
+                <div style="color: #444; font-size: 0.55rem; letter-spacing: 1px;">PERFECT SET HISTORY</div>
+                <div id="badge-container" class="badge-row"></div>
+            </div>
         </div>
-        <button class="btn" onclick="startGame('production')">ENGINEER</button>
-        <button class="btn" onclick="startGame('beats')">BEATS</button>
-        <button class="btn" onclick="startGame('songwriting')">WRITER</button>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: auto;">
+        <button class="btn" style="margin-bottom:10px" onclick="startGame('production')">ENGINEER</button>
+        <button class="btn" style="margin-bottom:10px" onclick="startGame('beats')">BEATS</button>
+        <button class="btn" style="margin-bottom:10px" onclick="startGame('songwriting')">WRITER</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;">
             <button class="btn btn-secondary" onclick="showScreen('screen-manual')">MANUAL</button>
-            <button class="btn btn-secondary" style="color:var(--red)" onclick="resetAll()">RESET</button>
+            <button class="btn btn-secondary" onclick="resetAll()">RESET</button>
         </div>
     </div>
 
     <div id="screen-game" class="screen">
         <div class="game-hud">
             <span>TASK: <span id="task-count" class="hud-val">1/10</span></span>
-            <span>CLOUT: <span id="clout-val" class="hud-val">0</span></span>
+            <span>SESSION: <span id="clout-val" class="hud-val">0</span></span>
         </div>
-        <div id="cheat-error">!! SECURITY: COMPLETE LOCKED !!</div>
+        <div id="cheat-error">!! SECURITY TRIGGERED: COMPLETE TOO EARLY !!</div>
         <div id="timer">00:30</div>
         <div id="combo-alert">XP OVERDRIVE +25</div>
         <div id="card"><div id="card-body">Awaiting sync...</div></div>
-        
-        <button id="complete-btn" class="btn btn-primary" onclick="attemptComplete()">
-            COMPLETE
-            <span id="cooldown-timer" class="cooldown-text">LOCKED</span>
-        </button>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;">
+        <div id="game-controls">
+            <button id="complete-btn" class="btn btn-primary" style="grid-column: span 2" onclick="attemptComplete()">
+                COMPLETE
+                <span id="cooldown-timer" class="cooldown-text">LOCKED</span>
+            </button>
             <button class="btn btn-secondary" onclick="rerollTask()">RERUN</button>
             <button id="pause-btn" class="btn btn-secondary" onclick="togglePause()">PAUSE</button>
+            <button class="btn btn-secondary" style="grid-column: span 2; color: var(--red); border-color: #400;" onclick="exitGame()">EJECT</button>
         </div>
-        <button class="btn btn-secondary" style="color:var(--red); border-color:#400; margin-top: 10px;" onclick="exitGame()">EJECT RIG</button>
     </div>
 
     <div id="screen-results" class="screen">
         <h2 id="result-header">SET COMPLETE</h2>
         <div id="result-clout" style="font-size: 4rem; color: var(--yellow)">0</div>
-        <div id="perfect-badge" style="display:none; color: var(--yellow); border: 1px solid var(--yellow); padding: 5px 15px; border-radius: 20px; font-size: 0.7rem; font-weight: bold;">GOLD STATUS</div>
-        <p id="result-footer" style="margin-top: 20px; font-size: 0.6rem; color: #666;">BANKING CLOUT...</p>
+        <div id="perfect-badge">PERFECT SET // GOLD STATUS</div>
+        <p id="result-footer" style="margin-top: 20px;">BANKING CLOUT...</p>
         <button class="btn btn-primary" style="margin-top: 20px" onclick="showScreen('screen-modes')">CONTINUE</button>
     </div>
 </div>
 
 <script>
-    // --- AUDIO ENGINE ---
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
-    function playTone(freq, type, duration, vol = 0.1) {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-    }
-
-    const sfx = {
-        click: () => playTone(150, 'sine', 0.1, 0.2),
-        error: () => { playTone(100, 'sawtooth', 0.2, 0.1); playTone(80, 'sawtooth', 0.2, 0.1); },
-        success: () => { playTone(600, 'sine', 0.2, 0.1); setTimeout(()=>playTone(800, 'sine', 0.3, 0.1), 50); },
-        tick: (isLow) => playTone(isLow ? 1200 : 800, 'square', 0.05, 0.03),
-        xp: () => { [440, 554, 659, 880].forEach((f, i) => setTimeout(() => playTone(f, 'sine', 0.4, 0.1), i * 100)); },
-        boot: () => { playTone(200, 'sine', 1, 0.2); playTone(400, 'sine', 1, 0.1); }
-    };
-
-    // --- GAME LOGIC ---
     const SET_LIMIT = 10;
     const TASK_TIME = 30; 
     const cardDecks = {
@@ -319,12 +159,10 @@
     };
 
     let sessionClout = 0, timeLeft = 0, timerInterval = null, isPaused = false, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
-    let comboCount = 0, rerunUsedInSession = false, speedDemonCount = 0, cooldownLeft = 0;
+    let comboCount = 0, rerunUsedInSession = false, cleanStreakCount = 0, cooldownLeft = 0, speedDemonCount = 0;
     const API_PATH = "/.netlify/functions";
 
     function showScreen(id) {
-        if(audioCtx.state === 'suspended') audioCtx.resume();
-        sfx.click();
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         const target = document.getElementById(id);
         if(target) target.classList.add('active-screen');
@@ -356,9 +194,8 @@
 
     function validateAuth() {
         const name = document.getElementById('username').value.trim().toUpperCase();
-        if(name.length < 2) { sfx.error(); return; }
+        if(name.length < 2) return;
         currentCallsign = name;
-        sfx.boot();
         document.getElementById('welcome-msg').innerText = `WELCOME, ${currentCallsign}`;
         if(!sessionStorage.getItem('manualSeen')) {
             sessionStorage.setItem('manualSeen', 'true');
@@ -368,30 +205,26 @@
 
     function startGame(mode) {
         selectedMode = mode; tasksCompleted = 0; sessionClout = 0; isPaused = false;
-        comboCount = 0; rerunUsedInSession = false; speedDemonCount = 0;
+        comboCount = 0; cleanStreakCount = 0; rerunUsedInSession = false; speedDemonCount = 0;
         document.getElementById('clout-val').innerText = "0";
         document.getElementById('perfect-badge').style.display = "none";
         showScreen('screen-game');
         drawTask();
     }
 
+    // FIX: Shuffle card text correctly every time
     function drawTask() {
         if(tasksCompleted >= SET_LIMIT) { endSession(); return; }
-        const cardBody = document.getElementById('card-body');
-        cardBody.classList.remove('card-load');
-        cardBody.classList.add('card-eject');
         
-        setTimeout(() => {
-            document.getElementById('task-count').innerText = `${tasksCompleted + 1}/${SET_LIMIT}`;
-            const deck = cardDecks[selectedMode] || cardDecks.production;
-            cardBody.innerText = deck[Math.floor(Math.random() * deck.length)];
-            cardBody.classList.remove('card-eject');
-            cardBody.classList.add('card-load');
-            timeLeft = TASK_TIME;
-            cooldownLeft = 10; 
-            updateCooldownUI();
-            startTimer();
-        }, 300);
+        document.getElementById('task-count').innerText = `${tasksCompleted + 1}/${SET_LIMIT}`;
+        const deck = cardDecks[selectedMode] || cardDecks.production;
+        const randomCard = deck[Math.floor(Math.random() * deck.length)];
+        document.getElementById('card-body').innerText = randomCard;
+        
+        timeLeft = TASK_TIME;
+        cooldownLeft = 10; 
+        updateCooldownUI();
+        startTimer();
     }
 
     function updateCooldownUI() {
@@ -414,29 +247,16 @@
             if(!isPaused) {
                 timeLeft--;
                 if(cooldownLeft > 0) { cooldownLeft--; updateCooldownUI(); }
-                
-                sfx.tick(timeLeft <= 10);
                 if(timeLeft <= 10) timerEl.classList.add('timer-low');
-                
                 const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
                 timerEl.innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
-                
-                if(timeLeft <= 0) { 
-                    clearInterval(timerInterval); 
-                    sfx.error();
-                    showScreen('screen-modes'); 
-                }
+                if(timeLeft <= 0) { clearInterval(timerInterval); comboCount = 0; showScreen('screen-modes'); }
             }
         }, 1000);
     }
 
     function attemptComplete() {
-        if(cooldownLeft > 0) { 
-            sfx.error();
-            showCheatError(); 
-            return; 
-        }
-        sfx.success();
+        if(cooldownLeft > 0) { showCheatError(); return; }
         completeTask();
     }
 
@@ -448,25 +268,19 @@
 
     function completeTask() {
         let currentBonus = 0;
-        if (timeLeft > 15) { 
-            currentBonus += 5; 
-            speedDemonCount++; 
-            triggerAlert("SPEED DEMON +5"); 
-        }
+        if (timeLeft > 15) { currentBonus += 5; speedDemonCount++; triggerAlert("SPEED DEMON +5"); }
         tasksCompleted++; 
         sessionClout += (10 + currentBonus);
-        comboCount++; 
+        comboCount++; cleanStreakCount++;
         
-        if(comboCount === 3) { 
-            sessionClout += 25; 
-            setTimeout(() => {
-                sfx.xp();
-                triggerAlert("XP OVERDRIVE +25");
-            }, 500); 
-            comboCount = 0; 
+        if(comboCount === 3) { sessionClout += 25; setTimeout(() => triggerAlert("XP OVERDRIVE +25"), 800); comboCount = 0; }
+        if(cleanStreakCount === 6 && !rerunUsedInSession) {
+            const bonus = Math.floor(Math.random() * 101) + 50; 
+            sessionClout += bonus;
+            setTimeout(() => triggerAlert(`CLEAN STREAK +${bonus}`), 1600);
         }
         document.getElementById('clout-val').innerText = sessionClout;
-        drawTask();
+        drawTask(); // Shuffle next card
     }
 
     function triggerAlert(text) {
@@ -476,46 +290,41 @@
     }
 
     function rerollTask() { 
-        sfx.click();
         rerunUsedInSession = true; 
+        cleanStreakCount = 0; 
         const deck = cardDecks[selectedMode] || cardDecks.production;
-        const cardBody = document.getElementById('card-body');
-        cardBody.classList.remove('card-load');
-        cardBody.classList.add('card-eject');
-        setTimeout(() => {
-            cardBody.innerText = deck[Math.floor(Math.random() * deck.length)];
-            cardBody.classList.remove('card-eject');
-            cardBody.classList.add('card-load');
-        }, 300);
+        document.getElementById('card-body').innerText = deck[Math.floor(Math.random() * deck.length)];
     }
 
     async function endSession() {
         clearInterval(timerInterval);
-        sfx.xp();
         showScreen('screen-results');
+        
         if (!rerunUsedInSession && speedDemonCount >= 5) {
             document.getElementById('perfect-badge').style.display = "block";
             sessionClout += 100;
             const perfects = parseInt(localStorage.getItem(`perfect_${currentCallsign}`) || 0);
             localStorage.setItem(`perfect_${currentCallsign}`, perfects + 1);
         }
+
         const currentTotal = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
         localStorage.setItem(`clout_${currentCallsign}`, currentTotal + sessionClout);
         document.getElementById('result-clout').innerText = sessionClout;
-        
+        const footer = document.getElementById('result-footer');
+        footer.innerText = "SYNCING TO GLOBAL RIG...";
         try {
             await fetch(`${API_PATH}/save-score`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username: currentCallsign, score: sessionClout })
             });
-            document.getElementById('result-footer').innerText = "RANK UPDATED.";
-        } catch (e) { document.getElementById('result-footer').innerText = "OFFLINE MODE."; }
+            footer.innerText = "RANK UPDATED SUCCESSFULLY.";
+        } catch (e) { footer.innerText = "OFFLINE: SAVED TO LOCAL RIG."; }
     }
 
-    function resetAll() { if(confirm("ERASE ALL CAREER PROGRESS?")) { sfx.error(); localStorage.clear(); location.reload(); } }
-    function togglePause() { sfx.click(); isPaused = !isPaused; document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE"; }
-    function exitGame() { sfx.click(); clearInterval(timerInterval); showScreen('screen-modes'); }
+    function resetAll() { if(confirm("ERASE ALL CAREER PROGRESS?")) { localStorage.clear(); location.reload(); } }
+    function togglePause() { isPaused = !isPaused; document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE"; }
+    function exitGame() { clearInterval(timerInterval); showScreen('screen-modes'); }
     window.onload = () => showScreen('screen-auth');
 </script>
 </body>
