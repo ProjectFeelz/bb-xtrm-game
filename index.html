@@ -44,6 +44,11 @@
         .lb-name { color: #888; text-transform: uppercase; }
         .lb-score { color: var(--yellow); font-weight: bold; }
 
+        /* Manual List */
+        .manual-box { width: 100%; background: #0a0b0e; border-radius: 10px; padding: 15px; overflow-y: auto; max-height: 450px; text-align: left; }
+        .manual-item { margin-bottom: 15px; font-size: 0.85rem; }
+        .manual-item b { color: var(--cyan); display: block; margin-bottom: 3px; font-size: 0.75rem; letter-spacing: 1px; }
+
         /* UI Elements */
         input {
             width: 100%; padding: 16px; background: #0a0b0e; border: 1px solid var(--border);
@@ -76,6 +81,19 @@
         <button class="btn btn-primary" style="margin-top:20px" onclick="validateAuth()">LOGIN</button>
     </div>
 
+    <div id="screen-manual" class="screen">
+        <div class="logo-small">RIG MANUAL</div>
+        <div class="manual-box">
+            <div class="manual-item"><b>OBJECTIVE</b>Complete a deck of 10 tasks as fast as possible to earn Clout.</div>
+            <div class="manual-item"><b>WHAT IS CLOUT?</b>Points earned for completing tasks. +10 Clout per card. It represents your skill level and status in the Rig.</div>
+            <div class="manual-item"><b>ACCUMULATION</b>Scores from single rounds are posted to the "Top Session Records." All Clout earned across all rounds is added to your "Lifetime Clout" bank.</div>
+            <div class="manual-item"><b>RERUN</b>Stuck? Hit Rerun to swap the current task for a new one. No penalty.</div>
+            <div class="manual-item"><b>PAUSE</b>Freezes the timer if you need to step away from the DAW.</div>
+            <div class="manual-item"><b>EJECT</b>Instantly ends the session and returns you to the lobby.</div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">BACK TO RIG</button>
+    </div>
+
     <div id="screen-modes" class="screen">
         <h2 id="welcome-msg">WELCOME, ARTIST</h2>
         
@@ -91,7 +109,10 @@
         <button class="btn" style="margin-bottom:10px" onclick="startGame('production')">ENGINEER</button>
         <button class="btn" style="margin-bottom:10px" onclick="startGame('beats')">BEATS</button>
         <button class="btn" style="margin-bottom:10px" onclick="startGame('songwriting')">WRITER</button>
-        <button class="btn btn-secondary" onclick="localStorage.clear(); location.reload();">RESET RIG</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;">
+            <button class="btn btn-secondary" onclick="showScreen('screen-manual')">INFO</button>
+            <button class="btn btn-secondary" onclick="localStorage.clear(); location.reload();">RESET</button>
+        </div>
     </div>
 
     <div id="screen-game" class="screen">
@@ -119,7 +140,6 @@
 </div>
 
 <script>
-    // --- DATA ---
     const SET_LIMIT = 10;
     const cardDecks = {
         production: ['Filter everything below 200Hz', 'Layer a snare sample', 'Bus melodic elements', 'Mute lead instrument', 'Apply 1/8th delay', 'Saturate the Bass', 'Pan hats 30% Right', 'Double vocals', 'Reverse reverb tail', 'Bitcrush melody'],
@@ -127,22 +147,16 @@
         beats: ['Replace snare with Clap', 'Nudge hats late', 'Pitch kick up', '1-bar drum break', 'Add shaker loop', 'Reverse crash', 'Half-time hats', 'Velocity humanize kicks', 'Woodblock on 4', 'Triple hi-hat speed']
     };
 
-    // --- STATE ---
     let sessionClout = 0, timeLeft = 0, timerInterval = null, isPaused = false, selectedMode = '', tasksCompleted = 0, currentCallsign = "";
     const API_PATH = "/.netlify/functions";
 
-    // --- CORE NAVIGATION ---
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         const target = document.getElementById(id);
         if(target) target.classList.add('active-screen');
-        if(id === 'screen-modes') {
-            loadLeaderboard();
-            updateLocalDisplay();
-        }
+        if(id === 'screen-modes') { loadLeaderboard(); updateLocalDisplay(); }
     }
 
-    // --- PERSISTENCE ---
     function updateLocalDisplay() {
         const savedClout = localStorage.getItem(`clout_${currentCallsign}`) || 0;
         document.getElementById('last-score').innerText = savedClout;
@@ -164,7 +178,6 @@
         }
     }
 
-    // --- LOGIC ---
     function validateAuth() {
         const name = document.getElementById('username').value.trim().toUpperCase();
         if(name.length < 2) return;
@@ -222,14 +235,10 @@
     async function endSession() {
         clearInterval(timerInterval);
         showScreen('screen-results');
-        
-        // Save Total to LocalStorage
         const currentTotal = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
         localStorage.setItem(`clout_${currentCallsign}`, currentTotal + sessionClout);
-
         document.getElementById('result-artist').innerText = `ARTIST: ${currentCallsign}`;
         document.getElementById('result-clout').innerText = sessionClout;
-        
         const footer = document.getElementById('result-footer');
         footer.innerText = "SYNCING TO GLOBAL RIG...";
         try {
@@ -243,8 +252,6 @@
     }
 
     function exitGame() { clearInterval(timerInterval); showScreen('screen-modes'); }
-
-    // Initial Launch
     window.onload = () => showScreen('screen-auth');
 </script>
 </body>
