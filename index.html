@@ -213,10 +213,19 @@
     }
 
     function updateRankDisplay() {
-        const savedClout = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
-        document.getElementById('last-score').innerText = `${savedClout} LIFETIME CLOUT`;
-        document.getElementById('global-rank-display').innerText = "LOCAL RIG";
-    }
+    const savedClout = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
+    document.getElementById('last-score').innerText = `${savedClout} LIFETIME CLOUT`;
+    
+    // Dynamic Rank Logic
+    let rankTitle = "INTERN";
+    if (savedClout > 500) rankTitle = "GHOST PRODUCER";
+    if (savedClout > 1500) rankTitle = "STUDIO ENGINEER";
+    if (savedClout > 5000) rankTitle = "HIT MAKER";
+    if (savedClout > 10000) rankTitle = "XTRM EXECUTIVE";
+    if (savedClout > 50000) rankTitle = "INDUSTRY ICON";
+
+    document.getElementById('global-rank-display').innerText = rankTitle;
+}
 
     function validateAuth() {
         const name = document.getElementById('username').value.trim().toUpperCase();
