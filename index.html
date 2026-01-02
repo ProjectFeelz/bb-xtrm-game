@@ -4,31 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BB XTRM // PRO STUDIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0a0b0e;
-            --panel: #1a1d26;
-            --border: #2a2f36;
-            --cyan: #00d9ff;
+            --bg: #1a1d26;
+            --panel: #2a2f3a;
+            --border: #4a5568;
+            --cyan: #00f2ff;
             --magenta: #ff00ff;
-            --yellow: #f1c40f;
+            --yellow: #ffd700;
             --green: #2ecc71;
             --red: #ff4757;
-            --screen-reflection: #003d47;
-            --metal-light: #4a5568;
-            --metal-dark: #1a1d23;
+            --metal-light: #6b7280;
+            --metal-dark: #2d3748;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
         }
         
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', 'Courier New', monospace; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Orbitron', 'Arial', sans-serif; }
         
         body {
-            background: #000;
-            color: #e0e0e0;
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 50%, #111827 100%);
+            color: #f0f0f0;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: 
+                linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(100,100,100,0.1) 2px, rgba(100,100,100,0.1) 4px);
+            pointer-events: none;
+            z-index: 1;
         }
         
         #console {
@@ -37,255 +51,315 @@
             height: 100vh;
             max-height: 850px;
             position: relative;
-            background: linear-gradient(145deg, var(--metal-light), var(--metal-dark));
-            border-radius: 24px;
-            padding: 22px;
+            background: linear-gradient(145deg, var(--metal-light), var(--metal-dark), var(--metal-light));
+            border-radius: 28px;
+            padding: 24px;
             box-shadow: 
-                0 20px 60px rgba(0,0,0,0.8),
-                inset 0 1px 2px rgba(255,255,255,0.1),
-                inset 0 -1px 2px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
+                0 30px 80px rgba(0,0,0,0.9),
+                inset 0 2px 4px rgba(255,255,255,0.2),
+                inset 0 -2px 4px rgba(0,0,0,0.6);
+            z-index: 2;
         }
         
         #console::after {
             content: '';
             position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, 
-                rgba(255,255,255,0.05) 0%, 
-                transparent 50%, 
-                rgba(0,0,0,0.3) 100%);
-            border-radius: 24px;
+            top: 20%;
+            left: -20%;
+            width: 140%;
+            height: 60%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.08), transparent);
+            transform: rotate(-15deg);
             pointer-events: none;
-            z-index: 1;
+            z-index: 3;
         }
         
         .screen {
             position: absolute;
-            inset: 22px;
-            padding: 30px;
+            inset: 24px;
+            padding: 35px;
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #000;
+            background: linear-gradient(135deg, #1e2533 0%, #141822 100%);
             z-index: 10;
-            border-radius: 12px;
-            box-shadow: 
-                inset 0 0 40px rgba(0,217,255,0.15);
-            background-image: 
-                repeating-linear-gradient(0deg, 
-                    rgba(0,217,255,0.03) 0px, 
-                    transparent 1px, 
-                    transparent 2px, 
-                    rgba(0,217,255,0.03) 3px);
+            border-radius: 16px;
+            box-shadow: inset 0 4px 20px rgba(0,0,0,0.6);
         }
         
-        .active-screen { 
-            display: flex !important; 
-            z-index: 20 !important;
-        }
+        .active-screen { display: flex !important; z-index: 20 !important; }
         
         .logo-small { 
-            font-size: 3.5rem; 
+            font-size: 4.5rem; 
             font-weight: 900; 
-            background: linear-gradient(135deg, var(--cyan), #00a8cc);
+            background: linear-gradient(135deg, var(--cyan), #00d4e6, var(--cyan));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 40px;
-            margin-top: -40px;
+            margin-bottom: 35px;
+            margin-top: -50px;
             font-style: italic;
-            letter-spacing: 8px;
+            letter-spacing: 12px;
             line-height: 1;
             text-align: center;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6)) drop-shadow(0 0 30px rgba(0,217,255,0.8));
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.8)) drop-shadow(0 0 40px rgba(0,242,255,0.9));
         }
         
         h2 { 
-            font-size: 0.7rem; 
-            letter-spacing: 3px; 
+            font-size: 0.85rem; 
+            letter-spacing: 4px; 
             color: var(--magenta); 
             text-transform: uppercase; 
-            margin-bottom: 15px; 
+            margin-bottom: 18px; 
             text-align: center;
+            font-weight: 700;
+        }
+        
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
+            transform: rotate(45deg);
+            pointer-events: none;
         }
         
         #rank-panel {
             width: 100%;
-            background: linear-gradient(145deg, #0d0f14, #000);
-            border: 1px solid var(--screen-reflection);
-            border-radius: 10px;
-            margin-bottom: 20px;
-            padding: 20px;
+            margin-bottom: 22px;
+            padding: 24px;
             text-align: center;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
         }
 
-        #career-stats { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; align-items: center; }
-        .badge-row { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; margin-top: 5px; }
+        #career-stats { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; align-items: center; }
+        .badge-row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
         .mini-badge { 
-            width: 12px; 
-            height: 12px; 
-            background: radial-gradient(circle, var(--yellow), #c29d0b);
+            width: 14px; 
+            height: 14px; 
+            background: radial-gradient(circle, var(--yellow), #d4af37);
             border-radius: 50%; 
-            box-shadow: 0 0 8px var(--yellow), inset 0 1px 2px rgba(255,255,255,0.3);
+            box-shadow: 0 0 10px var(--yellow), inset 0 2px 3px rgba(255,255,255,0.4);
         }
 
         #cheat-error { 
             color: var(--red); 
-            font-weight: bold; 
-            font-size: 0.75rem; 
-            letter-spacing: 1px; 
+            font-weight: 900; 
+            font-size: 0.85rem; 
+            letter-spacing: 1.5px; 
             opacity: 0; 
             transition: 0.2s; 
-            height: 15px; 
-            margin-bottom: 5px; 
+            height: 18px; 
+            margin-bottom: 8px; 
             text-transform: uppercase;
-            text-shadow: 0 0 10px var(--red);
+            text-shadow: 0 0 15px var(--red);
         }
 
-        input {
+        .cassette-field {
             width: 100%;
-            padding: 16px;
-            background: #000;
+            padding: 18px;
+            background: linear-gradient(135deg, #1a1d26 0%, #0f1218 100%);
             border: 2px solid var(--cyan);
             color: var(--cyan);
-            border-radius: 8px;
+            border-radius: 10px;
             outline: none;
-            font-size: 1.1rem;
+            font-size: 1.3rem;
+            font-weight: 700;
             text-align: center;
             box-shadow: 
-                inset 0 2px 8px rgba(0,0,0,0.8),
-                0 0 15px rgba(0,217,255,0.2);
+                inset 0 3px 10px rgba(0,0,0,0.8),
+                0 0 20px rgba(0,242,255,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cassette-field::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-50%);
         }
         
         .btn {
             width: 100%;
-            padding: 18px;
+            padding: 20px;
             border: none;
-            border-radius: 12px;
-            background: linear-gradient(145deg, #2a2f36, #1a1d23, #0d0f14, #000);
-            color: white;
-            font-weight: bold;
+            border-radius: 14px;
+            background: linear-gradient(145deg, #3a4050, #2a2f3a, #1a1d26, #0a0b0e);
+            color: #f0f0f0;
+            font-weight: 900;
+            font-size: 1.05rem;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
             transition: 0.2s;
             position: relative;
             box-shadow: 
-                0 4px 0 #000,
-                0 6px 12px rgba(0,0,0,0.5),
-                inset 0 1px 0 rgba(255,255,255,0.1);
+                0 6px 0 #000,
+                0 8px 16px rgba(0,0,0,0.6),
+                inset 0 2px 0 rgba(255,255,255,0.15),
+                inset 0 -2px 8px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.1), transparent);
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            bottom: 35%;
+            left: 5%;
+            right: 5%;
+            height: 2px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 50%;
         }
         
         .btn:active {
-            transform: translateY(4px);
+            transform: translateY(6px);
             box-shadow: 
                 0 0 0 #000,
-                0 2px 6px rgba(0,0,0,0.5),
-                inset 0 1px 0 rgba(255,255,255,0.1);
+                0 2px 8px rgba(0,0,0,0.6),
+                inset 0 2px 0 rgba(255,255,255,0.15);
         }
         
         .btn-primary { 
-            background: linear-gradient(145deg, #00f0ff, #00d9ff, #00a8cc, #007a8c);
-            color: black;
-            text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+            background: linear-gradient(145deg, #00f2ff, #00d4e6, #00a8cc, #007a8c);
+            color: #000;
+            font-weight: 900;
+            text-shadow: 0 1px 3px rgba(255,255,255,0.4);
             box-shadow: 
-                0 4px 0 #005a6a,
-                0 6px 12px rgba(0,217,255,0.4),
-                inset 0 1px 0 rgba(255,255,255,0.3);
+                0 6px 0 #005566,
+                0 8px 16px rgba(0,242,255,0.5),
+                inset 0 2px 0 rgba(255,255,255,0.4),
+                inset 0 -2px 8px rgba(0,0,0,0.2);
         }
         
         .btn-primary:active {
             box-shadow: 
-                0 0 0 #005a6a,
-                0 2px 6px rgba(0,217,255,0.4),
-                inset 0 1px 0 rgba(255,255,255,0.3);
+                0 0 0 #005566,
+                0 2px 8px rgba(0,242,255,0.5),
+                inset 0 2px 0 rgba(255,255,255,0.4);
         }
         
         .btn-locked { 
-            background: linear-gradient(145deg, #1a1d23, #0d0f14, #000, #000) !important;
-            color: #444 !important;
+            background: linear-gradient(145deg, #1a1d26, #0f1218, #000, #000) !important;
+            color: #555 !important;
             cursor: not-allowed;
-            opacity: 0.5;
+            opacity: 0.6;
             box-shadow: 
-                0 4px 0 #000,
-                0 6px 12px rgba(0,0,0,0.5),
-                inset 0 2px 10px rgba(0,0,0,0.8) !important;
+                0 6px 0 #000,
+                0 8px 16px rgba(0,0,0,0.6),
+                inset 0 3px 12px rgba(0,0,0,0.9) !important;
         }
         
         .btn-secondary { 
-            background: linear-gradient(145deg, #1a1d23, #0d0f14, #000, #000);
-            font-size: 0.8rem;
-            padding: 12px;
-            box-shadow: 
-                0 3px 0 #000,
-                0 5px 10px rgba(0,0,0,0.5),
-                inset 0 1px 0 rgba(255,255,255,0.05);
+            background: linear-gradient(145deg, #2a2f3a, #1a1d26, #0f1218, #000);
+            font-size: 0.9rem;
+            padding: 15px;
         }
 
         #combo-alert { 
             color: var(--magenta); 
             font-weight: 900; 
-            font-size: 1.2rem; 
-            margin-top: -10px; 
-            margin-bottom: 10px; 
+            font-size: 1.4rem; 
+            margin-top: -12px; 
+            margin-bottom: 12px; 
             opacity: 0; 
             transition: 0.3s; 
             z-index: 20; 
-            height: 20px; 
+            height: 24px; 
             text-align: center;
-            text-shadow: 0 0 15px var(--magenta);
+            text-shadow: 0 0 20px var(--magenta);
         }
 
         .game-hud { 
             display: flex; 
             justify-content: space-between; 
             width: 100%; 
-            margin-bottom: 10px; 
-            font-size: 0.8rem; 
-            color: #888;
+            margin-bottom: 12px; 
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #aaa;
         }
-        .hud-val { color: var(--cyan); font-weight: bold; }
+        .hud-val { color: var(--cyan); font-weight: 900; font-size: 1.1rem; }
         
         #timer { 
-            font-size: 6rem; 
+            font-size: 5.5rem; 
             color: var(--yellow); 
-            font-family: 'Courier New', monospace; 
+            font-family: 'Orbitron', monospace; 
             line-height: 1; 
             margin: 0;
-            text-shadow: 0 0 20px var(--yellow);
+            font-weight: 900;
+            text-shadow: 0 0 30px var(--yellow);
+            letter-spacing: 0.05em;
         }
         .timer-low { 
             color: var(--red) !important; 
             animation: pulse 0.5s infinite;
-            text-shadow: 0 0 30px var(--red) !important;
+            text-shadow: 0 0 40px var(--red) !important;
         }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
         #card { 
             width: 100%; 
             flex: 1; 
-            border: 2px solid var(--cyan); 
-            background: #000;
-            border-radius: 15px; 
+            border: 3px solid var(--cyan); 
+            background: linear-gradient(135deg, #1a1d26 0%, #0f1218 100%);
+            border-radius: 18px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            padding: 25px; 
+            padding: 28px; 
             text-align: center; 
-            margin: 15px 0; 
-            font-size: 1.4rem; 
-            font-weight: 600;
+            margin: 18px 0; 
+            font-size: 1.6rem; 
+            font-weight: 700;
             position: relative;
             overflow: hidden;
             box-shadow: 
-                inset 0 2px 15px rgba(0,0,0,0.8),
-                0 0 20px rgba(0,217,255,0.3);
+                inset 0 3px 18px rgba(0,0,0,0.8),
+                0 0 25px rgba(0,242,255,0.4);
         }
         
         #card::before {
+            content: '';
+            position: absolute;
+            top: 45%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255,255,255,0.08);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.3);
+        }
+        
+        #card::after {
             content: '';
             position: absolute;
             top: 0;
@@ -294,9 +368,9 @@
             height: 100%;
             background: linear-gradient(90deg, 
                 transparent, 
-                rgba(0,217,255,0.1), 
+                rgba(0,242,255,0.15), 
                 transparent);
-            animation: cassette-scan 2s infinite;
+            animation: cassette-scan 2.5s infinite;
         }
         
         @keyframes cassette-scan {
@@ -322,31 +396,85 @@
             }
         }
         
-        #game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+        #game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
         
         #perfect-badge { 
             display: none; 
             color: var(--yellow); 
-            border: 2px solid var(--yellow);
-            padding: 10px 20px; 
+            border: 3px solid var(--yellow);
+            padding: 12px 24px; 
             border-radius: 50px; 
-            font-size: 0.8rem; 
+            font-size: 0.95rem; 
             font-weight: 900;
-            margin-top: 15px; 
+            margin-top: 18px; 
             animation: glow 1.5s infinite alternate;
-            box-shadow: 0 0 20px var(--yellow);
+            box-shadow: 0 0 25px var(--yellow);
         }
         @keyframes glow { 
-            from { box-shadow: 0 0 10px var(--yellow); } 
-            to { box-shadow: 0 0 30px var(--yellow); } 
+            from { box-shadow: 0 0 15px var(--yellow); } 
+            to { box-shadow: 0 0 35px var(--yellow); } 
         }
 
         .cooldown-text { 
-            font-size: 0.6rem; 
+            font-size: 0.7rem; 
             display: block; 
-            margin-top: 4px; 
-            opacity: 0.7; 
-            font-weight: normal;
+            margin-top: 5px; 
+            opacity: 0.8; 
+            font-weight: 700;
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--cyan);
+            position: absolute;
+            animation: confetti-fall 3s ease-out forwards;
+            z-index: 100;
+        }
+        
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 18px;
+            margin-top: 25px;
+            justify-content: center;
+        }
+        
+        .social-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cyan);
+            font-size: 1.3rem;
+            text-decoration: none;
+            transition: 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .social-icon:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,242,255,0.4);
+        }
+        
+        #result-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -356,51 +484,63 @@
     <div id="screen-auth" class="screen active-screen">
         <div class="logo-small">BB XTRM</div>
         <h2>SIGN IN</h2>
-        <input type="text" id="username" placeholder="ARTIST NAME">
-        <button class="btn btn-primary" style="margin-top:20px" onclick="validateAuth()">ENGAGE RIG</button>
+        <input type="text" id="username" class="cassette-field" placeholder="ARTIST NAME">
+        <button class="btn btn-primary" style="margin-top:22px" onclick="validateAuth()">ENGAGE RIG</button>
+        
+        <div class="social-icons">
+            <a href="#" class="social-icon">𝕏</a>
+            <a href="#" class="social-icon">📷</a>
+            <a href="#" class="social-icon">🎵</a>
+        </div>
     </div>
 
     <div id="screen-manual" class="screen">
-        <div style="font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, var(--cyan), #00a8cc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; font-style: italic; letter-spacing: 6px; text-align: center; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)) drop-shadow(0 0 20px rgba(0,217,255,0.6));">HOW TO</div>
-        <div style="text-align: left; font-size: 0.75rem; line-height: 1.5; background: #000; padding: 20px; border-radius: 12px; border: 1px solid var(--screen-reflection);">
-            <b style="color:var(--red)">• HIGH STAKES:</b> You have exactly 30s to complete each task. If the timer hits zero, the session ends. <br><br>
-            <b style="color:var(--cyan)">• 10s SECURITY LOCK:</b> The 'COMPLETE' button is hard-locked for the first 10s of every card. Focus on the craft during this time.<br><br>
-            <b style="color:var(--green)">• SPEED DEMON:</b> Submit your task with more than 15s left on the clock to earn +5 bonus Clout.<br><br>
-            <b style="color:var(--magenta)">• XP COMBO:</b> Chain 3 tasks without a RERUN or failure to trigger +25 XP Overdrive.<br><br>
-            <b style="color:var(--yellow)">• PERFECT SET:</b> Complete all 10 tasks with 0 RERUNS and 5+ SPEED bonuses to earn a Career Trophy and +100 Clout.
+        <div style="font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg, var(--cyan), #00d4e6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 22px; font-style: italic; letter-spacing: 8px; text-align: center; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.7)) drop-shadow(0 0 25px rgba(0,242,255,0.7));">HOW TO</div>
+        <div style="text-align: left; font-size: 0.85rem; line-height: 1.6; background: linear-gradient(135deg, #1a1d26 0%, #0f1218 100%); padding: 22px; border-radius: 14px; border: 2px solid var(--border); font-weight: 500;">
+            <b style="color:var(--red); font-weight: 900;">• HIGH STAKES:</b> You have exactly 30s to complete each task. If the timer hits zero, the session ends. <br><br>
+            <b style="color:var(--cyan); font-weight: 900;">• 10s SECURITY LOCK:</b> The 'COMPLETE' button is hard-locked for the first 10s of every card. Focus on the craft during this time.<br><br>
+            <b style="color:var(--green); font-weight: 900;">• SPEED DEMON:</b> Submit your task with more than 15s left on the clock to earn +5 bonus Clout.<br><br>
+            <b style="color:var(--magenta); font-weight: 900;">• XP COMBO:</b> Chain 3 tasks without a RERUN or failure to trigger +25 XP Overdrive.<br><br>
+            <b style="color:var(--yellow); font-weight: 900;">• PERFECT SET:</b> Complete all 10 tasks with 0 RERUNS and 5+ SPEED bonuses to earn a Career Trophy and +100 Clout.
         </div>
-        <button class="btn btn-primary" style="margin-top:20px" onclick="showScreen('screen-modes')">INITIALIZE RIG</button>
+        <button class="btn btn-primary" style="margin-top:22px" onclick="showScreen('screen-modes')">INITIALIZE RIG</button>
+        
+        <div class="social-icons">
+            <a href="#" class="social-icon">𝕏</a>
+            <a href="#" class="social-icon">📷</a>
+            <a href="#" class="social-icon">🎵</a>
+        </div>
     </div>
 
     <div id="screen-modes" class="screen">
         <h2 id="welcome-msg">WELCOME, ARTIST</h2>
-        <div id="rank-panel">
-            <div style="color: #666; font-size: 0.6rem; letter-spacing: 2px; margin-bottom: 5px;">PERSONAL BEST</div>
-            <div id="global-rank-display" style="font-size: 2.2rem; color: var(--cyan); font-weight: 900;">0</div>
-            <div id="last-score" style="color: #888; font-size: 0.65rem; margin-top: 8px;">0 LIFETIME CLOUT</div>
-            <div id="streak-display" style="margin-top: 10px; padding: 10px; background: #0a0b0e; border-radius: 8px; border: 1px solid var(--border);">
-                <div style="color: var(--magenta); font-size: 0.6rem; letter-spacing: 1px; margin-bottom: 3px;">DAILY STREAK</div>
-                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    <span style="font-size: 1.8rem; color: var(--yellow); font-weight: 900;">🔥</span>
-                    <span id="streak-count" style="font-size: 1.5rem; color: var(--yellow); font-weight: 900;">0</span>
-                    <span style="font-size: 0.7rem; color: #666;">DAYS</span>
+        <div id="rank-panel" class="glass-panel">
+            <div style="color: #888; font-size: 0.7rem; letter-spacing: 3px; margin-bottom: 8px; font-weight: 700;">PERSONAL BEST</div>
+            <div id="global-rank-display" style="font-size: 2.8rem; color: var(--cyan); font-weight: 900; text-shadow: 0 0 20px var(--cyan);">0</div>
+            <div id="last-score" style="color: #aaa; font-size: 0.75rem; margin-top: 10px; font-weight: 600;">0 LIFETIME CLOUT</div>
+            <div id="streak-display" style="margin-top: 14px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                <div style="color: var(--magenta); font-size: 0.7rem; letter-spacing: 1.5px; margin-bottom: 5px; font-weight: 700;">DAILY STREAK</div>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <span style="font-size: 2rem;">🔥</span>
+                    <span id="streak-count" style="font-size: 1.8rem; color: var(--yellow); font-weight: 900; text-shadow: 0 0 15px var(--yellow);">0</span>
+                    <span style="font-size: 0.8rem; color: #888; font-weight: 700;">DAYS</span>
                 </div>
             </div>
             <div id="career-stats">
-                <div style="color: #444; font-size: 0.55rem; letter-spacing: 1px;">PERFECT SET HISTORY</div>
+                <div style="color: #666; font-size: 0.65rem; letter-spacing: 1.5px; font-weight: 700;">PERFECT SET HISTORY</div>
                 <div id="badge-container" class="badge-row"></div>
             </div>
         </div>
-        <button class="btn" style="margin-bottom:10px" onclick="startGame('production')">ENGINEER</button>
-        <button class="btn" style="margin-bottom:10px" onclick="startGame('beats')">BEATS</button>
-        <button class="btn" style="margin-bottom:10px" onclick="startGame('songwriting')">WRITER</button>
+        <button class="btn" style="margin-bottom:12px" onclick="startGame('production')">ENGINEER</button>
+        <button class="btn" style="margin-bottom:12px" onclick="startGame('beats')">BEATS</button>
+        <button class="btn" style="margin-bottom:12px" onclick="startGame('songwriting')">WRITER</button>
         <button class="btn btn-secondary" onclick="showScreen('screen-manual')">MANUAL</button>
     </div>
 
     <div id="screen-game" class="screen">
         <div class="game-hud">
             <span>TASK: <span id="task-count" class="hud-val">1/10</span></span>
-            <span>SESSION: <span id="clout-val" class="hud-val">0</span></span>
+            <span>CLOUT: <span id="clout-val" class="hud-val">0</span></span>
         </div>
         <div id="cheat-error">!! SECURITY TRIGGERED: COMPLETE TOO EARLY !!</div>
         <div id="timer">00:30</div>
@@ -419,14 +559,23 @@
 
     <div id="screen-results" class="screen">
         <h2 id="result-header">SET COMPLETE</h2>
-        <div id="result-clout" style="font-size: 4rem; color: var(--yellow); text-shadow: 0 0 30px var(--yellow);">0</div>
+        <div id="result-clout" style="font-size: 5rem; color: var(--yellow); text-shadow: 0 0 40px var(--yellow); font-weight: 900;">0</div>
+        <div id="previous-best" style="font-size: 1.2rem; color: #888; margin-top: 8px; font-weight: 600; display: none;">Previous Best: <span style="color: var(--cyan);">0</span></div>
         <div id="perfect-badge">PERFECT SET // GOLD STATUS</div>
-        <p id="result-footer" style="margin-top: 20px;">BANKING CLOUT...</p>
-        <button class="btn btn-primary" style="margin-top: 20px" onclick="showScreen('screen-modes')">CONTINUE</button>
+        <p id="result-footer" style="margin-top: 18px; font-size: 0.95rem; font-weight: 600;">BANKING CLOUT...</p>
+        <div id="result-buttons">
+            <button class="btn btn-primary" onclick="showScreen('screen-modes')">CONTINUE</button>
+            <button id="try-again-btn" class="btn btn-secondary" style="display:none;" onclick="restartFromResults()">TRY AGAIN</button>
+        </div>
     </div>
 </div>
 
 <script>
+    // Request notification permission on load
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
+
     // Audio System
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     
@@ -435,8 +584,8 @@
         const gain = audioContext.createGain();
         osc.connect(gain);
         gain.connect(audioContext.destination);
-        osc.frequency.value = 800;
-        gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+        osc.frequency.value = 900;
+        gain.gain.setValueAtTime(0.12, audioContext.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
         osc.start();
         osc.stop(audioContext.currentTime + 0.05);
@@ -455,21 +604,19 @@
     }
     
     function playAlarmBuzz(intensity) {
-        // intensity from 0 to 1 (increases as time runs out)
         const osc = audioContext.createOscillator();
         const gain = audioContext.createGain();
         osc.connect(gain);
         gain.connect(audioContext.destination);
         osc.type = 'sawtooth';
-        osc.frequency.value = 220 + (intensity * 180); // pitch rises with intensity
-        gain.gain.setValueAtTime(0.08 + (intensity * 0.12), audioContext.currentTime); // volume increases
+        osc.frequency.value = 220 + (intensity * 180);
+        gain.gain.setValueAtTime(0.08 + (intensity * 0.12), audioContext.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
         osc.start();
         osc.stop(audioContext.currentTime + 0.15);
     }
     
     function playCassetteInsert() {
-        // Mechanical click
         const click = audioContext.createOscillator();
         const clickGain = audioContext.createGain();
         click.connect(clickGain);
@@ -480,7 +627,6 @@
         click.start();
         click.stop(audioContext.currentTime + 0.1);
         
-        // Tape head engage (whirr)
         setTimeout(() => {
             const whirr = audioContext.createOscillator();
             const whirrGain = audioContext.createGain();
@@ -526,8 +672,7 @@
     }
     
     function playCelebration() {
-        // Triumphant ascending fanfare
-        const notes = [392, 494, 587, 698, 784, 880]; // G, B, D, F, G, A
+        const notes = [392, 494, 587, 698, 784, 880];
         notes.forEach((freq, i) => {
             setTimeout(() => {
                 const osc = audioContext.createOscillator();
@@ -543,76 +688,72 @@
             }, i * 80);
         });
     }
+    
+    function createConfetti() {
+        const colors = ['#00f2ff', '#ff00ff', '#ffd700', '#2ecc71', '#ff4757'];
+        for (let i = 0; i < 50; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000);
+            }, i * 30);
+        }
+    }
 
     // Game Variables
     const SET_LIMIT = 10;
     const TASK_TIME = 30; 
     const cardDecks = {
         production: [
-            'Add reverb to vocals', 'Pan drums left and right', 'Add a hi-pass filter', 'Boost the bass frequencies',
-            'Cut harsh high frequencies', 'Add compression to vocals', 'Layer a pad sound', 'Add delay to lead',
-            'Boost the kick drum', 'Add distortion to bass', 'Pan the hi-hats right', 'Add a low-pass filter',
-            'Boost 1kHz on vocals', 'Add sidechain compression', 'Layer two kick drums', 'Add stereo width',
-            'Cut 200Hz muddiness', 'Boost treble on snare', 'Add a sub bass layer', 'Pan guitar left',
-            'Add tape saturation', 'Boost presence at 3kHz', 'Add a gate to drums', 'Layer vocal harmonies',
-            'Cut boxiness at 500Hz', 'Add chorus to keys', 'Boost air at 10kHz', 'Pan synth right',
-            'Add parallel compression', 'Cut low end rumble', 'Boost attack on drums', 'Add a stereo imager',
-            'Layer ambient noise', 'Pan claps center', 'Add saturation to vocals', 'Boost warmth at 200Hz',
-            'Cut harshness at 4kHz', 'Add a limiter', 'Layer string sounds', 'Pan percussion wide',
-            'Add tube warmth', 'Boost clarity at 5kHz', 'Cut sibilance at 8kHz', 'Layer bass synth',
-            'Pan lead vocal center', 'Add glue compression', 'Boost punch at 100Hz', 'Cut nasal at 1kHz',
-            'Layer background vocals', 'Pan effects left', 'Add analog warmth', 'Boost shine at 12kHz',
-            'Cut mid-range mud', 'Add vocal doubling', 'Layer acoustic guitar', 'Pan string section wide',
-            'Add vintage compression', 'Boost low mids', 'Cut digital harshness', 'Layer electric piano',
-            'Pan shaker right', 'Add console emulation', 'Boost sub frequencies', 'Cut resonance peaks',
-            'Layer brass section', 'Pan tambourine left', 'Add tape delay', 'Boost upper mids',
-            'Cut room resonance', 'Layer synth pad', 'Pan ride cymbal right', 'Add spring reverb',
-            'Boost vocal presence', 'Cut proximity effect', 'Layer orchestral hits', 'Pan toms across stereo',
-            'Add plate reverb', 'Boost drum transients', 'Cut phase issues', 'Layer choir sounds'
+            'High-pass everything below 200Hz', 'Layer an extra snare quietly', 'Bus all melodic elements together',
+            'Add a subtle 1/8 delay', 'Lightly saturate the bass', 'Pan the hats 30% right',
+            'Double the vocal take', 'Add a reverse reverb tail', 'Add ~20% swing to the MIDI',
+            'Sidechain the pad to the kick', 'Boost presence around 3k on vocals', 'Automate a gentle low-pass sweep (8 bars)',
+            'Sneak in a foley texture', 'Soft-clip the master peak', 'Widen the chorus only',
+            'Mono the sub-bass', 'Shift a melody up one octave', 'Gate the pads rhythmically',
+            'Ping-pong delay on the hats', 'Shorten all kick decays', 'Mute the lead instrument (8 bars)',
+            'Bitcrush the melody slightly', 'Clip the drum bus instead of compressing', 'Distort the parallel bus',
+            'Swap reverb for delay on one element', 'Automate a filter using LFO', 'Hard-pan one background element',
+            'Chorus on bass (low mix)', 'Print a resample and commit', 'Remove one plugin you rely on',
+            'Turn one send into an insert', 'Automate reverb throw on last word', 'Collapse the mix to mono (4 bars)',
+            'Sidechain something unexpected', 'Add a 1-bar silent gap', 'Reverse the entire FX bus (4 bars)',
+            'Mute drums completely (8 bars)', 'Print the mix and re-import it', 'Pitch the master down -1 semitone (8 bars)',
+            'Automate a hard low-pass to 300Hz (4 bars)', 'Only automate — no static settings (8 bars)', 'Redo the last change, but exaggerate it',
+            'Swap roles: bass acts as melody', 'Remove the most "important" element', 'Do the opposite of your instinct',
+            'Turn a mistake into the main feature'
         ],
         songwriting: [
-            'Write about the weather', 'Use the word "fire"', 'Rhyme the last word', 'Describe a color',
-            'Write about time', 'Use a metaphor', 'Mention a city', 'Write about water',
-            'Use alliteration', 'Write about night', 'Mention an emotion', 'Use repetition',
-            'Write about movement', 'Describe a texture', 'Use a simile', 'Write about light',
-            'Mention a season', 'Write about silence', 'Use contrast', 'Write about sky',
-            'Describe a feeling', 'Use personification', 'Write about speed', 'Mention darkness',
-            'Write about distance', 'Use the word heart', 'Write about memories', 'Describe a sound',
-            'Use imagery', 'Write about hope', 'Mention the moon', 'Write about change',
-            'Use the word soul', 'Write about journey', 'Describe a moment', 'Use rhythm',
-            'Write about freedom', 'Mention the sun', 'Write about truth', 'Use the word dream',
-            'Write about tomorrow', 'Describe a touch', 'Use parallelism', 'Write about home',
-            'Mention a number', 'Write about breaking', 'Use the word eyes', 'Write about forever',
-            'Describe a taste', 'Use contradiction', 'Write about rising', 'Mention a direction',
-            'Write about falling', 'Use the word love', 'Write about yesterday', 'Describe a smell',
-            'Use anaphora', 'Write about hiding', 'Mention the stars', 'Write about searching',
-            'Use the word shadows', 'Write about running', 'Describe temperature', 'Use hyperbole',
-            'Write about waiting', 'Mention the ocean', 'Write about leaving', 'Use the word tears',
-            'Write about finding', 'Describe a place', 'Use juxtaposition', 'Write about wanting',
-            'Mention the wind', 'Write about staying', 'Use the word hands', 'Write about believing',
-            'Describe a person', 'Use epistrophe', 'Write about losing', 'Mention a flower'
+            'Rhyme with "stone"', 'Use a weather metaphor', 'Mention a specific color',
+            'Tell a 4-line mini story', 'Alliterate the next line', 'End the line with a verb',
+            'Write about a machine', 'Describe a smell', 'Use a word with 4+ syllables',
+            'Reference a 90s movie', 'Switch perspective to "them"', 'Include a line about time or a clock',
+            'Use an AABB rhyme scheme', 'Internal rhymes only', 'Name a real city',
+            'Start a line with "Never"', 'Drop in a technical term', 'Repeat one word for emphasis',
+            'Write a question as a statement', 'No "I", "me", or "my" allowed', 'Ask three questions in a row',
+            'Start the line with the last word used', 'No words ending in "-ing"', 'Write one line with zero verbs',
+            'Contradict the previous line', 'Whisper the next 2 lines', 'Use only short words (1–2 syllables)',
+            'Change tense mid-verse', 'Say something emotional without emotion words', 'Write from an object\'s POV',
+            'Remove all rhymes (1 verse)', 'Turn the hook into spoken word', 'Rewrite the verse as instructions',
+            'Say the quietest thought out loud', 'Rewrite your favorite line in a worse way', 'Keep the first idea — no edits',
+            'Say what you\'ve been avoiding', 'Turn a filler line into the hook', 'Break your own rule'
         ],
         beats: [
-            'Change kick drum sound', 'Speed up the hi-hats', 'Add a clap sound', 'Slow down tempo',
-            'Change snare pitch', 'Add a shaker', 'Make drums louder', 'Add a ride cymbal',
-            'Change hi-hat pattern', 'Add tom fills', 'Make kick punchier', 'Add a crash',
-            'Change snare pattern', 'Add percussion loop', 'Make hi-hats softer', 'Add cowbell',
-            'Swing the rhythm', 'Add rim shots', 'Make drums tighter', 'Add a tambourine',
-            'Change drum spacing', 'Add finger snaps', 'Make kick deeper', 'Add wood blocks',
-            'Shuffle the groove', 'Add hand claps', 'Make snare crisper', 'Add a bell',
-            'Change drum speed', 'Add bongo hits', 'Make hi-hats open', 'Add triangle',
-            'Quantize the drums', 'Add conga drums', 'Make kick faster', 'Add sleigh bells',
-            'Humanize timing', 'Add tabla sounds', 'Make snare deeper', 'Add chimes',
-            'Add drum rolls', 'Add djembe hits', 'Make hi-hats closed', 'Add maracas',
-            'Layer kick drums', 'Add wood block', 'Make drums drier', 'Add güiro',
-            'Add ghost notes', 'Add clave pattern', 'Make snare tighter', 'Add vibraslap',
-            'Change drum tone', 'Add cabasa', 'Make kick tighter', 'Add agogo bells',
-            'Add drum break', 'Add cajón sound', 'Make hi-hats louder', 'Add wind chimes',
-            'Reverse a cymbal', 'Add timbales', 'Make snare shorter', 'Add cuica',
-            'Add triplet hi-hats', 'Add surdo drum', 'Make kick shorter', 'Add berimbau',
-            'Add syncopation', 'Add pandeiro', 'Make drums roomy', 'Add reco-reco',
-            'Add half-time feel', 'Add repinique', 'Make snare longer', 'Add triangle roll',
-            'Add double-time feel', 'Add tamborim', 'Make kick longer', 'Add güira scrape'
+            'Swap the snare for a clap', 'Nudge the hats 5ms late', 'Add a shaker loop',
+            'Reverse the crash', 'Half-time the hi-hats', 'Humanize kick velocities',
+            'Woodblock on beat 4', 'Delete every 4th kick', 'Add a rimshot on the "and"',
+            'Ghost-note the snares', 'Pitch the hats down', 'Tambourine on 2 and 4',
+            'Randomize hat velocities', 'Filter the drums (2 bars)', 'Snare roll at the end',
+            'Add a single cowbell hit', 'Layer a quiet perc loop', 'Mute drums except kick (4 bars)',
+            'Pitch the kick up 2 semitones', 'Insert a 1-bar drum break', 'Triple the hi-hat speed',
+            'Replace the kick with a tom', 'Flanger on the drum bus', 'Remove the snare temporarily (8 bars)',
+            'Only kicks and hats (4 bars)', 'Offset drums slightly off-grid', 'Mute the kick entirely (8 bars)',
+            'Reverse the entire drum loop', 'One drum hit per bar only', 'Resample drums and destroy them',
+            'Drums fade in from silence (16 bars)', 'Make the drums answer the vocal rhythm', 'Turn rhythm into melody',
+            'Build tension without adding hits', 'Break the groove — then fix it', 'Do something that scares you (slightly)'
         ]
     };
 
@@ -628,6 +769,7 @@
             updateRankDisplay(); 
             renderBadges();
             updateStreak();
+            checkStreakNotification();
         }
         playClick();
     }
@@ -663,17 +805,35 @@
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             
             if (diffDays === 0) {
-                // Already played today, keep streak
-            } else if (diffDays === 1) {
-                // Would be consecutive day, but don't increment yet - wait for session completion
+                // Already played today
             } else if (diffDays > 1) {
-                // Streak broken, reset to 0
+                // Streak broken
                 currentStreak = 0;
                 localStorage.setItem(`streak_${currentCallsign}`, currentStreak);
             }
         }
         
         document.getElementById('streak-count').innerText = currentStreak;
+    }
+    
+    function checkStreakNotification() {
+        const today = new Date().toDateString();
+        const lastPlayed = localStorage.getItem(`lastPlayed_${currentCallsign}`);
+        
+        if (lastPlayed) {
+            const lastDate = new Date(lastPlayed);
+            const todayDate = new Date(today);
+            const diffTime = todayDate - lastDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1 && 'Notification' in window && Notification.permission === 'granted') {
+                const streak = parseInt(localStorage.getItem(`streak_${currentCallsign}`) || 0);
+                new Notification('BB XTRM - Keep Your Streak!', {
+                    body: `You're on a ${streak} day streak! Complete a session today to keep it going. +${streak * 5} bonus clout available!`,
+                    icon: '🔥'
+                });
+            }
+        }
     }
 
     function validateAuth() {
@@ -682,6 +842,7 @@
         currentCallsign = name;
         document.getElementById('welcome-msg').innerText = `WELCOME, ${currentCallsign}`;
         playSuccess();
+        playCassetteInsert();
         if(!sessionStorage.getItem('manualSeen')) {
             sessionStorage.setItem('manualSeen', 'true');
             showScreen('screen-manual');
@@ -700,6 +861,7 @@
         document.getElementById('clout-val').innerText = "0";
         document.getElementById('perfect-badge').style.display = "none";
         playSuccess();
+        playCassetteInsert();
         showScreen('screen-game');
         drawTask();
     }
@@ -755,11 +917,9 @@
             if(cooldownLeft > 0) { cooldownLeft--; updateCooldownUI(); }
             if(timeLeft <= 10) {
                 timerEl.classList.add('timer-low');
-                // Alarm buzz with increasing intensity
-                const intensity = (10 - timeLeft) / 10; // 0 at 10s, 1 at 0s
+                const intensity = (10 - timeLeft) / 10;
                 playAlarmBuzz(intensity);
             } else {
-                // Subtle tick sound
                 playTick();
             }
             const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
@@ -798,6 +958,7 @@
         cleanStreakCount++;
         
         playSuccess();
+        playCassetteInsert();
         
         if(comboCount === 3) { 
             sessionClout += 25; 
@@ -824,11 +985,11 @@
         rerunUsedInSession = true; 
         cleanStreakCount = 0; 
         
-        // Deduct 5 clout for using rerun (can go negative)
         sessionClout -= 5;
         document.getElementById('clout-val').innerText = sessionClout;
         
         playClick();
+        playCassetteInsert();
         
         const deck = cardDecks[selectedMode] || cardDecks.production;
         let availableCards = deck.filter(card => !usedCards.includes(card));
@@ -838,16 +999,13 @@
         }
         
         const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
-        const lastCard = usedCards[usedCards.length - 1];
         usedCards[usedCards.length - 1] = randomCard;
         
         const cardBody = document.getElementById('card-body');
         cardBody.classList.add('cassette-load');
         cardBody.innerText = randomCard;
-        playCassetteInsert();
         setTimeout(() => cardBody.classList.remove('cassette-load'), 600);
         
-        // Reset timer and cooldown
         timeLeft = TASK_TIME;
         cooldownLeft = 10;
         updateCooldownUI();
@@ -858,13 +1016,12 @@
         clearInterval(timerInterval);
         showScreen('screen-results');
         
-        // Update streak when completing a session
         const today = new Date().toDateString();
         const lastPlayed = localStorage.getItem(`lastPlayed_${currentCallsign}`);
         let currentStreak = parseInt(localStorage.getItem(`streak_${currentCallsign}`) || 0);
+        let streakBonus = 0;
         
         if (!lastPlayed) {
-            // First session ever
             currentStreak = 1;
             localStorage.setItem(`streak_${currentCallsign}`, currentStreak);
             localStorage.setItem(`lastPlayed_${currentCallsign}`, today);
@@ -875,22 +1032,22 @@
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             
             if (diffDays === 0) {
-                // Same day, don't change streak
+                // Same day
             } else if (diffDays === 1) {
-                // Consecutive day, increment streak
                 currentStreak++;
+                streakBonus = currentStreak * 5;
+                sessionClout += streakBonus;
                 localStorage.setItem(`streak_${currentCallsign}`, currentStreak);
                 localStorage.setItem(`lastPlayed_${currentCallsign}`, today);
             } else {
-                // Streak broken, restart at 1
                 currentStreak = 1;
                 localStorage.setItem(`streak_${currentCallsign}`, currentStreak);
                 localStorage.setItem(`lastPlayed_${currentCallsign}`, today);
             }
         }
         
-        // Play celebration fanfare
         playCelebration();
+        createConfetti();
         
         if (!rerunUsedInSession && speedDemonCount >= 5) {
             document.getElementById('perfect-badge').style.display = "block";
@@ -899,43 +1056,45 @@
             localStorage.setItem(`perfect_${currentCallsign}`, perfects + 1);
         }
 
-        // Update lifetime clout
         const currentTotal = parseInt(localStorage.getItem(`clout_${currentCallsign}`) || 0);
         localStorage.setItem(`clout_${currentCallsign}`, currentTotal + sessionClout);
         
-        // Update personal best if this session beat it
         const currentBest = parseInt(localStorage.getItem(`best_${currentCallsign}`) || 0);
+        const tryAgainBtn = document.getElementById('try-again-btn');
+        const previousBestEl = document.getElementById('previous-best');
+        
         if (sessionClout > currentBest) {
             localStorage.setItem(`best_${currentCallsign}`, sessionClout);
             document.getElementById('result-header').innerText = "NEW PERSONAL BEST!";
+            tryAgainBtn.style.display = "none";
+            previousBestEl.style.display = "none";
         } else {
-            document.getElementById('result-header').innerText = "SET COMPLETE";
+            document.getElementById('result-header').innerText = "DIDN'T BEAT PERSONAL BEST";
+            tryAgainBtn.style.display = "block";
+            previousBestEl.style.display = "block";
+            previousBestEl.querySelector('span').innerText = currentBest;
         }
         
         document.getElementById('result-clout').innerText = sessionClout;
-        document.getElementById('result-footer').innerText = "SESSION ARCHIVED TO LOCAL RIG.";
+        
+        let footerText = "SESSION ARCHIVED TO LOCAL RIG.";
+        if (streakBonus > 0) {
+            footerText += ` STREAK BONUS: +${streakBonus} CLOUT!`;
+        }
+        document.getElementById('result-footer').innerText = footerText;
     }
 
-    function resetAll() { 
-        if(confirm("ERASE ALL CAREER PROGRESS AND LOGOUT?")) { 
-            localStorage.clear();
-            sessionStorage.clear();
-            currentCallsign = "";
-            playError();
-            document.getElementById('username').value = '';
-            document.getElementById('welcome-msg').innerText = 'WELCOME, ARTIST';
-            document.getElementById('global-rank-display').innerText = '0';
-            document.getElementById('last-score').innerText = '0 LIFETIME CLOUT';
-            document.getElementById('badge-container').innerHTML = '';
-            showScreen('screen-auth');
-        } 
-    }
-    
     function restartSession() {
         if(confirm("RESTART THIS SESSION? (Progress will be lost)")) {
             playClick();
             startGame(selectedMode);
         }
+    }
+    
+    function restartFromResults() {
+        playClick();
+        playCassetteInsert();
+        startGame(selectedMode);
     }
     
     function exitGame() { 
