@@ -665,20 +665,12 @@
             if (diffDays === 0) {
                 // Already played today, keep streak
             } else if (diffDays === 1) {
-                // Consecutive day, increment streak
-                currentStreak++;
-                localStorage.setItem(`streak_${currentCallsign}`, currentStreak);
-                localStorage.setItem(`lastPlayed_${currentCallsign}`, today);
-            } else {
+                // Would be consecutive day, but don't increment yet - wait for session completion
+            } else if (diffDays > 1) {
                 // Streak broken, reset to 0
                 currentStreak = 0;
                 localStorage.setItem(`streak_${currentCallsign}`, currentStreak);
-                localStorage.setItem(`lastPlayed_${currentCallsign}`, today);
             }
-        } else {
-            // First time playing
-            currentStreak = 0;
-            localStorage.setItem(`lastPlayed_${currentCallsign}`, today);
         }
         
         document.getElementById('streak-count').innerText = currentStreak;
@@ -866,31 +858,35 @@
         clearInterval(timerInterval);
         showScreen('screen-results');
         
-        // Update last played date when completing a session
+        // Update streak when completing a session
         const today = new Date().toDateString();
         const lastPlayed = localStorage.getItem(`lastPlayed_${currentCallsign}`);
+        let currentStreak = parseInt(localStorage.getItem(`streak_${currentCallsign}`) || 0);
         
-        if (lastPlayed !== today) {
-            const lastDate = new Date(lastPlayed || today);
+        if (!lastPlayed) {
+            // First session ever
+            currentStreak = 1;
+            localStorage.setItem(`streak_${currentCallsign}`, currentStreak);
+            localStorage.setItem(`lastPlayed_${currentCallsign}`, today);
+        } else {
+            const lastDate = new Date(lastPlayed);
             const todayDate = new Date(today);
             const diffTime = todayDate - lastDate;
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             
-            let currentStreak = parseInt(localStorage.getItem(`streak_${currentCallsign}`) || 0);
-            
-            if (diffDays === 1) {
-                // Consecutive day
+            if (diffDays === 0) {
+                // Same day, don't change streak
+            } else if (diffDays === 1) {
+                // Consecutive day, increment streak
                 currentStreak++;
-            } else if (diffDays > 1) {
-                // Streak broken
-                currentStreak = 1;
+                localStorage.setItem(`streak_${currentCallsign}`, currentStreak);
+                localStorage.setItem(`lastPlayed_${currentCallsign}`, today);
             } else {
-                // Same day, don't change
-                currentStreak = currentStreak || 1;
+                // Streak broken, restart at 1
+                currentStreak = 1;
+                localStorage.setItem(`streak_${currentCallsign}`, currentStreak);
+                localStorage.setItem(`lastPlayed_${currentCallsign}`, today);
             }
-            
-            localStorage.setItem(`streak_${currentCallsign}`, currentStreak);
-            localStorage.setItem(`lastPlayed_${currentCallsign}`, today);
         }
         
         // Play celebration fanfare
