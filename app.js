@@ -239,7 +239,6 @@ const elements = {
     globalRankDisplay: document.getElementById('global-rank-display'),
     lastScore: document.getElementById('last-score'),
     streakCount: document.getElementById('streak-count'),
-    badgeContainer: document.getElementById('badge-container'),
     taskCount: document.getElementById('task-count'),
     cloutVal: document.getElementById('clout-val'),
     cheatError: document.getElementById('cheat-error'),
@@ -380,13 +379,6 @@ function updateMainScreenUI() {
     elements.globalRankDisplay.textContent = userProfile.personal_best || 0;
     elements.lastScore.textContent = (userProfile.lifetime_clout || 0) + ' LIFETIME CLOUT';
     elements.streakCount.textContent = userProfile.current_streak || 0;
-    elements.badgeContainer.innerHTML = '';
-    const badgeCount = userProfile.perfect_sets || 0;
-    for (let i = 0; i < badgeCount; i++) {
-        const badge = document.createElement('div');
-        badge.className = 'mini-badge';
-        elements.badgeContainer.appendChild(badge);
-    }
 }
 
 async function completeOnboarding() {
