@@ -562,7 +562,7 @@ function openProfile() {
     elements.statLifetime.textContent = userProfile.lifetime_clout || 0;
     elements.statBest.textContent = userProfile.personal_best || 0;
     elements.statSessions.textContent = userAnalytics?.total_sessions || 0;
-    elements.statTime.textContent = formatTime(userAnalytics?.total_time_in_studio || 0);
+    elements.statTime.textContent = `${userAnalytics?.total_reruns || 0} (−${userAnalytics?.clout_lost || 0} clout)`;
     
     // Update mode bars
     const total = (userAnalytics?.production_plays || 0) + 
