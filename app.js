@@ -1,15 +1,15 @@
 // =====================================================
 // BB XTRM PRO STUDIO - MAIN APPLICATION
-// Complete Supabase Integration with PWA Support
+// Complete supabaseClient Integration with PWA Support
 // =====================================================
 
 // ==================== CONFIGURATION ====================
 // Fixed: Added quotes and the full URL format
-const SUPABASE_URL = 'https://jykeezvbsxngbqiejkkt.supabase.co'; 
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5a2VlenZic3huZ2JxaWVqa2t0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzIyMzIsImV4cCI6MjA4Mjg0ODIzMn0.o47Ddz9NJztpmMDhNryKnvO4lxdDnKn24YSrUZZDjHk'; 
+const supabaseClient_URL = 'https://jykeezvbsxngbqiejkkt.supabaseClient.co'; 
+const supabaseClient_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5a2VlenZic3huZ2JxaWVqa2t0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzIyMzIsImV4cCI6MjA4Mjg0ODIzMn0.o47Ddz9NJztpmMDhNryKnvO4lxdDnKn24YSrUZZDjHk'; 
 
-// Initialize Supabase client
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Initialize supabaseClient client
+const supabaseClientClient = window.supabaseClient.createClient(supabaseClient_URL, supabaseClient_ANON_KEY);
 
 // ==================== AUDIO SYSTEM ====================
 let audioContext = null;
@@ -352,7 +352,7 @@ function populateCountryDropdown() {
 // ==================== AUTH FUNCTIONS ====================
 async function checkAuthState() {
     try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
         
         if (error) {
             console.error('Auth error:', error);
@@ -386,7 +386,7 @@ async function sendMagicLink() {
     elements.authBtn.textContent = 'SENDING...';
     
     try {
-        const { error } = await supabase.auth.signInWithOtp({
+        const { error } = await supabaseClient.auth.signInWithOtp({
             email: email,
             options: {
                 emailRedirectTo: window.location.origin
@@ -414,7 +414,7 @@ async function sendMagicLink() {
 
 async function logout() {
     try {
-        const { error } = await supabase.auth.signOut();
+        const { error } = await supabaseClient.auth.signOut();
         if (!error) {
             currentUser = null;
             userProfile = null;
@@ -437,7 +437,7 @@ async function loadUserProfile() {
     
     try {
         // Fetch full profile with analytics using RPC
-        const { data, error } = await supabase.rpc('get_full_profile');
+        const { data, error } = await supabaseClient.rpc('get_full_profile');
         
         if (error) {
             console.error('Profile fetch error:', error);
@@ -516,7 +516,7 @@ async function completeOnboarding() {
     elements.onboardSubmit.textContent = 'SAVING...';
     
     try {
-        const { data, error } = await supabase.rpc('complete_onboarding', {
+        const { data, error } = await supabaseClient.rpc('complete_onboarding', {
             p_artist_name: name,
             p_age: age,
             p_country: country
@@ -750,7 +750,7 @@ async function rerollTask() {
     
     // Track the rerun in database (fire and forget)
     if (currentUser) {
-        supabase.rpc('track_card_rerun', {
+        supabaseClient.rpc('track_card_rerun', {
             p_card_text: currentCardText,
             p_game_mode: selectedMode
         }).catch(err => console.error('Failed to track rerun:', err));
@@ -815,7 +815,7 @@ async function endSession() {
     
     try {
         // Call server-side function to increment clout securely
-        const { data, error } = await supabase.rpc('increment_clout', {
+        const { data, error } = await supabaseClient.rpc('increment_clout', {
             p_clout_amount: displayClout,
             p_game_mode: selectedMode,
             p_tasks_completed: tasksCompleted,
@@ -974,7 +974,7 @@ function initEventListeners() {
 }
 
 // ==================== AUTH STATE LISTENER ====================
-supabase.auth.onAuthStateChange(async (event, session) => {
+supabaseClient.auth.onAuthStateChange(async (event, session) => {
     console.log('Auth state changed:', event);
     
     if (event === 'SIGNED_IN' && session) {
