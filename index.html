@@ -13,6 +13,13 @@
     <title>BB XTRM // PRO STUDIO</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Scale everything down by 10% */
+        #console {
+            transform: scale(0.9);
+            transform-origin: top center;
+        }
+    </style>
 </head>
 <body>
 
@@ -21,7 +28,7 @@
     <div id="screen-loading" class="screen active-screen">
         <div class="logo-small">BB XTRM</div>
         <div class="loading-spinner"></div>
-        <p style="margin-top: 20px; color: #888; font-size: 0.8rem;">INITIALIZING RIG...</p>
+        <p style="margin-top: 18px; color: #888; font-size: 0.72rem;">INITIALIZING RIG...</p>
     </div>
 
     <!-- AUTH SCREEN - Magic Link Login -->
@@ -30,8 +37,8 @@
         <h2>SIGN IN</h2>
         <div id="auth-form">
             <input type="email" id="auth-email" class="cassette-field" placeholder="YOUR EMAIL">
-            <button id="auth-btn" class="btn btn-primary" style="margin-top:22px">SEND MAGIC LINK</button>
-            <p id="auth-message" style="margin-top: 15px; font-size: 0.8rem; color: #888; min-height: 40px;"></p>
+            <button id="auth-btn" class="btn btn-primary" style="margin-top:20px">SEND MAGIC LINK</button>
+            <p id="auth-message" style="margin-top: 14px; font-size: 0.72rem; color: #888; min-height: 36px;"></p>
         </div>
         <div class="social-icons">
             <a href="#" class="social-icon">𝕏</a>
@@ -42,22 +49,22 @@
 
     <!-- ONBOARDING SCREEN - First Time Only -->
     <div id="screen-onboarding" class="screen">
-        <div style="font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, var(--magenta), #ff66ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; text-align: center; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.7));">VIBE CHECK</div>
-        <h2 style="color: var(--cyan); margin-bottom: 25px;">WHERE ARE YOU PLAYING FROM?</h2>
+        <div style="font-size: 1.8rem; font-weight: 900; background: linear-gradient(135deg, var(--magenta), #ff66ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 9px; text-align: center; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.7));">VIBE CHECK</div>
+        <h2 style="color: var(--cyan); margin-bottom: 22px; font-size: 0.9rem;">SET UP YOUR PROFILE</h2>
         
-        <div class="onboarding-form glass-panel" style="padding: 24px; width: 100%;">
+        <div class="onboarding-form glass-panel" style="padding: 22px; width: 100%;">
             <div class="form-group">
                 <label class="form-label">ARTIST NAME</label>
                 <input type="text" id="onboard-name" class="cassette-field" placeholder="YOUR STAGE NAME" maxlength="20">
             </div>
             
-            <div class="form-group" style="margin-top: 18px;">
+            <div class="form-group" style="margin-top: 16px;">
                 <label class="form-label">AGE</label>
                 <input type="number" id="onboard-age" class="cassette-field" placeholder="YOUR AGE" min="13" max="120">
                 <span class="form-hint">Must be 13 or older to play</span>
             </div>
             
-            <div class="form-group" style="margin-top: 18px;">
+            <div class="form-group" style="margin-top: 16px;">
                 <label class="form-label">COUNTRY</label>
                 <select id="onboard-country" class="cassette-field cassette-select">
                     <option value="">SELECT YOUR COUNTRY</option>
@@ -65,21 +72,21 @@
             </div>
         </div>
         
-        <button id="onboard-submit" class="btn btn-primary" style="margin-top: 22px;">LET'S GO</button>
-        <p id="onboard-error" style="color: var(--red); font-size: 0.8rem; margin-top: 10px; min-height: 20px;"></p>
+        <button id="onboard-submit" class="btn btn-primary" style="margin-top: 20px;">LET'S GO</button>
+        <p id="onboard-error" style="color: var(--red); font-size: 0.72rem; margin-top: 9px; min-height: 18px;"></p>
     </div>
 
     <!-- MANUAL SCREEN -->
     <div id="screen-manual" class="screen">
-        <div style="font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg, var(--cyan), #00d4e6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 22px; font-style: italic; letter-spacing: 8px; text-align: center; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.7)) drop-shadow(0 0 25px rgba(0,242,255,0.7));">HOW TO</div>
-        <div style="text-align: left; font-size: 0.85rem; line-height: 1.6; background: linear-gradient(135deg, #1a1d26 0%, #0f1218 100%); padding: 22px; border-radius: 14px; border: 2px solid var(--border); font-weight: 500;">
+        <div style="font-size: 2.25rem; font-weight: 900; background: linear-gradient(135deg, var(--cyan), #00d4e6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; font-style: italic; letter-spacing: 7px; text-align: center; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.7)) drop-shadow(0 0 22px rgba(0,242,255,0.7));">HOW TO</div>
+        <div style="text-align: left; font-size: 0.77rem; line-height: 1.5; background: linear-gradient(135deg, #1a1d26 0%, #0f1218 100%); padding: 20px; border-radius: 13px; border: 2px solid var(--border); font-weight: 500;">
             <b style="color:var(--red); font-weight: 900;">• HIGH STAKES:</b> You have exactly 30s to complete each task. If the timer hits zero, the session ends. <br><br>
             <b style="color:var(--cyan); font-weight: 900;">• 10s SECURITY LOCK:</b> The 'COMPLETE' button is hard-locked for the first 10s of every card. Focus on the craft during this time.<br><br>
             <b style="color:var(--green); font-weight: 900;">• SPEED DEMON:</b> Submit your task with more than 15s left on the clock to earn +5 bonus Clout.<br><br>
             <b style="color:var(--magenta); font-weight: 900;">• XP COMBO:</b> Chain 3 tasks without a RERUN or failure to trigger +25 XP Overdrive.<br><br>
             <b style="color:var(--yellow); font-weight: 900;">• PERFECT SET:</b> Complete all 10 tasks with 0 RERUNS and 5+ SPEED bonuses to earn a Career Trophy and +100 Clout.
         </div>
-        <button class="btn btn-primary" style="margin-top:22px" id="manual-continue">INITIALIZE RIG</button>
+        <button class="btn btn-primary" style="margin-top:20px" id="manual-continue">INITIALIZE RIG</button>
         
         <div class="social-icons">
             <a href="#" class="social-icon">𝕏</a>
@@ -90,27 +97,27 @@
 
     <!-- MODES SCREEN -->
     <div id="screen-modes" class="screen">
-        <h2 id="welcome-msg">WELCOME, ARTIST</h2>
+        <h2 id="welcome-msg" style="font-size: 1.1rem;">WELCOME, ARTIST</h2>
         <div id="rank-panel" class="glass-panel">
-            <div style="color: #888; font-size: 0.7rem; letter-spacing: 3px; margin-bottom: 8px; font-weight: 700;">PERSONAL BEST</div>
-            <div id="global-rank-display" style="font-size: 2.8rem; color: var(--cyan); font-weight: 900; text-shadow: 0 0 20px var(--cyan);">0</div>
-            <div id="last-score" style="color: #aaa; font-size: 0.75rem; margin-top: 10px; font-weight: 600;">0 LIFETIME CLOUT</div>
-            <div id="streak-display" style="margin-top: 14px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
-                <div style="color: var(--magenta); font-size: 0.7rem; letter-spacing: 1.5px; margin-bottom: 5px; font-weight: 700;">DAILY STREAK</div>
-                <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                    <span style="font-size: 2rem;">🔥</span>
-                    <span id="streak-count" style="font-size: 1.8rem; color: var(--yellow); font-weight: 900; text-shadow: 0 0 15px var(--yellow);">0</span>
-                    <span style="font-size: 0.8rem; color: #888; font-weight: 700;">DAYS</span>
+            <div style="color: #888; font-size: 0.63rem; letter-spacing: 3px; margin-bottom: 7px; font-weight: 700;">PERSONAL BEST</div>
+            <div id="global-rank-display" style="font-size: 2.5rem; color: var(--cyan); font-weight: 900; text-shadow: 0 0 18px var(--cyan);">0</div>
+            <div id="last-score" style="color: #aaa; font-size: 0.68rem; margin-top: 9px; font-weight: 600;">0 LIFETIME CLOUT</div>
+            <div id="streak-display" style="margin-top: 12px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 9px; border: 1px solid rgba(255,255,255,0.1);">
+                <div style="color: var(--magenta); font-size: 0.63rem; letter-spacing: 1.5px; margin-bottom: 4px; font-weight: 700;">DAILY STREAK</div>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 9px;">
+                    <span style="font-size: 1.8rem;">🔥</span>
+                    <span id="streak-count" style="font-size: 1.6rem; color: var(--yellow); font-weight: 900; text-shadow: 0 0 14px var(--yellow);">0</span>
+                    <span style="font-size: 0.72rem; color: #888; font-weight: 700;">DAYS</span>
                 </div>
             </div>
             <div id="career-stats">
-                <div style="color: #666; font-size: 0.65rem; letter-spacing: 1.5px; font-weight: 700;">PERFECT SET HISTORY</div>
+                <div style="color: #666; font-size: 0.59rem; letter-spacing: 1.5px; font-weight: 700;">PERFECT SET HISTORY</div>
                 <div id="badge-container" class="badge-row"></div>
             </div>
         </div>
-        <button class="btn mode-btn" data-mode="production" style="margin-bottom:12px">ENGINEER</button>
-        <button class="btn mode-btn" data-mode="beats" style="margin-bottom:12px">BEATS</button>
-        <button class="btn mode-btn" data-mode="songwriting" style="margin-bottom:12px">WRITER</button>
+        <button class="btn mode-btn" data-mode="production" style="margin-bottom:11px">ENGINEER</button>
+        <button class="btn mode-btn" data-mode="beats" style="margin-bottom:11px">BEATS</button>
+        <button class="btn mode-btn" data-mode="songwriting" style="margin-bottom:11px">WRITER</button>
         <button class="btn btn-secondary" id="show-manual">MANUAL</button>
     </div>
 
@@ -129,7 +136,7 @@
                 COMPLETE
                 <span id="cooldown-timer" class="cooldown-text">LOCKED</span>
             </button>
-            <button id="rerun-btn" class="btn btn-secondary">RERUN (-5)</button>
+            <button id="rerun-btn" class="btn btn-secondary">RERUN (-50)</button>
             <button id="restart-btn" class="btn btn-secondary">RESTART</button>
             <button id="exit-btn" class="btn btn-secondary" style="grid-column: span 2; color: var(--red); border-color: #400;">EJECT</button>
         </div>
@@ -137,20 +144,29 @@
 
     <!-- RESULTS SCREEN -->
     <div id="screen-results" class="screen">
-        <h2 id="result-header">SET COMPLETE</h2>
-        <div id="result-clout" style="font-size: 5rem; color: var(--yellow); text-shadow: 0 0 40px var(--yellow); font-weight: 900;">0</div>
-        <div id="previous-best" style="font-size: 1.2rem; color: #888; margin-top: 8px; font-weight: 600; display: none;">Previous Best: <span style="color: var(--cyan);">0</span></div>
+        <h2 id="result-header" style="font-size: 1.1rem;">SET COMPLETE</h2>
+        <div id="result-clout" style="font-size: 4.5rem; color: var(--yellow); text-shadow: 0 0 36px var(--yellow); font-weight: 900;">0</div>
+        <div id="previous-best" style="font-size: 1.08rem; color: #888; margin-top: 7px; font-weight: 600; display: none;">Previous Best: <span style="color: var(--cyan);">0</span></div>
         <div id="perfect-badge">PERFECT SET // GOLD STATUS</div>
-        <p id="result-footer" style="margin-top: 18px; font-size: 0.95rem; font-weight: 600;">BANKING CLOUT...</p>
+        <p id="result-footer" style="margin-top: 16px; font-size: 0.86rem; font-weight: 600;">BANKING CLOUT...</p>
         <div id="result-buttons">
             <button id="continue-btn" class="btn btn-primary">CONTINUE</button>
             <button id="try-again-btn" class="btn btn-secondary" style="display:none;">TRY AGAIN</button>
         </div>
     </div>
 
+    <!-- LEADERBOARD SCREEN -->
+    <div id="screen-leaderboard" class="screen">
+        <h2 style="color: var(--cyan); margin-bottom: 20px; font-size: 1.1rem;">🏆 GLOBAL LEADERBOARD</h2>
+        <div id="leaderboard-list" class="glass-panel" style="padding: 15px; max-height: 400px; overflow-y: auto;">
+            <div class="leaderboard-loading">Loading rankings...</div>
+        </div>
+        <button id="close-leaderboard" class="btn btn-secondary" style="margin-top: 20px;">BACK TO PROFILE</button>
+    </div>
+
     <!-- PROFILE ICON (Fixed at bottom) -->
     <button id="profile-icon" class="profile-trigger" aria-label="Open Profile">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="8" r="4"/>
             <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
         </svg>
@@ -160,57 +176,37 @@
     <div id="profile-overlay" class="overlay">
         <div class="overlay-content">
             <button id="close-profile" class="close-btn">&times;</button>
-            <h2 style="color: var(--magenta); margin-bottom: 20px;">ARTIST PROFILE</h2>
+            <h2 style="color: var(--magenta); margin-bottom: 18px; font-size: 1rem;">ARTIST PROFILE</h2>
             
             <div class="profile-section glass-panel">
-                <div class="profile-avatar">
-                    <span id="profile-initial">?</span>
+                <div class="profile-avatar" style="width: 72px; height: 72px;">
+                    <span id="profile-initial" style="font-size: 1.8rem;">?</span>
                 </div>
-                <div id="profile-name" class="profile-name">LOADING...</div>
-                <div id="profile-location" class="profile-location">--</div>
+                <div id="profile-name" class="profile-name" style="font-size: 1.35rem;">LOADING...</div>
+                <div id="profile-location" class="profile-location" style="font-size: 0.77rem;"></div>
             </div>
             
             <div class="stats-grid">
                 <div class="stat-card glass-panel">
-                    <div class="stat-value" id="stat-lifetime">0</div>
-                    <div class="stat-label">LIFETIME CLOUT</div>
+                    <div class="stat-value" id="stat-lifetime" style="font-size: 1.6rem;">0</div>
+                    <div class="stat-label" style="font-size: 0.59rem;">LIFETIME CLOUT</div>
                 </div>
                 <div class="stat-card glass-panel">
-                    <div class="stat-value" id="stat-best">0</div>
-                    <div class="stat-label">PERSONAL BEST</div>
+                    <div class="stat-value" id="stat-best" style="font-size: 1.6rem;">0</div>
+                    <div class="stat-label" style="font-size: 0.59rem;">PERSONAL BEST</div>
                 </div>
                 <div class="stat-card glass-panel">
-                    <div class="stat-value" id="stat-sessions">0</div>
-                    <div class="stat-label">TOTAL SESSIONS</div>
+                    <div class="stat-value" id="stat-reruns" style="font-size: 1.6rem;">0</div>
+                    <div class="stat-label" style="font-size: 0.59rem;">TOTAL RERUNS</div>
                 </div>
                 <div class="stat-card glass-panel">
-                    <div class="stat-value" id="stat-time">0h</div>
-                    <div class="stat-label">TOTAL RERUNS</div>
+                    <div class="stat-value" id="stat-clout-lost" style="font-size: 1.6rem;">0</div>
+                    <div class="stat-label" style="font-size: 0.59rem;">CLOUT LOST</div>
                 </div>
             </div>
             
-            <div class="analytics-section glass-panel" style="margin-top: 15px; padding: 15px;">
-                <h3 style="color: var(--cyan); font-size: 0.8rem; margin-bottom: 12px;">MODE BREAKDOWN</h3>
-                <div id="mode-chart" class="mode-bars">
-                    <div class="mode-bar-item">
-                        <span class="mode-label">ENGINEER</span>
-                        <div class="mode-bar-track"><div id="bar-production" class="mode-bar-fill"></div></div>
-                        <span id="count-production" class="mode-count">0</span>
-                    </div>
-                    <div class="mode-bar-item">
-                        <span class="mode-label">BEATS</span>
-                        <div class="mode-bar-track"><div id="bar-beats" class="mode-bar-fill"></div></div>
-                        <span id="count-beats" class="mode-count">0</span>
-                    </div>
-                    <div class="mode-bar-item">
-                        <span class="mode-label">WRITER</span>
-                        <div class="mode-bar-track"><div id="bar-songwriting" class="mode-bar-fill"></div></div>
-                        <span id="count-songwriting" class="mode-count">0</span>
-                    </div>
-                </div>
-            </div>
-            
-            <button id="logout-btn" class="btn btn-secondary" style="margin-top: 20px; width: 100%;">LOG OUT</button>
+            <button id="leaderboard-btn" class="btn btn-primary" style="margin-top: 18px; width: 100%;">🏆 LEADERBOARD</button>
+            <button id="logout-btn" class="btn btn-secondary" style="margin-top: 10px; width: 100%;">LOG OUT</button>
         </div>
     </div>
 </div>
