@@ -56,6 +56,8 @@ body::before {
         inset 0 2px 4px rgba(255,255,255,0.2),
         inset 0 -2px 4px rgba(0,0,0,0.6);
     z-index: 2;
+    transform: scale(0.9);
+    transform-origin: top center;
 }
 
 #console::after {
@@ -759,6 +761,110 @@ h2 {
     color: var(--cyan);
     width: 30px;
     font-weight: 700;
+}
+
+/* ==================== LEADERBOARD ==================== */
+#screen-leaderboard {
+    padding: 20px;
+}
+
+#screen-leaderboard h2 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+#leaderboard-list {
+    width: 100%;
+    max-height: 55vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--cyan) transparent;
+    padding: 10px;
+}
+
+#leaderboard-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+#leaderboard-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#leaderboard-list::-webkit-scrollbar-thumb {
+    background: var(--cyan);
+    border-radius: 3px;
+}
+
+.leaderboard-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    margin: 6px 0;
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.leaderboard-item:hover {
+    background: rgba(0,0,0,0.5);
+}
+
+.leaderboard-item.gold {
+    background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,215,0,0.05));
+    border-color: rgba(255,215,0,0.5);
+}
+
+.leaderboard-item.silver {
+    background: linear-gradient(135deg, rgba(192,192,192,0.2), rgba(192,192,192,0.05));
+    border-color: rgba(192,192,192,0.5);
+}
+
+.leaderboard-item.bronze {
+    background: linear-gradient(135deg, rgba(205,127,50,0.2), rgba(205,127,50,0.05));
+    border-color: rgba(205,127,50,0.5);
+}
+
+.leaderboard-item.current-user {
+    background: linear-gradient(135deg, rgba(255,0,255,0.2), rgba(255,0,255,0.05));
+    border-color: var(--magenta);
+}
+
+.lb-rank {
+    font-size: 1.2rem;
+    min-width: 30px;
+    color: var(--cyan);
+}
+
+.lb-name {
+    flex: 1;
+    margin-left: 10px;
+    font-weight: 600;
+}
+
+.lb-country {
+    font-size: 0.7rem;
+    color: #888;
+    margin-right: 15px;
+}
+
+.lb-clout {
+    color: var(--yellow);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.leaderboard-loading,
+.leaderboard-empty,
+.leaderboard-error {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888;
+}
+
+.leaderboard-error {
+    color: var(--red);
 }
 
 /* ==================== RESPONSIVE ==================== */
