@@ -5,8 +5,8 @@
 
 // ==================== CONFIGURATION ====================
 // PASTE YOUR NEW DATA HERE:
-const GAME_DATABASE_URL = 'PASTE_YOUR_NEW_URL_HERE'; 
-const GAME_DATABASE_KEY = 'PASTE_YOUR_NEW_ANON_KEY_HERE'; 
+const GAME_DATABASE_URL = 'https://qholvwlaeldvrlmvepnj.supabase.co'; 
+const GAME_DATABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFob2x2d2xhZWxkdnJsbXZlcG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NTgxODIsImV4cCI6MjA4MzAzNDE4Mn0.vuf0EAsbWi2xduhkncMvjYAlEb3CPOcY9Px2fuk_N54'; 
 
 // This creates your connection. 
 // We use 'supabaseClient' as the name to avoid crashing with the library.
