@@ -454,7 +454,10 @@ async function openLeaderboard() {
     }
 }
 
-function closeLeaderboard() { openProfile(); playClick(); }
+function closeLeaderboard() { 
+    showScreen('screen-modes'); 
+    playClick(); 
+}
 
 function startGame(mode) {
     selectedMode = mode;
