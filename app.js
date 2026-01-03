@@ -351,32 +351,19 @@ function populateCountryDropdown() {
 }
 
 // ==================== AUTH FUNCTIONS ====================
-async function loadUserProfile() {
+async function checkAuthState() {
     try {
-        // 1. Fetch data from the "Robot" (RPC) we built in Supabase
-        const { data, error } = await supabaseClient.rpc('get_full_profile');
-
-        if (error) throw error;
-
-        if (data && data.length > 0) {
-            userProfile = data[0]; // Save the profile to memory
-
-            // 2. CHECK THE STATUS: This is the critical part!
-            if (userProfile.onboarding_completed) {
-                // If they finished setup, go to game modes
-                showScreen('screen-modes');
-            } else {
-                // If they are new, go to the Vibe Check
-                showScreen('screen-onboarding');
-            }
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        
+        if (session) {
+            currentUser = session.user;
+            await loadUserProfile();
         } else {
-            // No profile row exists yet, send to onboarding
-            showScreen('screen-onboarding');
+            showScreen('screen-auth');
         }
     } catch (err) {
-        console.error('Failed to load profile:', err);
-        // Safety fallback: if database fails, at least show the onboarding screen
-        showScreen('screen-onboarding');
+        console.error('Auth check failed:', err);
+        showScreen('screen-auth');
     }
 }
 
@@ -497,7 +484,35 @@ function updateMainScreenUI() {
 }
 
 async function completeOnboarding() {
-    // ... (your existing name/age/country variables) ...
+    const name = elements.onboardName.value.trim();
+    const age = parseInt(elements.onboardAge.value);
+    const country = elements.onboardCountry.value;
+    
+    // Validation
+    if (!name || name.length < 2) {
+        elements.onboardError.textContent = 'Please enter a valid artist name';
+        elements.onboardError.style.display = 'block';
+        playError();
+        return;
+    }
+    
+    if (!age || age < 13 || age > 120) {
+        elements.onboardError.textContent = 'Please enter a valid age (13+)';
+        elements.onboardError.style.display = 'block';
+        playError();
+        return;
+    }
+    
+    if (!country) {
+        elements.onboardError.textContent = 'Please select your country';
+        elements.onboardError.style.display = 'block';
+        playError();
+        return;
+    }
+    
+    elements.onboardError.style.display = 'none';
+    elements.onboardSubmit.disabled = true;
+    elements.onboardSubmit.textContent = 'SAVING...';
 
     try {
         const { data, error } = await supabaseClient.rpc('complete_onboarding', {
@@ -508,21 +523,34 @@ async function completeOnboarding() {
 
         if (error) throw error;
 
-        // THIS IS THE PART THAT WAS FAILING:
-        // We need to tell the app that onboarding is done locally
-        if (typeof userProfile !== 'undefined') {
-            userProfile.onboarding_completed = true;
-            userProfile.artist_name = name;
+        // Update local profile state
+        if (!userProfile) {
+            userProfile = {};
         }
+        userProfile.onboarding_completed = true;
+        userProfile.artist_name = name;
+        userProfile.age = age;
+        userProfile.country = country;
+        userProfile.lifetime_clout = 0;
+        userProfile.personal_best = 0;
+        userProfile.current_streak = 0;
+        userProfile.perfect_sets = 0;
 
-        // AND THIS IS THE COMMAND YOU JUST TYPED:
-        // Now we make the app do it automatically
-        showScreen('screen-modes'); 
+        playSuccess();
+        
+        // Show manual for first time users
+        sessionStorage.setItem('manualSeen', 'true');
+        showScreen('screen-manual');
 
     } catch (err) {
         console.error("Onboarding failed:", err);
-        alert("Error saving: " + err.message);
+        elements.onboardError.textContent = 'Error saving: ' + err.message;
+        elements.onboardError.style.display = 'block';
+        playError();
     }
+    
+    elements.onboardSubmit.disabled = false;
+    elements.onboardSubmit.textContent = 'START CREATING';
 }
 
 function openProfile() {
