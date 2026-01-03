@@ -9,7 +9,7 @@ const SUPABASE_URL = 'https://jykeezvbsxngbqiejkkt.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5a2VlenZic3huZ2JxaWVqa2t0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzIyMzIsImV4cCI6MjA4Mjg0ODIzMn0.o47Ddz9NJztpmMDhNryKnvO4lxdDnKn24YSrUZZDjHk'; 
 
 // Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ==================== AUDIO SYSTEM ====================
 let audioContext = null;
