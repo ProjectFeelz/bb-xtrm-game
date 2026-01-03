@@ -351,25 +351,32 @@ function populateCountryDropdown() {
 }
 
 // ==================== AUTH FUNCTIONS ====================
-async function checkAuthState() {
+async function loadUserProfile() {
     try {
-        const { data: { session }, error } = await supabaseClient.auth.getSession();
-        
-        if (error) {
-            console.error('Auth error:', error);
-            showScreen('screen-auth');
-            return;
-        }
-        
-        if (session) {
-            currentUser = session.user;
-            await loadUserProfile();
+        // 1. Fetch data from the "Robot" (RPC) we built in Supabase
+        const { data, error } = await supabaseClient.rpc('get_full_profile');
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+            userProfile = data[0]; // Save the profile to memory
+
+            // 2. CHECK THE STATUS: This is the critical part!
+            if (userProfile.onboarding_completed) {
+                // If they finished setup, go to game modes
+                showScreen('screen-modes');
+            } else {
+                // If they are new, go to the Vibe Check
+                showScreen('screen-onboarding');
+            }
         } else {
-            showScreen('screen-auth');
+            // No profile row exists yet, send to onboarding
+            showScreen('screen-onboarding');
         }
     } catch (err) {
-        console.error('Auth check failed:', err);
-        showScreen('screen-auth');
+        console.error('Failed to load profile:', err);
+        // Safety fallback: if database fails, at least show the onboarding screen
+        showScreen('screen-onboarding');
     }
 }
 
