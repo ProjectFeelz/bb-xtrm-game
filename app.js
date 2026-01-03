@@ -4,12 +4,13 @@
 // =====================================================
 
 // ==================== CONFIGURATION ====================
-// Fixed: Added quotes and the full URL format
-const supabaseClient_URL = 'https://jykeezvbsxngbqiejkkt.supabaseClient.co'; 
-const supabaseClient_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5a2VlenZic3huZ2JxaWVqa2t0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzIyMzIsImV4cCI6MjA4Mjg0ODIzMn0.o47Ddz9NJztpmMDhNryKnvO4lxdDnKn24YSrUZZDjHk'; 
+// Note: The URL must end in .supabase.co (not .supabaseClient.co)
+const SUPABASE_URL = 'https://jykeezvbsxngbqiejkkt.supabase.co'; 
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5a2VlenZic3huZ2JxaWVqa2t0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzIyMzIsImV4cCI6MjA4Mjg0ODIzMn0.o47Ddz9NJztpmMDhNryKnvO4lxdDnKn24YSrUZZDjHk'; 
 
-// Initialize supabaseClient client
-const supabaseClientClient = window.supabaseClient.createClient(supabaseClient_URL, supabaseClient_ANON_KEY);
+// Initialize the client with a unique name to avoid the "already declared" error
+// window.supabase must stay exactly like this to talk to the library in your HTML
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ==================== AUDIO SYSTEM ====================
 let audioContext = null;
