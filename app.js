@@ -490,57 +490,31 @@ function updateMainScreenUI() {
 }
 
 async function completeOnboarding() {
-    const name = elements.onboardName.value.trim();
-    const age = parseInt(elements.onboardAge.value);
-    const country = elements.onboardCountry.value;
-    
-    // Validation
-    if (name.length < 2) {
-        elements.onboardError.textContent = 'Name must be at least 2 characters';
-        playError();
-        return;
-    }
-    
-    if (!age || age < 13 || age > 120) {
-        elements.onboardError.textContent = 'You must be 13 or older to play';
-        playError();
-        return;
-    }
-    
-    if (!country) {
-        elements.onboardError.textContent = 'Please select your country';
-        playError();
-        return;
-    }
-    
-    elements.onboardSubmit.disabled = true;
-    elements.onboardSubmit.textContent = 'SAVING...';
-    
+    // ... (your existing name/age/country variables) ...
+
     try {
         const { data, error } = await supabaseClient.rpc('complete_onboarding', {
-            p_artist_name: name,
             p_age: age,
+            p_artist_name: name,
             p_country: country
         });
-        
-        if (error || !data || !data.success) {
-            elements.onboardError.textContent = error?.message || data?.error || 'Failed to save profile';
-            elements.onboardSubmit.disabled = false;
-            elements.onboardSubmit.textContent = "LET'S GO";
-            playError();
-            return;
+
+        if (error) throw error;
+
+        // THIS IS THE PART THAT WAS FAILING:
+        // We need to tell the app that onboarding is done locally
+        if (typeof userProfile !== 'undefined') {
+            userProfile.onboarding_completed = true;
+            userProfile.artist_name = name;
         }
-        
-        playSuccess();
-        playCassetteInsert();
-        
-        // Reload profile
-        await loadUserProfile();
+
+        // AND THIS IS THE COMMAND YOU JUST TYPED:
+        // Now we make the app do it automatically
+        showScreen('screen-modes'); 
+
     } catch (err) {
-        elements.onboardError.textContent = 'Network error. Please try again.';
-        elements.onboardSubmit.disabled = false;
-        elements.onboardSubmit.textContent = "LET'S GO";
-        playError();
+        console.error("Onboarding failed:", err);
+        alert("Error saving: " + err.message);
     }
 }
 
