@@ -17,6 +17,73 @@ const supabaseClient = window.supabase.createClient(GAME_URL, GAME_KEY, {
     }
 });
 
+// ==================== CACHE & SERVICE WORKER MANAGEMENT ====================
+const APP_VERSION = '1.0.5'; // Increment this when you deploy updates
+
+// Clear old caches and manage service worker
+async function manageCacheAndSW() {
+    // Store version in localStorage
+    const storedVersion = localStorage.getItem('app_version');
+    
+    if (storedVersion !== APP_VERSION) {
+        console.log('New version detected, clearing caches...');
+        
+        // Clear all caches
+        if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
+            console.log('Caches cleared');
+        }
+        
+        // Unregister old service workers
+        if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (const registration of registrations) {
+                await registration.unregister();
+                console.log('Service worker unregistered');
+            }
+        }
+        
+        // Clear sessionStorage
+        sessionStorage.clear();
+        
+        // Update stored version
+        localStorage.setItem('app_version', APP_VERSION);
+        
+        // Reload to get fresh content (only if version changed)
+        if (storedVersion !== null) {
+            window.location.reload(true);
+            return false;
+        }
+    }
+    return true;
+}
+
+// Handle visibility change - refresh auth state when app returns to foreground
+document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState === 'visible' && currentUser) {
+        try {
+            // Refresh the session when app comes back to foreground
+            const { data, error } = await supabaseClient.auth.getSession();
+            if (error || !data.session) {
+                console.log('Session expired, redirecting to auth...');
+                currentUser = null;
+                showScreen('screen-auth');
+            }
+        } catch (err) {
+            console.error('Session refresh error:', err);
+        }
+    }
+});
+
+// Prevent stale cache on page show (back/forward cache)
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        // Page was restored from back/forward cache
+        window.location.reload();
+    }
+});
+
 // ==================== AUDIO SYSTEM ====================
 let audioContext = null;
 
@@ -1342,11 +1409,17 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     else if (event === 'SIGNED_OUT') { currentUser = null; userProfile = null; userAnalytics = null; showScreen('screen-auth'); }
 });
 
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', async () => {
-        try { await navigator.serviceWorker.register('/sw.js'); } catch (e) { console.log('SW failed:', e); }
-    });
+// Don't register a service worker - it causes more problems than it solves for this app
+// If you want offline support later, uncomment and create a proper sw.js
+
+async function init() {
+    // Manage cache and service worker first
+    const shouldContinue = await manageCacheAndSW();
+    if (!shouldContinue) return; // Page will reload
+    
+    populateCountryDropdown();
+    initEventListeners();
+    await checkAuthState();
 }
 
-async function init() { populateCountryDropdown(); initEventListeners(); await checkAuthState(); }
 if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
