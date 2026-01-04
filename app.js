@@ -880,16 +880,71 @@ async function endSession() {
         else if (data && data.success) {
             userProfile.lifetime_clout = data.new_lifetime_total;
             userProfile.current_streak = data.new_streak;
-            if (data.is_new_best) { userProfile.personal_best = data.final_clout; elements.resultHeader.textContent = "NEW PERSONAL BEST!"; elements.tryAgainBtn.style.display = "none"; elements.previousBest.style.display = "none"; }
-            else { elements.resultHeader.textContent = "SESSION COMPLETE"; elements.tryAgainBtn.style.display = "block"; elements.previousBest.style.display = "block"; elements.previousBest.querySelector('span').textContent = userProfile.personal_best; }
+            
+            // Update streak display on main screen
+            if (elements.streakCount) elements.streakCount.textContent = data.new_streak;
+            
+            if (data.is_new_best) { 
+                userProfile.personal_best = data.final_clout; 
+                elements.resultHeader.textContent = "NEW PERSONAL BEST!"; 
+                elements.tryAgainBtn.style.display = "none"; 
+                elements.previousBest.style.display = "none"; 
+            } else { 
+                elements.resultHeader.textContent = "SESSION COMPLETE"; 
+                elements.tryAgainBtn.style.display = "block"; 
+                elements.previousBest.style.display = "block"; 
+                elements.previousBest.querySelector('span').textContent = userProfile.personal_best; 
+            }
+            
             elements.resultClout.textContent = data.final_clout;
             let footerText = "SESSION ARCHIVED.";
-            if (data.streak_bonus > 0) footerText += ' STREAK BONUS: +' + data.streak_bonus + '!';
+            
+            // Show streak notification if streak increased
+            if (data.streak_increased && data.new_streak > 1) {
+                setTimeout(() => {
+                    showStreakNotification(data.new_streak, data.streak_bonus);
+                }, 1500);
+            }
+            
+            if (data.streak_bonus > 0) {
+                footerText += ' 🔥 STREAK BONUS: +' + data.streak_bonus + '!';
+            }
+            
             elements.resultFooter.textContent = footerText;
-            elements.resultFooter.style.color = "";
-            if (userAnalytics) { userAnalytics.total_reruns = (userAnalytics.total_reruns || 0) + totalRerunsThisSession; userAnalytics.clout_lost = (userAnalytics.clout_lost || 0) + (totalRerunsThisSession * RERUN_PENALTY); }
+            elements.resultFooter.style.color = data.streak_bonus > 0 ? "var(--yellow)" : "";
+            
+            if (userAnalytics) { 
+                userAnalytics.total_reruns = (userAnalytics.total_reruns || 0) + totalRerunsThisSession; 
+                userAnalytics.clout_lost = (userAnalytics.clout_lost || 0) + (totalRerunsThisSession * RERUN_PENALTY); 
+            }
         }
     } catch (err) { console.error('Session error:', err); elements.resultFooter.textContent = "NETWORK ERROR"; elements.resultFooter.style.color = "var(--red)"; }
+}
+
+function showStreakNotification(streak, bonus) {
+    const notification = document.createElement('div');
+    notification.className = 'streak-notification';
+    notification.innerHTML = `
+        <div class="streak-fire">🔥</div>
+        <div class="streak-count">${streak} DAY STREAK!</div>
+        ${bonus > 0 ? `<div class="streak-bonus">+${bonus} CLOUT</div>` : ''}
+        <div class="streak-message">${getStreakMessage(streak)}</div>
+    `;
+    document.body.appendChild(notification);
+    playSuccess();
+    setTimeout(() => notification.classList.add('show'), 100);
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 500);
+    }, 3500);
+}
+
+function getStreakMessage(streak) {
+    if (streak >= 30) return "LEGENDARY STATUS! 👑";
+    if (streak >= 14) return "TWO WEEKS STRONG! 💪";
+    if (streak >= 7) return "ONE WEEK LOCKED IN! 🎯";
+    if (streak >= 3) return "BUILDING MOMENTUM! ⚡";
+    return "KEEP IT GOING! 🚀";
 }
 
 function initEventListeners() {
