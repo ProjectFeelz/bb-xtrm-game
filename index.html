@@ -1,103 +1,348 @@
--- =====================================================
--- COMMUNITY FEED TABLES & FUNCTIONS
--- =====================================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1d26">
+    <meta name="description" content="BB XTRM Pro Studio - The ultimate beatmaking challenge game">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BB XTRM">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <title>BB XTRM // PRO STUDIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Scale everything down by 10% */
+        #console {
+            transform: scale(0.9);
+            transform-origin: top center;
+        }
+    </style>
+</head>
+<body>
 
--- Add challenge_id to feed_posts to link submissions to challenges
-ALTER TABLE feed_posts ADD COLUMN IF NOT EXISTS challenge_id UUID REFERENCES weekly_challenges(id);
-ALTER TABLE feed_posts ADD COLUMN IF NOT EXISTS is_challenge_entry BOOLEAN DEFAULT false;
+<div id="console">
+    <!-- LOADING SCREEN -->
+    <div id="screen-loading" class="screen active-screen">
+        <div class="logo-small">BB XTRM</div>
+        <div class="loading-spinner"></div>
+        <p style="margin-top: 18px; color: #888; font-size: 0.72rem;">INITIALIZING RIG...</p>
+    </div>
 
--- Create comments table
-CREATE TABLE IF NOT EXISTS feed_comments (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    post_id UUID REFERENCES feed_posts(id) ON DELETE CASCADE,
-    user_id UUID REFERENCES auth.users(id),
-    artist_name TEXT NOT NULL,
-    comment_text TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+    <!-- AUTH SCREEN - Magic Link Login -->
+    <div id="screen-auth" class="screen">
+        <div class="logo-small" style="margin-top: 0; margin-bottom: 25px;">BB XTRM</div>
+        <h2>SIGN IN</h2>
+        <div id="auth-form">
+            <input type="email" id="auth-email" class="cassette-field" placeholder="YOUR EMAIL">
+            <button id="auth-btn" class="btn btn-primary" style="margin-top:15px">SEND MAGIC LINK</button>
+            <p id="auth-message" style="margin-top: 10px; font-size: 0.72rem; color: #888; min-height: 20px;"></p>
+            
+            <div style="display: flex; align-items: center; margin: 10px 0; gap: 10px;">
+                <div style="flex: 1; height: 1px; background: var(--border);"></div>
+                <span style="color: #666; font-size: 0.65rem; letter-spacing: 1px;">OR</span>
+                <div style="flex: 1; height: 1px; background: var(--border);"></div>
+            </div>
+            
+            <div style="display: flex; justify-content: center;">
+                <button id="discord-btn" class="btn btn-discord btn-small">
+                    🎮 DISCORD
+                </button>
+            </div>
+        </div>
+        <div class="social-icons">
+            <a href="https://www.projectfeelz.com/b/bbxtrm" target="_blank" class="social-icon" title="Website">🌐</a>
+            <a href="https://youtube.com/@BB-XTRM" target="_blank" class="social-icon" title="YouTube">▶️</a>
+            <a href="https://discord.gg/PRTDW8d8TS" target="_blank" class="social-icon" title="Discord">💬</a>
+        </div>
+    </div>
 
--- Enable RLS on comments
-ALTER TABLE feed_comments ENABLE ROW LEVEL SECURITY;
+    <!-- ONBOARDING SCREEN - First Time Only -->
+    <div id="screen-onboarding" class="screen">
+        <div style="font-size: 1.8rem; font-weight: 900; background: linear-gradient(135deg, var(--magenta), #ff66ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 9px; text-align: center; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.7));">VIBE CHECK</div>
+        <h2 style="color: var(--cyan); margin-bottom: 22px; font-size: 0.9rem;">SET UP YOUR PROFILE</h2>
+        
+        <div class="onboarding-form glass-panel" style="padding: 22px; width: 100%;">
+            <div class="form-group">
+                <label class="form-label">ARTIST NAME</label>
+                <input type="text" id="onboard-name" class="cassette-field" placeholder="YOUR STAGE NAME" maxlength="20">
+            </div>
+            
+            <div class="form-group" style="margin-top: 16px;">
+                <label class="form-label">AGE</label>
+                <input type="number" id="onboard-age" class="cassette-field" placeholder="YOUR AGE" min="13" max="120">
+                <span class="form-hint">Must be 13 or older to play</span>
+            </div>
+            
+            <div class="form-group" style="margin-top: 16px;">
+                <label class="form-label">COUNTRY</label>
+                <select id="onboard-country" class="cassette-field cassette-select">
+                    <option value="">SELECT YOUR COUNTRY</option>
+                </select>
+            </div>
+        </div>
+        
+        <button id="onboard-submit" class="btn btn-primary" style="margin-top: 20px;">LET'S GO</button>
+        <p id="onboard-error" style="color: var(--red); font-size: 0.72rem; margin-top: 9px; min-height: 18px;"></p>
+    </div>
 
--- Policies for comments
-DROP POLICY IF EXISTS "Anyone can view comments" ON feed_comments;
-CREATE POLICY "Anyone can view comments" ON feed_comments
-FOR SELECT USING (true);
+    <!-- MANUAL SCREEN -->
+    <div id="screen-manual" class="screen">
+        <div style="font-size: 2.25rem; font-weight: 900; background: linear-gradient(135deg, var(--cyan), #00d4e6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; font-style: italic; letter-spacing: 7px; text-align: center; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.7)) drop-shadow(0 0 22px rgba(0,242,255,0.7));">HOW TO</div>
+        <div style="text-align: center; font-size: 0.9rem; line-height: 1.7; background: linear-gradient(135deg, #1a1d26 0%, #0f1218 100%); padding: 25px; border-radius: 13px; border: 2px solid var(--border); font-weight: 500; color: #ccc;">
+            You've got 30 seconds to make a move—beat, bars, or mix. You can rerun, but it'll cost you Clout. Stay sharp, move fast, and stack clean wins to unlock XP and trophies.
+        </div>
+        <button class="btn btn-primary" style="margin-top:20px; display: block; margin-left: auto; margin-right: auto;" id="manual-continue">INITIALIZE RIG</button>
+        
+        <div class="social-icons">
+            <a href="https://www.projectfeelz.com/b/bbxtrm" target="_blank" class="social-icon" title="Website">🌐</a>
+            <a href="https://youtube.com/@BB-XTRM" target="_blank" class="social-icon" title="YouTube">▶️</a>
+            <a href="https://discord.gg/PRTDW8d8TS" target="_blank" class="social-icon" title="Discord">💬</a>
+        </div>
+    </div>
 
-DROP POLICY IF EXISTS "Users can insert own comments" ON feed_comments;
-CREATE POLICY "Users can insert own comments" ON feed_comments
-FOR INSERT WITH CHECK (auth.uid() = user_id);
+    <!-- MODES SCREEN -->
+    <div id="screen-modes" class="screen">
+        <h2 id="welcome-msg" style="font-size: 1.1rem;">WELCOME, ARTIST</h2>
+        <div id="rank-panel" class="glass-panel">
+            <div style="color: #888; font-size: 0.63rem; letter-spacing: 3px; margin-bottom: 7px; font-weight: 700;">PERSONAL BEST</div>
+            <div id="global-rank-display" style="font-size: 2.5rem; color: var(--cyan); font-weight: 900; text-shadow: 0 0 18px var(--cyan);">0</div>
+            <div id="last-score" style="color: #aaa; font-size: 0.68rem; margin-top: 9px; font-weight: 600;">0 LIFETIME CLOUT</div>
+            <div id="streak-display" style="margin-top: 12px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 9px; border: 1px solid rgba(255,255,255,0.1);">
+                <div style="color: var(--magenta); font-size: 0.63rem; letter-spacing: 1.5px; margin-bottom: 4px; font-weight: 700;">DAILY STREAK</div>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 9px;">
+                    <span style="font-size: 1.8rem;">🔥</span>
+                    <span id="streak-count" style="font-size: 1.6rem; color: var(--yellow); font-weight: 900; text-shadow: 0 0 14px var(--yellow);">0</span>
+                    <span style="font-size: 0.72rem; color: #888; font-weight: 700;">DAYS</span>
+                </div>
+            </div>
+        </div>
+        <button class="btn mode-btn" data-mode="production" style="margin-bottom:11px">ENGINEER</button>
+        <button class="btn mode-btn" data-mode="beats" style="margin-bottom:11px">BEATS</button>
+        <button class="btn mode-btn" data-mode="songwriting" style="margin-bottom:11px">WRITER</button>
+        <button class="btn btn-community" id="community-btn" style="margin-bottom:11px">🎬 COMMUNITY</button>
+        <button class="btn btn-secondary" id="show-manual">MANUAL</button>
+    </div>
 
-DROP POLICY IF EXISTS "Users can delete own comments" ON feed_comments;
-CREATE POLICY "Users can delete own comments" ON feed_comments
-FOR DELETE USING (auth.uid() = user_id);
+    <!-- GAME SCREEN -->
+    <div id="screen-game" class="screen">
+        <div class="game-hud">
+            <span>TASK: <span id="task-count" class="hud-val">1/10</span></span>
+            <span>CLOUT: <span id="clout-val" class="hud-val">0</span></span>
+        </div>
+        <div id="cheat-error">!! SECURITY TRIGGERED: COMPLETE TOO EARLY !!</div>
+        <div id="timer">00:30</div>
+        <div id="combo-alert">XP OVERDRIVE +25</div>
+        <div id="card"><div id="card-body">Awaiting sync...</div></div>
+        <div id="game-controls">
+            <button id="complete-btn" class="btn btn-primary" style="grid-column: span 2">
+                COMPLETE
+                <span id="cooldown-timer" class="cooldown-text">LOCKED</span>
+            </button>
+            <button id="rerun-btn" class="btn btn-secondary">RERUN (-50)</button>
+            <button id="restart-btn" class="btn btn-secondary">RESTART</button>
+            <button id="exit-btn" class="btn btn-secondary" style="grid-column: span 2; color: var(--red); border-color: #400;">EJECT</button>
+        </div>
+    </div>
 
--- Add winner fields to weekly_challenges
-ALTER TABLE weekly_challenges ADD COLUMN IF NOT EXISTS winner_post_id UUID REFERENCES feed_posts(id);
-ALTER TABLE weekly_challenges ADD COLUMN IF NOT EXISTS winner_announced BOOLEAN DEFAULT false;
-ALTER TABLE weekly_challenges ADD COLUMN IF NOT EXISTS youtube_live_url TEXT;
+    <!-- COOLDOWN SCREEN (Between Cards) -->
+    <div id="screen-cooldown" class="screen">
+        <div class="cooldown-title">COOLDOWN</div>
+        <div id="cooldown-countdown" class="cooldown-number">10</div>
+        <div class="cooldown-message">Take a breath. Next card incoming...</div>
+        <div class="cooldown-progress-bar">
+            <div id="cooldown-progress" class="cooldown-progress-fill"></div>
+        </div>
+    </div>
 
--- Function to submit a challenge entry
-CREATE OR REPLACE FUNCTION submit_challenge_entry(
-    p_tiktok_url TEXT,
-    p_description TEXT DEFAULT NULL
-)
-RETURNS JSON
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-DECLARE
-    v_user_id UUID;
-    v_artist_name TEXT;
-    v_challenge_id UUID;
-    v_card_text TEXT;
-BEGIN
-    v_user_id := auth.uid();
-    
-    IF v_user_id IS NULL THEN
-        RETURN json_build_object('success', false, 'error', 'Not authenticated');
-    END IF;
-    
-    SELECT artist_name INTO v_artist_name FROM profiles WHERE id = v_user_id;
-    
-    SELECT id, card_text INTO v_challenge_id, v_card_text 
-    FROM weekly_challenges 
-    WHERE is_active = true 
-    AND CURRENT_DATE BETWEEN start_date AND end_date
-    LIMIT 1;
-    
-    IF v_challenge_id IS NULL THEN
-        RETURN json_build_object('success', false, 'error', 'No active challenge');
-    END IF;
-    
-    INSERT INTO feed_posts (user_id, artist_name, tiktok_url, card_text, game_mode, description, is_challenge_entry, challenge_id, is_approved)
-    VALUES (v_user_id, v_artist_name, p_tiktok_url, v_card_text, 'challenge', p_description, true, v_challenge_id, true);
-    
-    RETURN json_build_object('success', true, 'message', 'Challenge entry submitted!');
-END;
-$$;
+    <!-- RESULTS SCREEN -->
+    <div id="screen-results" class="screen">
+        <h2 id="result-header" style="font-size: 1.1rem;">SET COMPLETE</h2>
+        <div id="result-clout" style="font-size: 4.5rem; color: var(--yellow); text-shadow: 0 0 36px var(--yellow); font-weight: 900;">0</div>
+        <div id="previous-best" style="font-size: 1.08rem; color: #888; margin-top: 7px; font-weight: 600; display: none;">Previous Best: <span style="color: var(--cyan);">0</span></div>
+        <div id="perfect-badge">PERFECT SET // GOLD STATUS</div>
+        <p id="result-footer" style="margin-top: 16px; font-size: 0.86rem; font-weight: 600;">BANKING CLOUT...</p>
+        <div id="result-buttons">
+            <button id="continue-btn" class="btn btn-primary">CONTINUE</button>
+            <button id="try-again-btn" class="btn btn-secondary" style="display:none;">TRY AGAIN</button>
+        </div>
+    </div>
 
--- Function to add a comment
-CREATE OR REPLACE FUNCTION add_comment(p_post_id UUID, p_comment_text TEXT)
-RETURNS JSON
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-DECLARE
-    v_user_id UUID;
-    v_artist_name TEXT;
-BEGIN
-    v_user_id := auth.uid();
-    
-    IF v_user_id IS NULL THEN
-        RETURN json_build_object('success', false, 'error', 'Not authenticated');
-    END IF;
-    
-    SELECT artist_name INTO v_artist_name FROM profiles WHERE id = v_user_id;
-    
-    INSERT INTO feed_comments (post_id, user_id, artist_name, comment_text)
-    VALUES (p_post_id, v_user_id, v_artist_name, p_comment_text);
-    
-    RETURN json_build_object('success', true);
-END;
-$$;
+    <!-- LEADERBOARD SCREEN -->
+    <div id="screen-leaderboard" class="screen">
+        <h2 style="color: var(--cyan); margin-bottom: 20px; font-size: 1.1rem;">🏆 GLOBAL LEADERBOARD</h2>
+        <div id="leaderboard-list" class="glass-panel" style="padding: 15px; max-height: 400px; overflow-y: auto;">
+            <div class="leaderboard-loading">Loading rankings...</div>
+        </div>
+        <button id="close-leaderboard" class="btn btn-secondary" style="margin-top: 20px;">BACK TO THE RIG</button>
+    </div>
+
+    <!-- COMMUNITY FEED SCREEN -->
+    <div id="screen-feed" class="screen">
+        <h2 style="color: var(--magenta); margin-bottom: 15px; font-size: 1rem;">🎬 COMMUNITY CLIPS</h2>
+        
+        <!-- Winner Announcement Banner -->
+        <div id="winner-announcement" class="winner-banner" style="display: none;">
+            <div class="winner-badge">🏆 LAST WEEK'S WINNER</div>
+            <div id="winner-name" class="winner-name"></div>
+            <div id="winner-challenge" class="winner-challenge"></div>
+            <a id="winner-youtube-link" href="#" target="_blank" class="winner-youtube-btn">📺 WATCH THE ANNOUNCEMENT</a>
+        </div>
+        
+        <!-- Weekly Challenge Banner -->
+        <div id="weekly-challenge" class="weekly-challenge-banner" style="display: none;">
+            <div class="challenge-badge">📍 THIS WEEK'S CHALLENGE</div>
+            <div id="challenge-title" class="challenge-title"></div>
+            <div id="challenge-desc" class="challenge-desc"></div>
+            <div id="challenge-prize" class="challenge-prize"></div>
+            <div id="challenge-timer" class="challenge-timer"></div>
+            <div class="challenge-schedule">
+                <span>🗓️ Starts Monday</span> • <span>🎥 Winner announced Wednesday on YT Live</span>
+            </div>
+            <button id="enter-challenge-btn" class="btn btn-challenge-enter">🎯 ENTER THIS CHALLENGE</button>
+        </div>
+        
+        <!-- Feed Tabs -->
+        <div class="feed-tabs">
+            <button class="feed-tab active" data-tab="all">ALL CLIPS</button>
+            <button class="feed-tab" data-tab="challenges">🏆 CHALLENGE ENTRIES</button>
+        </div>
+        
+        <!-- Feed Posts -->
+        <div id="feed-list" class="feed-container">
+            <div style="text-align:center;color:#888;padding:20px;">Loading clips...</div>
+        </div>
+        
+        <!-- Bottom Actions -->
+        <div class="feed-actions">
+            <button id="submit-clip-btn" class="btn btn-primary" style="flex: 1;">+ SUBMIT CLIP</button>
+            <button id="close-feed-btn" class="btn btn-secondary" style="flex: 1;">BACK</button>
+        </div>
+    </div>
+
+    <!-- SUBMIT CLIP SCREEN -->
+    <div id="screen-submit" class="screen">
+        <h2 style="color: var(--cyan); margin-bottom: 20px; font-size: 1rem;">📤 SUBMIT YOUR CLIP</h2>
+        
+        <div class="glass-panel" style="padding: 20px; width: 100%;">
+            <div class="form-group">
+                <label class="form-label">TIKTOK URL</label>
+                <input type="url" id="submit-tiktok-url" class="cassette-field" placeholder="https://tiktok.com/..." style="font-size: 0.8rem;">
+            </div>
+            
+            <div class="form-group" style="margin-top: 15px;">
+                <label class="form-label">CHALLENGE CARD</label>
+                <input type="text" id="submit-card-text" class="cassette-field" placeholder="What card were you doing?" style="font-size: 0.8rem;">
+            </div>
+            
+            <div class="form-group" style="margin-top: 15px;">
+                <label class="form-label">GAME MODE</label>
+                <select id="submit-game-mode" class="cassette-field cassette-select" style="font-size: 0.8rem;">
+                    <option value="">SELECT MODE</option>
+                    <option value="production">ENGINEER</option>
+                    <option value="beats">BEATS</option>
+                    <option value="songwriting">WRITER</option>
+                </select>
+            </div>
+            
+            <div class="form-group" style="margin-top: 15px;">
+                <label class="form-label">CAPTION (OPTIONAL)</label>
+                <input type="text" id="submit-description" class="cassette-field" placeholder="Say something about your clip..." style="font-size: 0.8rem;" maxlength="50">
+                <span class="form-hint">Max 50 characters</span>
+            </div>
+        </div>
+        
+        <p id="submit-message" style="margin-top: 10px; font-size: 0.75rem; color: #888; min-height: 20px; text-align: center;"></p>
+        
+        <div style="display: flex; gap: 10px; margin-top: 15px; width: 100%;">
+            <button id="submit-post-btn" class="btn btn-primary" style="flex: 1;">SUBMIT</button>
+            <button id="cancel-submit-btn" class="btn btn-secondary" style="flex: 1;">CANCEL</button>
+        </div>
+    </div>
+
+    <!-- SUBMIT CHALLENGE ENTRY SCREEN -->
+    <div id="screen-challenge-submit" class="screen">
+        <h2 style="color: var(--yellow); margin-bottom: 15px; font-size: 1rem;">🎯 ENTER THE CHALLENGE</h2>
+        
+        <div class="challenge-entry-info glass-panel" style="padding: 15px; margin-bottom: 15px; border-color: var(--yellow);">
+            <div style="color: var(--yellow); font-size: 0.7rem; margin-bottom: 5px;">THIS WEEK'S CHALLENGE:</div>
+            <div id="challenge-entry-title" style="font-size: 1rem; font-weight: 900; color: #fff;"></div>
+            <div id="challenge-entry-card" style="font-size: 0.8rem; color: var(--cyan); margin-top: 5px;"></div>
+        </div>
+        
+        <div class="glass-panel" style="padding: 20px; width: 100%;">
+            <div class="form-group">
+                <label class="form-label">TIKTOK URL</label>
+                <input type="url" id="challenge-tiktok-url" class="cassette-field" placeholder="https://tiktok.com/..." style="font-size: 0.8rem;">
+            </div>
+            
+            <div class="form-group" style="margin-top: 15px;">
+                <label class="form-label">CAPTION (OPTIONAL)</label>
+                <input type="text" id="challenge-description" class="cassette-field" placeholder="Tell us about your entry..." style="font-size: 0.8rem;" maxlength="50">
+                <span class="form-hint">Max 50 characters</span>
+            </div>
+        </div>
+        
+        <p id="challenge-submit-message" style="margin-top: 10px; font-size: 0.75rem; color: #888; min-height: 20px; text-align: center;"></p>
+        
+        <div style="display: flex; gap: 10px; margin-top: 15px; width: 100%;">
+            <button id="submit-challenge-entry-btn" class="btn btn-challenge-enter" style="flex: 1;">🎯 SUBMIT ENTRY</button>
+            <button id="cancel-challenge-btn" class="btn btn-secondary" style="flex: 1;">CANCEL</button>
+        </div>
+    </div>
+
+    <!-- PROFILE ICON (Fixed at bottom) -->
+    <button id="profile-icon" class="profile-trigger" aria-label="Open Profile">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+        </svg>
+    </button>
+
+    <!-- PROFILE OVERLAY -->
+    <div id="profile-overlay" class="overlay">
+        <div class="overlay-content">
+            <button id="close-profile" class="close-btn">&times;</button>
+            <h2 style="color: var(--magenta); margin-bottom: 18px; font-size: 1rem;">ARTIST PROFILE</h2>
+            
+            <div class="profile-section glass-panel">
+                <div class="profile-avatar" style="width: 72px; height: 72px;">
+                    <span id="profile-initial" style="font-size: 1.8rem;">?</span>
+                </div>
+                <div id="profile-name" class="profile-name" style="font-size: 1.35rem;">LOADING...</div>
+                <div id="profile-location" class="profile-location" style="font-size: 0.77rem;"></div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card glass-panel">
+                    <div class="stat-value" id="stat-lifetime" style="font-size: 1.6rem;">0</div>
+                    <div class="stat-label" style="font-size: 0.59rem;">LIFETIME CLOUT</div>
+                </div>
+                <div class="stat-card glass-panel">
+                    <div class="stat-value" id="stat-best" style="font-size: 1.6rem;">0</div>
+                    <div class="stat-label" style="font-size: 0.59rem;">PERSONAL BEST</div>
+                </div>
+                <div class="stat-card glass-panel">
+                    <div class="stat-value" id="stat-reruns" style="font-size: 1.6rem;">0</div>
+                    <div class="stat-label" style="font-size: 0.59rem;">TOTAL RERUNS</div>
+                </div>
+                <div class="stat-card glass-panel">
+                    <div class="stat-value" id="stat-clout-lost" style="font-size: 1.6rem;">0</div>
+                    <div class="stat-label" style="font-size: 0.59rem;">CLOUT LOST</div>
+                </div>
+            </div>
+            
+            <button id="leaderboard-btn" class="btn btn-primary" style="margin-top: 18px; width: 100%;">🏆 LEADERBOARD</button>
+            <button id="logout-btn" class="btn btn-secondary" style="margin-top: 10px; width: 100%;">LOG OUT</button>
+        </div>
+    </div>
+</div>
+
+<!-- Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="app.js"></script>
+</body>
+</html>
