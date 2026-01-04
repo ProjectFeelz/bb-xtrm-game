@@ -1,12 +1,15 @@
 {
   "name": "BB XTRM Pro Studio",
   "short_name": "BB XTRM",
-  "description": "The ultimate beatmaking challenge game",
+  "description": "The ultimate beatmaking challenge game - test your production skills!",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0d12",
-  "theme_color": "#1a1d26",
+  "background_color": "#1a1d26",
+  "theme_color": "#00f2ff",
   "orientation": "portrait",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["games", "music", "entertainment"],
   "icons": [
     {
       "src": "/icons/icon-192.png",
