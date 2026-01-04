@@ -409,7 +409,6 @@ Apply these fixes and your phone should:
 - ✅ Run smooth and cool
 - ✅ Persist login properly
 */
-});
 
 // Prevent stale cache on page show (back/forward cache)
 window.addEventListener('pageshow', (event) => {
