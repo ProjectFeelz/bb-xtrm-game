@@ -1171,12 +1171,29 @@ async function loadWeeklyChallenge() {
     }
 }
 
+// ═══════════════════════════════════════════════════════════════
+// CORRECTED loadFeedPosts() FUNCTION
+// Replace your existing function with this improved version
+// ═══════════════════════════════════════════════════════════════
+
 async function loadFeedPosts() {
+    console.log('🔵 loadFeedPosts() called - starting feed load');
     const feedList = document.getElementById('feed-list');
+    
+    if (!feedList) {
+        console.error('❌ CRITICAL: Feed list element (#feed-list) not found in DOM!');
+        console.log('Available elements with "feed" in ID:', 
+            Array.from(document.querySelectorAll('[id*="feed"]')).map(el => el.id));
+        return;
+    }
+    
+    console.log('✅ Feed list element found');
     feedList.innerHTML = '<div style="text-align:center;color:#888;padding:20px;">Loading clips...</div>';
     
     try {
-        console.log('Loading feed posts...');
+        console.log('📡 Querying Supabase feed_posts table...');
+        console.log('Current feed tab:', currentFeedTab);
+        
         let query = supabaseClient
             .from('feed_posts')
             .select('*')
@@ -1186,20 +1203,33 @@ async function loadFeedPosts() {
             .limit(20);
         
         if (currentFeedTab === 'challenges') {
+            console.log('Filtering for challenge entries only');
             query = query.eq('is_challenge_entry', true);
         }
         
         const { data, error } = await query;
         
-        console.log('Feed response:', data, error);
+        console.log('📦 Supabase response:');
+        console.log('  - Error:', error);
+        console.log('  - Data length:', data?.length || 0);
+        if (data && data.length > 0) {
+            console.log('  - First post:', data[0].artist_name, '-', data[0].card_text);
+        }
         
-        if (error) throw error;
+        if (error) {
+            console.error('❌ Database query error:', error);
+            feedList.innerHTML = '<div style="text-align:center;color:var(--red);padding:20px;">Database error: ' + error.message + '</div>';
+            return;
+        }
         
         if (!data || data.length === 0) {
+            console.log('ℹ️ No posts found in database');
             feedList.innerHTML = '<div style="text-align:center;color:#888;padding:40px;">' + 
                 (currentFeedTab === 'challenges' ? 'No challenge entries yet!' : 'No clips yet! Be the first to submit.') + '</div>';
             return;
         }
+        
+        console.log(`✅ Found ${data.length} posts - starting render`);
         
         // Find highest engagement score for challenge entries
         let highestScore = 0;
@@ -1209,85 +1239,101 @@ async function loadFeedPosts() {
                     highestScore = post.engagement_score || 0;
                 }
             });
+            console.log('Highest engagement score:', highestScore);
         }
         
         let html = '';
+        let renderedCount = 0;
+        
         for (const post of data) {
-            const videoId = extractTikTokId(post.tiktok_url);
-            const modeLabel = post.game_mode === 'production' ? 'ENGINEER' : 
-                             post.game_mode === 'beats' ? 'BEATS' : 
-                             post.game_mode === 'songwriting' ? 'WRITER' : 
-                             post.game_mode === 'challenge' ? 'CHALLENGE' : post.game_mode;
-            
-            const isChallenge = post.is_challenge_entry;
-            const postClass = isChallenge ? 'feed-post challenge-entry' : (post.is_pinned ? 'feed-post pinned' : 'feed-post');
-            const isLeading = isChallenge && highestScore > 0 && (post.engagement_score || 0) === highestScore;
-            const isOwnPost = currentUser && post.user_id === currentUser.id;
-            
-            html += `
-                <div class="${postClass}" data-post-id="${post.id}">
-                    <div class="feed-post-header">
-                        <span class="feed-post-author" onclick="viewPublicProfile('${post.artist_name}')" style="cursor:pointer;">@${post.artist_name}${isChallenge ? '<span class="challenge-entry-badge">🎯</span>' : ''}</span>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            ${isChallenge ? `<span class="engagement-score ${isLeading ? 'leading' : ''}">🔥 ${post.engagement_score || 0} ${isLeading ? '👑' : ''}</span>` : `<span class="feed-post-mode">${modeLabel}</span>`}
-                            ${isOwnPost ? `<button class="feed-delete-btn" onclick="deletePost('${post.id}')" title="Delete">🗑️</button>` : ''}
+            try {
+                const videoId = extractTikTokId(post.tiktok_url);
+                const modeLabel = post.game_mode === 'production' ? 'ENGINEER' : 
+                                 post.game_mode === 'beats' ? 'BEATS' : 
+                                 post.game_mode === 'songwriting' ? 'WRITER' : 
+                                 post.game_mode === 'challenge' ? 'CHALLENGE' : post.game_mode;
+                
+                const isChallenge = post.is_challenge_entry;
+                const postClass = isChallenge ? 'feed-post challenge-entry' : (post.is_pinned ? 'feed-post pinned' : 'feed-post');
+                const isLeading = isChallenge && highestScore > 0 && (post.engagement_score || 0) === highestScore;
+                const isOwnPost = currentUser && post.user_id === currentUser.id;
+                
+                html += `
+                    <div class="${postClass}" data-post-id="${post.id}">
+                        <div class="feed-post-header">
+                            <span class="feed-post-author" onclick="viewPublicProfile('${post.artist_name}')" style="cursor:pointer;">@${post.artist_name}${isChallenge ? '<span class="challenge-entry-badge">🎯</span>' : ''}</span>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                ${isChallenge ? `<span class="engagement-score ${isLeading ? 'leading' : ''}">🔥 ${post.engagement_score || 0} ${isLeading ? '👑' : ''}</span>` : `<span class="feed-post-mode">${modeLabel}</span>`}
+                                ${isOwnPost ? `<button class="feed-delete-btn" onclick="deletePost('${post.id}')" title="Delete">🗑️</button>` : ''}
+                            </div>
+                        </div>
+                        <div class="feed-post-card">"${post.card_text}"</div>
+                        ${post.description ? '<div class="feed-post-desc">' + post.description + '</div>' : ''}
+                        <div class="feed-tiktok-preview" id="preview-${post.id}" onclick="expandVideo('${post.id}', '${videoId}', '${post.tiktok_url}')">
+                            <div class="tiktok-preview-overlay">
+                                <span class="tiktok-play-btn">▶</span>
+                                <span class="tiktok-tap-text">Tap to watch</span>
+                            </div>
+                        </div>
+                        <div class="feed-post-actions">
+                            <button class="feed-like-btn" onclick="toggleLike('${post.id}', this)">
+                                ❤️ <span>${post.likes_count || 0}</span>
+                            </button>
+                            <button class="feed-comment-btn" onclick="toggleComments('${post.id}')">
+                                💬 <span class="comment-count-${post.id}">0</span>
+                            </button>
+                        </div>
+                        <div class="feed-comments" id="comments-${post.id}" style="display: none;">
+                            <div class="comments-list" id="comments-list-${post.id}"></div>
+                            <div class="feed-comment-input">
+                                <button class="emoji-btn" onclick="toggleEmojiPicker('${post.id}')">😀</button>
+                                <input type="text" placeholder="Add a comment..." id="comment-input-${post.id}" onkeypress="if(event.key==='Enter')addComment('${post.id}')" maxlength="150">
+                                <button onclick="addComment('${post.id}')">Post</button>
+                            </div>
+                            <div class="emoji-picker" id="emoji-picker-${post.id}" style="display:none;">
+                                <span onclick="insertEmoji('${post.id}','🔥')">🔥</span>
+                                <span onclick="insertEmoji('${post.id}','💯')">💯</span>
+                                <span onclick="insertEmoji('${post.id}','🎵')">🎵</span>
+                                <span onclick="insertEmoji('${post.id}','🎹')">🎹</span>
+                                <span onclick="insertEmoji('${post.id}','🎤')">🎤</span>
+                                <span onclick="insertEmoji('${post.id}','🎧')">🎧</span>
+                                <span onclick="insertEmoji('${post.id}','⚡')">⚡</span>
+                                <span onclick="insertEmoji('${post.id}','💪')">💪</span>
+                                <span onclick="insertEmoji('${post.id}','👀')">👀</span>
+                                <span onclick="insertEmoji('${post.id}','😂')">😂</span>
+                                <span onclick="insertEmoji('${post.id}','🙌')">🙌</span>
+                                <span onclick="insertEmoji('${post.id}','❤️')">❤️</span>
+                                <span onclick="insertEmoji('${post.id}','👏')">👏</span>
+                                <span onclick="insertEmoji('${post.id}','🤯')">🤯</span>
+                                <span onclick="insertEmoji('${post.id}','🎯')">🎯</span>
+                                <span onclick="insertEmoji('${post.id}','✨')">✨</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="feed-post-card">"${post.card_text}"</div>
-                    ${post.description ? '<div class="feed-post-desc">' + post.description + '</div>' : ''}
-                    <div class="feed-tiktok-preview" id="preview-${post.id}" onclick="expandVideo('${post.id}', '${videoId}', '${post.tiktok_url}')">
-                        <div class="tiktok-preview-overlay">
-                            <span class="tiktok-play-btn">▶</span>
-                            <span class="tiktok-tap-text">Tap to watch</span>
-                        </div>
-                    </div>
-                    <div class="feed-post-actions">
-                        <button class="feed-like-btn" onclick="toggleLike('${post.id}', this)">
-                            ❤️ <span>${post.likes_count || 0}</span>
-                        </button>
-                        <button class="feed-comment-btn" onclick="toggleComments('${post.id}')">
-                            💬 <span class="comment-count-${post.id}">0</span>
-                        </button>
-                    </div>
-                    <div class="feed-comments" id="comments-${post.id}" style="display: none;">
-                        <div class="comments-list" id="comments-list-${post.id}"></div>
-                        <div class="feed-comment-input">
-                            <button class="emoji-btn" onclick="toggleEmojiPicker('${post.id}')">😀</button>
-                            <input type="text" placeholder="Add a comment..." id="comment-input-${post.id}" onkeypress="if(event.key==='Enter')addComment('${post.id}')" maxlength="150">
-                            <button onclick="addComment('${post.id}')">Post</button>
-                        </div>
-                        <div class="emoji-picker" id="emoji-picker-${post.id}" style="display:none;">
-                            <span onclick="insertEmoji('${post.id}','🔥')">🔥</span>
-                            <span onclick="insertEmoji('${post.id}','💯')">💯</span>
-                            <span onclick="insertEmoji('${post.id}','🎵')">🎵</span>
-                            <span onclick="insertEmoji('${post.id}','🎹')">🎹</span>
-                            <span onclick="insertEmoji('${post.id}','🎤')">🎤</span>
-                            <span onclick="insertEmoji('${post.id}','🎧')">🎧</span>
-                            <span onclick="insertEmoji('${post.id}','⚡')">⚡</span>
-                            <span onclick="insertEmoji('${post.id}','💪')">💪</span>
-                            <span onclick="insertEmoji('${post.id}','👀')">👀</span>
-                            <span onclick="insertEmoji('${post.id}','😂')">😂</span>
-                            <span onclick="insertEmoji('${post.id}','🙌')">🙌</span>
-                            <span onclick="insertEmoji('${post.id}','❤️')">❤️</span>
-                            <span onclick="insertEmoji('${post.id}','👏')">👏</span>
-                            <span onclick="insertEmoji('${post.id}','🤯')">🤯</span>
-                            <span onclick="insertEmoji('${post.id}','🎯')">🎯</span>
-                            <span onclick="insertEmoji('${post.id}','✨')">✨</span>
-                        </div>
-                    </div>
-                </div>
-            `;
+                `;
+                
+                renderedCount++;
+                
+            } catch (postError) {
+                console.error(`❌ Error rendering post ${post.id}:`, postError);
+            }
         }
         
+        console.log(`✅ Successfully rendered ${renderedCount}/${data.length} posts`);
         feedList.innerHTML = html;
         
         // Load comment counts
+        console.log('📊 Loading comment counts...');
         for (const post of data) {
             loadCommentCount(post.id);
         }
+        
+        console.log('🎉 Feed loading complete!');
+        
     } catch (err) {
-        console.error('Failed to load feed:', err);
-        feedList.innerHTML = '<div style="text-align:center;color:var(--red);padding:20px;">Failed to load clips</div>';
+        console.error('❌ CRITICAL ERROR in loadFeedPosts():', err);
+        console.error('Stack:', err.stack);
+        feedList.innerHTML = '<div style="text-align:center;color:var(--red);padding:20px;">Critical error: ' + err.message + '<br><small>Check console for details</small></div>';
     }
 }
 
