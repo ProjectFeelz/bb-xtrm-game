@@ -836,6 +836,16 @@ async function loadFeedPosts() {
             return;
         }
         
+        // Find highest engagement score for challenge entries
+        let highestScore = 0;
+        if (currentFeedTab === 'challenges') {
+            data.forEach(post => {
+                if ((post.engagement_score || 0) > highestScore) {
+                    highestScore = post.engagement_score || 0;
+                }
+            });
+        }
+        
         let html = '';
         for (const post of data) {
             const tiktokEmbed = getTikTokEmbed(post.tiktok_url);
@@ -846,12 +856,13 @@ async function loadFeedPosts() {
             
             const isChallenge = post.is_challenge_entry;
             const postClass = isChallenge ? 'feed-post challenge-entry' : (post.is_pinned ? 'feed-post pinned' : 'feed-post');
+            const isLeading = isChallenge && highestScore > 0 && (post.engagement_score || 0) === highestScore;
             
             html += `
                 <div class="${postClass}" data-post-id="${post.id}">
                     <div class="feed-post-header">
-                        <span class="feed-post-author">@${post.artist_name}${isChallenge ? '<span class="challenge-entry-badge">🎯 CHALLENGE</span>' : ''}</span>
-                        <span class="feed-post-mode">${modeLabel}</span>
+                        <span class="feed-post-author">@${post.artist_name}${isChallenge ? '<span class="challenge-entry-badge">🎯</span>' : ''}</span>
+                        ${isChallenge ? `<span class="engagement-score ${isLeading ? 'leading' : ''}">🔥 ${post.engagement_score || 0} ${isLeading ? '👑' : ''}</span>` : `<span class="feed-post-mode">${modeLabel}</span>`}
                     </div>
                     <div class="feed-post-card">"${post.card_text}"</div>
                     ${post.description ? '<div class="feed-post-desc">' + post.description + '</div>' : ''}
