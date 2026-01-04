@@ -664,8 +664,8 @@ function openProfile() {
     elements.profileLocation.textContent = userProfile.country || 'Unknown';
     elements.statLifetime.textContent = userProfile.lifetime_clout || 0;
     elements.statBest.textContent = userProfile.personal_best || 0;
-    elements.statReruns.textContent = userAnalytics?.total_reruns || 0;
-    elements.statCloutLost.textContent = userAnalytics?.clout_lost_to_reruns || 0;
+    elements.statReruns.textContent = userProfile.total_reruns || userAnalytics?.total_reruns || 0;
+    elements.statCloutLost.textContent = userProfile.clout_lost || userAnalytics?.clout_lost_to_reruns || 0;
     elements.profileOverlay.classList.add('active');
     playClick();
 }
