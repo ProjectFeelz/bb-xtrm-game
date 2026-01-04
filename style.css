@@ -1244,11 +1244,11 @@ h2 {
 
 .btn-feed-small {
     flex: 1;
-    padding: 10px 15px;
+    padding: 8px 12px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     font-weight: 700;
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     cursor: pointer;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -1389,12 +1389,12 @@ h2 {
 
 .feed-tab {
     flex: 1;
-    padding: 8px;
+    padding: 10px;
     background: rgba(0,0,0,0.3);
     border: 1px solid var(--border);
     border-radius: 6px;
     color: #888;
-    font-size: 0.55rem;
+    font-size: 0.7rem;
     font-weight: 700;
     cursor: pointer;
     transition: 0.2s;
