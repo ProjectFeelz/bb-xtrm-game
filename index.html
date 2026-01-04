@@ -301,6 +301,86 @@
         </div>
     </div>
 
+    <!-- PUBLIC PROFILE VIEW -->
+    <div id="screen-public-profile" class="screen" style="padding: 20px;">
+        <div class="public-profile-header">
+            <div class="public-avatar" id="public-avatar">?</div>
+            <div class="public-name" id="public-name">Artist</div>
+            <div class="public-location" id="public-location">🌍 Unknown</div>
+        </div>
+        
+        <div class="public-bio" id="public-bio"></div>
+        
+        <div class="public-stats">
+            <div class="public-stat">
+                <span class="public-stat-val" id="public-clout">0</span>
+                <span class="public-stat-label">CLOUT</span>
+            </div>
+            <div class="public-stat">
+                <span class="public-stat-val" id="public-streak">0</span>
+                <span class="public-stat-label">STREAK</span>
+            </div>
+            <div class="public-stat">
+                <span class="public-stat-val" id="public-sets">0</span>
+                <span class="public-stat-label">SETS</span>
+            </div>
+        </div>
+        
+        <div class="public-socials" id="public-socials"></div>
+        
+        <button id="close-public-profile" class="btn btn-secondary" style="margin-top: 20px;">BACK</button>
+    </div>
+
+    <!-- EDIT PROFILE SCREEN -->
+    <div id="screen-edit-profile" class="screen" style="padding: 20px;">
+        <h2 style="color: var(--cyan); margin-bottom: 15px; font-size: 1rem;">✏️ EDIT PROFILE</h2>
+        
+        <div class="glass-panel" style="padding: 15px; width: 100%;">
+            <div class="form-group">
+                <label class="form-label">BIO</label>
+                <textarea id="edit-bio" class="cassette-field" placeholder="Tell the world about yourself..." maxlength="150" rows="3" style="font-size: 0.8rem; resize: none;"></textarea>
+                <span class="form-hint">Max 150 characters</span>
+            </div>
+            
+            <div class="form-group" style="margin-top: 12px;">
+                <label class="form-label">AVATAR</label>
+                <div class="avatar-upload-container">
+                    <div class="avatar-preview" id="avatar-preview">?</div>
+                    <div class="avatar-upload-btns">
+                        <label class="btn btn-secondary avatar-upload-btn">
+                            📷 UPLOAD
+                            <input type="file" id="edit-avatar-file" accept="image/png,image/jpeg,image/gif,image/webp" style="display:none;">
+                        </label>
+                        <button type="button" id="remove-avatar-btn" class="btn btn-secondary" style="font-size:0.6rem;">✕ REMOVE</button>
+                    </div>
+                </div>
+                <span class="form-hint">PNG, JPG, GIF (max 2MB)</span>
+            </div>
+            
+            <div class="form-group" style="margin-top: 12px;">
+                <label class="form-label">TIKTOK USERNAME</label>
+                <input type="text" id="edit-tiktok" class="cassette-field" placeholder="@username" style="font-size: 0.8rem;">
+            </div>
+            
+            <div class="form-group" style="margin-top: 12px;">
+                <label class="form-label">YOUTUBE URL</label>
+                <input type="url" id="edit-youtube" class="cassette-field" placeholder="https://youtube.com/..." style="font-size: 0.8rem;">
+            </div>
+            
+            <div class="form-group" style="margin-top: 12px;">
+                <label class="form-label">INSTAGRAM USERNAME</label>
+                <input type="text" id="edit-instagram" class="cassette-field" placeholder="@username" style="font-size: 0.8rem;">
+            </div>
+        </div>
+        
+        <p id="edit-profile-message" style="margin-top: 10px; font-size: 0.75rem; color: #888; min-height: 20px; text-align: center;"></p>
+        
+        <div style="display: flex; gap: 10px; margin-top: 15px; width: 100%;">
+            <button id="save-profile-btn" class="btn btn-primary" style="flex: 1;">SAVE</button>
+            <button id="cancel-edit-btn" class="btn btn-secondary" style="flex: 1;">CANCEL</button>
+        </div>
+    </div>
+
     <!-- PROFILE ICON (Fixed at bottom) -->
     <button id="profile-icon" class="profile-trigger" aria-label="Open Profile">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -343,6 +423,7 @@
             </div>
             
             <button id="leaderboard-btn" class="btn btn-primary" style="margin-top: 18px; width: 100%;">🏆 LEADERBOARD</button>
+            <button id="edit-profile-btn" class="btn btn-secondary" style="margin-top: 10px; width: 100%;">✏️ EDIT PROFILE</button>
             <button id="logout-btn" class="btn btn-secondary" style="margin-top: 10px; width: 100%;">LOG OUT</button>
         </div>
     </div>
