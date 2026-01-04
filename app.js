@@ -665,7 +665,7 @@ function openProfile() {
     elements.statLifetime.textContent = userProfile.lifetime_clout || 0;
     elements.statBest.textContent = userProfile.personal_best || 0;
     elements.statReruns.textContent = userAnalytics?.total_reruns || 0;
-    elements.statCloutLost.textContent = userAnalytics?.clout_lost || 0;
+    elements.statCloutLost.textContent = userAnalytics?.clout_lost_to_reruns || 0;
     elements.profileOverlay.classList.add('active');
     playClick();
 }
@@ -844,10 +844,15 @@ function showCooldownScreen() {
 function triggerAlert(text) { elements.comboAlert.textContent = text; elements.comboAlert.style.opacity = "1"; setTimeout(() => elements.comboAlert.style.opacity = "0", 2000); }
 
 async function rerollTask() {
-    if (sessionClout < RERUN_PENALTY) { triggerAlert('NEED ' + RERUN_PENALTY + ' CLOUT'); playError(); return; }
+    if (sessionClout < RERUN_PENALTY) { 
+        triggerAlert('NEED ' + RERUN_PENALTY + ' CLOUT'); 
+        playError(); 
+        return; 
+    }
     
     // Stop current timer immediately
     clearInterval(timerInterval);
+    timerInterval = null;
     
     rerunUsedInSession = true;
     cleanStreakCount = 0;
@@ -856,61 +861,42 @@ async function rerollTask() {
     sessionClout -= RERUN_PENALTY;
     elements.cloutVal.textContent = sessionClout;
     playClick();
-    playCassetteInsert();
     
+    // Track rerun (don't wait for it)
     if (currentUser) { 
-        supabaseClient.rpc('track_card_rerun', { p_card_text: currentCardText, p_game_mode: selectedMode }).catch(err => console.error('Track rerun failed:', err)); 
+        supabaseClient.rpc('track_card_rerun', { p_card_text: currentCardText, p_game_mode: selectedMode }).catch(() => {}); 
     }
     
     // Get the deck
     const deck = cardDecks[selectedMode] || cardDecks.production;
-    
-    // Get a NEW card that's different from current
-    let newCard = null;
-    let attempts = 0;
-    
-    while (!newCard && attempts < 50) {
-        const randomCard = deck[Math.floor(Math.random() * deck.length)];
-        if (randomCard.text !== currentCardText) {
-            newCard = randomCard;
-        }
-        attempts++;
+    if (!deck || deck.length === 0) {
+        console.error('No deck found');
+        startTimer();
+        return;
     }
     
-    // Fallback if somehow still null
-    if (!newCard) {
-        newCard = deck[0].text === currentCardText ? deck[1] : deck[0];
-    }
+    // Get a different card
+    const oldCardText = currentCardText;
+    const availableCards = deck.filter(c => c.text !== oldCardText);
+    const newCard = availableCards.length > 0 
+        ? availableCards[Math.floor(Math.random() * availableCards.length)]
+        : deck[Math.floor(Math.random() * deck.length)];
     
-    // Update tracking
+    // Update state
     currentCardText = newCard.text;
-    currentCardTime = newCard.time;
-    if (usedCards.length > 0) {
-        usedCards[usedCards.length - 1] = newCard.text;
-    }
-    
-    // Update card display - force DOM update
-    elements.cardBody.textContent = '';
-    elements.cardBody.classList.add('cassette-load');
-    
-    // Use setTimeout to ensure DOM updates
-    setTimeout(() => {
-        elements.cardBody.textContent = currentCardText;
-    }, 50);
-    
-    setTimeout(() => elements.cardBody.classList.remove('cassette-load'), 600);
-    
-    // Reset timer with NEW card's time
+    currentCardTime = newCard.time || 45;
     timeLeft = currentCardTime;
     cooldownLeft = 10;
     
-    // Update timer display immediately
+    // Update UI
+    elements.cardBody.textContent = currentCardText;
     const m = Math.floor(timeLeft / 60);
     const s = timeLeft % 60;
     elements.timer.textContent = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
     elements.timer.classList.remove('timer-low');
-    
     updateCooldownUI();
+    
+    // Start new timer
     startTimer();
     
     triggerAlert('RERUN -' + RERUN_PENALTY + ' CLOUT');
@@ -1368,14 +1354,18 @@ async function viewPublicProfile(artistName) {
     document.getElementById('public-socials').innerHTML = '';
     
     try {
+        console.log('Fetching public profile for:', artistName);
         const { data, error } = await supabaseClient.rpc('get_public_profile', {
             p_artist_name: artistName
         });
+        
+        console.log('Public profile response:', data, error);
         
         if (error) throw error;
         
         if (data && data.success) {
             const p = data.profile;
+            console.log('Profile data:', p);
             
             // Avatar
             const avatarEl = document.getElementById('public-avatar');
