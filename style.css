@@ -2029,3 +2029,207 @@ h2 {
     opacity: 0.5;
     pointer-events: none;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE PERFORMANCE OPTIMIZATIONS
+   Added to reduce phone heating and improve performance
+   ═══════════════════════════════════════════════════════════════ */
+
+/* DISABLE HEAVY ANIMATIONS ON MOBILE */
+@media (max-width: 768px) {
+    /* Disable confetti on mobile - CPU intensive */
+    .confetti {
+        display: none !important;
+    }
+    
+    /* Simplify all transitions */
+    * {
+        transition-duration: 0.15s !important;
+        transition-timing-function: ease-out !important;
+    }
+    
+    /* Reduce shadow complexity */
+    .glass-panel,
+    .btn,
+    .cassette-field {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+    }
+    
+    /* Disable heavy filters */
+    .logo-small {
+        filter: none !important;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5) !important;
+    }
+    
+    /* Simplify gradients */
+    .mode-btn,
+    .btn-primary {
+        background: var(--cyan) !important;
+        background-image: none !important;
+    }
+    
+    /* Disable backdrop blur (very CPU intensive) */
+    .glass-panel,
+    .overlay-content {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(26, 29, 38, 0.95) !important;
+    }
+    
+    body::before {
+        display: none !important;
+    }
+}
+
+/* PREVENT LAYOUT THRASHING */
+* {
+    will-change: auto !important;
+}
+
+/* Optimize animations to use GPU */
+.screen {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+.btn,
+.cassette-field {
+    transform: translateZ(0);
+}
+
+/* REDUCE REPAINTS */
+#timer,
+.clout-val {
+    contain: layout style;
+}
+
+/* PREVENT UNNECESSARY REFLOWS */
+#console {
+    contain: layout;
+}
+
+/* OPTIMIZE SCROLLING */
+.feed-container,
+#leaderboard-list {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    transform: translateZ(0);
+}
+
+/* DISABLE ANIMATIONS WHEN NOT VISIBLE */
+.screen:not(.active-screen) * {
+    animation-play-state: paused !important;
+    transition: none !important;
+}
+
+/* REDUCE TIKTOK EMBED OVERHEAD */
+.feed-tiktok-preview iframe {
+    will-change: auto;
+    contain: layout style paint;
+}
+
+/* OPTIMIZE TEXT RENDERING */
+body {
+    text-rendering: optimizeSpeed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* REDUCE PAINT AREA */
+.feed-post {
+    contain: layout style paint;
+}
+
+/* PREVENT TIMER FROM CAUSING REFLOWS */
+#timer {
+    min-width: 100px;
+    text-align: center;
+}
+
+/* OPTIMIZE COMBO ALERT */
+#combo-alert {
+    will-change: opacity;
+    transform: translateZ(0);
+}
+
+/* DISABLE EXPENSIVE CSS ON LOW-END DEVICES */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .confetti {
+        display: none !important;
+    }
+}
+
+/* OPTIMIZE LOADING SPINNER */
+.loading-spinner {
+    animation-duration: 1s;
+    will-change: transform;
+    contain: strict;
+}
+
+/* REDUCE REPAINT ON BUTTON HOVER (MOBILE) */
+@media (hover: none) {
+    .btn:hover,
+    .mode-btn:hover {
+        transform: none !important;
+        box-shadow: 0 4px 9px rgba(0,0,0,0.3) !important;
+    }
+}
+
+/* PREVENT VIDEO AUTOLOAD ON MOBILE */
+@media (max-width: 768px) {
+    .feed-tiktok-preview iframe {
+        loading: lazy;
+    }
+}
+
+/* OPTIMIZE PROFILE OVERLAY */
+.overlay {
+    contain: layout style;
+    transform: translateZ(0);
+}
+
+.overlay-content {
+    contain: layout;
+}
+
+/* FORCE HARDWARE ACCELERATION FOR KEY ELEMENTS */
+#timer,
+#clout-val,
+#task-count,
+.btn,
+#card {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* OPTIMIZE FEED RENDERING */
+.feed-post {
+    contain: content;
+}
+
+.feed-post-header,
+.feed-post-actions {
+    contain: layout style;
+}
+
+/* PREVENT EMOJI PICKER FROM CAUSING REFLOWS */
+.emoji-picker {
+    position: fixed;
+    will-change: auto;
+}
+
+/* LAZY LOAD IMAGES */
+img,
+iframe {
+    loading: lazy;
+}
