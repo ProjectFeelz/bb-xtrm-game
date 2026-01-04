@@ -1323,6 +1323,189 @@ h2 {
     border: none;
 }
 
+/* ==================== TIKTOK LINK (COMPACT) ==================== */
+.feed-tiktok-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #000, #1a1a2e);
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 10px 0;
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.feed-tiktok-link:hover {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a4e);
+    border-color: var(--cyan);
+    transform: scale(1.02);
+}
+
+.tiktok-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #ff0050, #00f2ea);
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+/* ==================== TIKTOK PREVIEW (EXPANDABLE) ==================== */
+.feed-tiktok-preview {
+    position: relative;
+    width: 100%;
+    height: 80px;
+    background: linear-gradient(135deg, #000, #1a1a2e);
+    border: 1px solid #333;
+    border-radius: 8px;
+    margin: 10px 0;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.feed-tiktok-preview:hover {
+    border-color: var(--cyan);
+    box-shadow: 0 0 15px rgba(0,242,255,0.2);
+}
+
+.feed-tiktok-preview.expanded {
+    height: 400px;
+    cursor: default;
+}
+
+.tiktok-preview-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(255,0,80,0.1), rgba(0,242,234,0.1));
+    gap: 5px;
+}
+
+.tiktok-play-btn {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #ff0050, #00f2ea);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(255,0,80,0.5);
+    transition: transform 0.2s;
+}
+
+.feed-tiktok-preview:hover .tiktok-play-btn {
+    transform: scale(1.1);
+}
+
+.tiktok-tap-text {
+    font-size: 0.65rem;
+    color: #888;
+    letter-spacing: 1px;
+}
+
+/* ==================== EMOJI PICKER ==================== */
+.emoji-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 8px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+.emoji-picker span {
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    transition: 0.2s;
+}
+
+.emoji-picker span:hover {
+    background: rgba(255,255,255,0.1);
+    transform: scale(1.2);
+}
+
+.emoji-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.2s;
+}
+
+.emoji-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--cyan);
+}
+
+.feed-comment-input {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    align-items: center;
+}
+
+.feed-comment-input input {
+    flex: 1;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 8px 12px;
+    color: #fff;
+    font-size: 0.7rem;
+    outline: none;
+}
+
+.feed-comment-input input:focus {
+    border-color: var(--cyan);
+}
+
+.feed-comment-input button {
+    background: var(--cyan);
+    border: none;
+    border-radius: 15px;
+    padding: 8px 15px;
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* ==================== DELETE BUTTON ==================== */
+.feed-delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    opacity: 0.5;
+    transition: 0.2s;
+    padding: 2px 5px;
+}
+
+.feed-delete-btn:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
 .feed-post-actions {
     display: flex;
     gap: 15px;
@@ -1587,38 +1770,6 @@ h2 {
 .feed-comment-text {
     color: #aaa;
     flex: 1;
-}
-
-.feed-comment-input {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.feed-comment-input input {
-    flex: 1;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 8px 12px;
-    color: #fff;
-    font-size: 0.7rem;
-    outline: none;
-}
-
-.feed-comment-input input:focus {
-    border-color: var(--cyan);
-}
-
-.feed-comment-input button {
-    background: var(--cyan);
-    border: none;
-    border-radius: 15px;
-    padding: 8px 15px;
-    color: #000;
-    font-size: 0.7rem;
-    font-weight: 700;
-    cursor: pointer;
 }
 
 /* ==================== SUBMIT SCREEN ==================== */
