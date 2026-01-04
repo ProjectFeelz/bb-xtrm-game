@@ -1,1793 +1,1886 @@
-:root {
-    --bg: #1a1d26;
-    --panel: #2a2f3a;
-    --border: #4a5568;
-    --cyan: #00f2ff;
-    --magenta: #ff00ff;
-    --yellow: #ffd700;
-    --green: #2ecc71;
-    --red: #ff4757;
-    --metal-light: #6b7280;
-    --metal-dark: #2d3748;
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.15);
-}
+// =====================================================
+// BB XTRM PRO STUDIO - MAIN APPLICATION
+// Complete supabaseClient Integration with PWA Support
+// =====================================================
 
-* { 
-    box-sizing: border-box; 
-    margin: 0; 
-    padding: 0; 
-    font-family: 'Orbitron', 'Arial', sans-serif; 
-}
+// ==================== CONFIGURATION ====================
+const GAME_URL = 'https://qholvwlaeldvrlmvepnj.supabase.co'; 
+const GAME_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFob2x2d2xhZWxkdnJsbXZlcG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NTgxODIsImV4cCI6MjA4MzAzNDE4Mn0.vuf0EAsbWi2xduhkncMvjYAlEb3CPOcY9Px2fuk_N54'; 
 
-body {
-    background: linear-gradient(135deg, #2d3748 0%, #1a202c 50%, #111827 100%);
-    color: #f0f0f0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    position: relative;
-}
-
-body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: 
-        linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%),
-        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(100,100,100,0.1) 2px, rgba(100,100,100,0.1) 4px);
-    pointer-events: none;
-    z-index: 1;
-}
-
-#console {
-    width: 100%;
-    max-width: 420px;
-    height: 100vh;
-    max-height: 850px;
-    position: relative;
-    background: transparent;
-    border-radius: 0;
-    padding: 24px;
-    box-shadow: none;
-    z-index: 2;
-    transform: scale(0.9);
-    transform-origin: center center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-#console::after {
-    display: none;
-}
-
-/* ==================== SCREENS ==================== */
-.screen {
-    position: absolute;
-    inset: 24px;
-    padding: 35px;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #1e2533 0%, #141822 100%);
-    z-index: 10;
-    border-radius: 16px;
-    box-shadow: inset 0 4px 20px rgba(0,0,0,0.6);
-    overflow-y: auto;
-}
-
-.active-screen { 
-    display: flex !important; 
-    z-index: 20 !important; 
-}
-
-/* ==================== LOADING ==================== */
-.loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid var(--metal-dark);
-    border-top-color: var(--cyan);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* ==================== TYPOGRAPHY ==================== */
-.logo-small { 
-    font-size: 3.5rem; 
-    font-weight: 900; 
-    background: linear-gradient(135deg, var(--cyan), #00d4e6, var(--cyan));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 25px;
-    margin-top: 0;
-    font-style: italic;
-    letter-spacing: 8px;
-    line-height: 1;
-    text-align: center;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8)) drop-shadow(0 0 30px rgba(0,242,255,0.9));
-}
-
-h2 { 
-    font-size: 0.85rem; 
-    letter-spacing: 4px; 
-    color: var(--magenta); 
-    text-transform: uppercase; 
-    margin-bottom: 18px; 
-    text-align: center;
-    font-weight: 700;
-}
-
-/* ==================== GLASS PANEL ==================== */
-.glass-panel {
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    box-shadow: 
-        0 8px 32px rgba(0,0,0,0.4),
-        inset 0 1px 0 rgba(255,255,255,0.1);
-    position: relative;
-    overflow: hidden;
-}
-
-.glass-panel::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
-    transform: rotate(45deg);
-    pointer-events: none;
-}
-
-/* ==================== RANK PANEL ==================== */
-#rank-panel {
-    width: 100%;
-    margin-bottom: 22px;
-    padding: 24px;
-    text-align: center;
-    background: linear-gradient(135deg, rgba(26, 29, 38, 0.9) 0%, rgba(15, 18, 24, 0.95) 100%);
-    border: 2px solid var(--cyan);
-    box-shadow: 
-        inset 0 3px 18px rgba(0,0,0,0.8),
-        0 0 25px rgba(0,242,255,0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-#rank-panel::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, 
-        transparent 40%, 
-        rgba(255,255,255,0.08) 50%, 
-        transparent 60%);
-    pointer-events: none;
-}
-
-#career-stats { 
-    margin-top: 12px; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 6px; 
-    align-items: center; 
-}
-
-.badge-row { 
-    display: flex; 
-    gap: 6px; 
-    flex-wrap: wrap; 
-    justify-content: center; 
-    margin-top: 6px; 
-}
-
-.mini-badge { 
-    width: 14px; 
-    height: 14px; 
-    background: radial-gradient(circle, var(--yellow), #d4af37);
-    border-radius: 50%; 
-    box-shadow: 0 0 10px var(--yellow), inset 0 2px 3px rgba(255,255,255,0.4);
-}
-
-/* ==================== FORM ELEMENTS ==================== */
-.form-group {
-    width: 100%;
-}
-
-.form-label {
-    display: block;
-    font-size: 0.7rem;
-    letter-spacing: 2px;
-    color: var(--cyan);
-    margin-bottom: 8px;
-    font-weight: 700;
-}
-
-.form-hint {
-    display: block;
-    font-size: 0.65rem;
-    color: #666;
-    margin-top: 5px;
-}
-
-.cassette-field {
-    width: 100%;
-    padding: 18px;
-    background: linear-gradient(135deg, #1a1d26 0%, #0f1218 100%);
-    border: 2px solid var(--cyan);
-    color: var(--cyan);
-    border-radius: 10px;
-    outline: none;
-    font-size: 1.3rem;
-    font-weight: 700;
-    text-align: center;
-    box-shadow: 
-        inset 0 3px 10px rgba(0,0,0,0.8),
-        0 0 20px rgba(0,242,255,0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.cassette-field::placeholder {
-    color: #4a5568;
-    font-size: 0.9rem;
-}
-
-.cassette-field:focus {
-    border-color: var(--magenta);
-    box-shadow: 
-        inset 0 3px 10px rgba(0,0,0,0.8),
-        0 0 25px rgba(255,0,255,0.4);
-}
-
-.cassette-select {
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300f2ff' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 15px center;
-    background-size: 20px;
-    padding-right: 50px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-.cassette-select option {
-    background: #1a1d26;
-    color: var(--cyan);
-    padding: 10px;
-}
-
-/* ==================== BUTTONS ==================== */
-.btn {
-    width: 100%;
-    padding: 20px;
-    border: none;
-    border-radius: 14px;
-    background: linear-gradient(145deg, #3a4050, #2a2f3a, #1a1d26, #0a0b0e);
-    color: #f0f0f0;
-    font-weight: 900;
-    font-size: 1.05rem;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    transition: 0.2s;
-    position: relative;
-    box-shadow: 
-        0 6px 0 #000,
-        0 8px 16px rgba(0,0,0,0.6),
-        inset 0 2px 0 rgba(255,255,255,0.15),
-        inset 0 -2px 8px rgba(0,0,0,0.3);
-    overflow: hidden;
-}
-
-.btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50%;
-    background: linear-gradient(180deg, rgba(255,255,255,0.1), transparent);
-}
-
-.btn:active {
-    transform: translateY(6px);
-    box-shadow: 
-        0 0 0 #000,
-        0 2px 8px rgba(0,0,0,0.6),
-        inset 0 2px 0 rgba(255,255,255,0.15);
-}
-
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.btn-primary { 
-    background: linear-gradient(145deg, #00f2ff, #00d4e6, #00a8cc, #007a8c);
-    color: #000;
-    font-weight: 900;
-    text-shadow: 0 1px 3px rgba(255,255,255,0.4);
-    box-shadow: 
-        0 6px 0 #005566,
-        0 8px 16px rgba(0,242,255,0.5),
-        inset 0 2px 0 rgba(255,255,255,0.4),
-        inset 0 -2px 8px rgba(0,0,0,0.2);
-}
-
-.btn-primary:active {
-    box-shadow: 
-        0 0 0 #005566,
-        0 2px 8px rgba(0,242,255,0.5),
-        inset 0 2px 0 rgba(255,255,255,0.4);
-}
-
-.btn-locked { 
-    background: linear-gradient(145deg, #1a1d26, #0f1218, #000, #000) !important;
-    color: #555 !important;
-    cursor: not-allowed;
-    opacity: 0.6;
-    box-shadow: 
-        0 6px 0 #000,
-        0 8px 16px rgba(0,0,0,0.6),
-        inset 0 3px 12px rgba(0,0,0,0.9) !important;
-}
-
-.btn-secondary { 
-    background: linear-gradient(145deg, #2a2f3a, #1a1d26, #0f1218, #000);
-    font-size: 0.9rem;
-    padding: 15px;
-}
-
-.btn-discord {
-    background: linear-gradient(145deg, #5865F2, #4752C4, #3C45A5, #2D3580);
-    color: #fff;
-    font-weight: 900;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-    box-shadow: 
-        0 4px 0 #2D3580,
-        0 6px 12px rgba(88,101,242,0.3),
-        inset 0 2px 0 rgba(255,255,255,0.2),
-        inset 0 -2px 8px rgba(0,0,0,0.2);
-}
-
-.btn-discord:active {
-    box-shadow: 
-        0 0 0 #2D3580,
-        0 2px 8px rgba(88,101,242,0.4),
-        inset 0 2px 0 rgba(255,255,255,0.2);
-}
-
-.btn-small {
-    padding: 12px 20px;
-    font-size: 0.75rem;
-    width: auto;
-    display: inline-block;
-}
-
-/* ==================== GAME UI ==================== */
-#cheat-error { 
-    color: var(--red); 
-    font-weight: 900; 
-    font-size: 0.85rem; 
-    letter-spacing: 1.5px; 
-    opacity: 0; 
-    transition: 0.2s; 
-    height: 18px; 
-    margin-bottom: 8px; 
-    text-transform: uppercase;
-    text-shadow: 0 0 15px var(--red);
-}
-
-#combo-alert { 
-    color: var(--magenta); 
-    font-weight: 900; 
-    font-size: 1.4rem; 
-    margin-top: -12px; 
-    margin-bottom: 12px; 
-    opacity: 0; 
-    transition: 0.3s; 
-    z-index: 20; 
-    height: 24px; 
-    text-align: center;
-    text-shadow: 0 0 20px var(--magenta);
-}
-
-.game-hud { 
-    display: flex; 
-    justify-content: space-between; 
-    width: 100%; 
-    margin-bottom: 12px; 
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #aaa;
-}
-
-.hud-val { 
-    color: var(--cyan); 
-    font-weight: 900; 
-    font-size: 1.1rem; 
-}
-
-#timer { 
-    font-size: 5.5rem; 
-    color: var(--yellow); 
-    font-family: 'Orbitron', monospace; 
-    line-height: 1; 
-    margin: 0;
-    font-weight: 900;
-    text-shadow: 0 0 30px var(--yellow);
-    letter-spacing: 0.05em;
-}
-
-.timer-low { 
-    color: var(--red) !important; 
-    animation: pulse 0.5s infinite;
-    text-shadow: 0 0 40px var(--red) !important;
-}
-
-@keyframes pulse { 
-    0% { opacity: 1; } 
-    50% { opacity: 0.7; } 
-    100% { opacity: 1; } 
-}
-
-#card { 
-    width: 100%; 
-    flex: 1; 
-    border: 3px solid var(--cyan); 
-    background: linear-gradient(135deg, #1a1d26 0%, #0f1218 100%);
-    border-radius: 18px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    padding: 28px; 
-    text-align: center; 
-    margin: 18px 0; 
-    font-size: 1.6rem; 
-    font-weight: 700;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 
-        inset 0 3px 18px rgba(0,0,0,0.8),
-        0 0 25px rgba(0,242,255,0.4);
-}
-
-#card::before {
-    content: '';
-    position: absolute;
-    top: 45%;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: rgba(255,255,255,0.08);
-    box-shadow: 0 1px 0 rgba(0,0,0,0.3);
-}
-
-#card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, 
-        transparent, 
-        rgba(0,242,255,0.15), 
-        transparent);
-    animation: cassette-scan 2.5s infinite;
-}
-
-@keyframes cassette-scan {
-    0% { left: -100%; }
-    100% { left: 100%; }
-}
-
-.cassette-load {
-    animation: cassette-insert 0.6s ease-out;
-}
-
-@keyframes cassette-insert {
-    0% { 
-        transform: translateY(-100%) scale(0.9);
-        opacity: 0;
+const supabaseClient = window.supabase.createClient(GAME_URL, GAME_KEY, {
+    auth: {
+        persistSession: true,
+        storageKey: 'bb-xtrm-auth',
+        storage: window.localStorage,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
     }
-    60% {
-        transform: translateY(5%);
+});
+
+// ==================== CACHE & SERVICE WORKER MANAGEMENT ====================
+const APP_VERSION = '1.0.5'; // Increment this when you deploy updates
+
+// Clear old caches and manage service worker
+async function manageCacheAndSW() {
+    // Store version in localStorage
+    const storedVersion = localStorage.getItem('app_version');
+    
+    if (storedVersion !== APP_VERSION) {
+        console.log('New version detected, clearing caches...');
+        
+        // Clear all caches
+        if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
+            console.log('Caches cleared');
+        }
+        
+        // Unregister old service workers
+        if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (const registration of registrations) {
+                await registration.unregister();
+                console.log('Service worker unregistered');
+            }
+        }
+        
+        // Clear sessionStorage
+        sessionStorage.clear();
+        
+        // Update stored version
+        localStorage.setItem('app_version', APP_VERSION);
+        
+        // Reload to get fresh content (only if version changed)
+        if (storedVersion !== null) {
+            window.location.reload(true);
+            return false;
+        }
     }
-    100% { 
-        transform: translateY(0) scale(1);
-        opacity: 1;
+    return true;
+}
+
+// Handle visibility change - refresh auth state when app returns to foreground
+document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState === 'visible' && currentUser) {
+        try {
+            // Refresh the session when app comes back to foreground
+            const { data, error } = await supabaseClient.auth.getSession();
+            if (error || !data.session) {
+                console.log('Session expired, redirecting to auth...');
+                currentUser = null;
+                showScreen('screen-auth');
+            }
+        } catch (err) {
+            console.error('Session refresh error:', err);
+        }
+    }
+});
+
+// Prevent stale cache on page show (back/forward cache)
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        // Page was restored from back/forward cache
+        window.location.reload();
+    }
+});
+
+// ==================== AUDIO SYSTEM ====================
+let audioContext = null;
+
+function initAudio() {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
     }
 }
 
-#game-controls { 
-    display: grid; 
-    grid-template-columns: 1fr 1fr; 
-    gap: 12px; 
-    width: 100%; 
+function playClick() {
+    initAudio();
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+    osc.frequency.value = 900;
+    gain.gain.setValueAtTime(0.12, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+    osc.start();
+    osc.stop(audioContext.currentTime + 0.05);
 }
 
-#perfect-badge { 
-    display: none; 
-    color: var(--yellow); 
-    border: 3px solid var(--yellow);
-    padding: 12px 24px; 
-    border-radius: 50px; 
-    font-size: 0.95rem; 
-    font-weight: 900;
-    margin-top: 18px; 
-    animation: glow 1.5s infinite alternate;
-    box-shadow: 0 0 25px var(--yellow);
+function playTick() {
+    initAudio();
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+    osc.frequency.value = 1200;
+    gain.gain.setValueAtTime(0.03, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.03);
+    osc.start();
+    osc.stop(audioContext.currentTime + 0.03);
 }
 
-@keyframes glow { 
-    from { box-shadow: 0 0 15px var(--yellow); } 
-    to { box-shadow: 0 0 35px var(--yellow); } 
+function playAlarmBuzz(intensity) {
+    initAudio();
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+    osc.type = 'sawtooth';
+    osc.frequency.value = 220 + (intensity * 180);
+    gain.gain.setValueAtTime(0.08 + (intensity * 0.12), audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+    osc.start();
+    osc.stop(audioContext.currentTime + 0.15);
 }
 
-.cooldown-text { 
-    font-size: 0.7rem; 
-    display: block; 
-    margin-top: 5px; 
-    opacity: 0.8; 
-    font-weight: 700;
+function playCassetteInsert() {
+    initAudio();
+    const click = audioContext.createOscillator();
+    const clickGain = audioContext.createGain();
+    click.connect(clickGain);
+    clickGain.connect(audioContext.destination);
+    click.frequency.value = 200;
+    clickGain.gain.setValueAtTime(0.15, audioContext.currentTime);
+    clickGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    click.start();
+    click.stop(audioContext.currentTime + 0.1);
+    
+    setTimeout(() => {
+        const whirr = audioContext.createOscillator();
+        const whirrGain = audioContext.createGain();
+        whirr.connect(whirrGain);
+        whirrGain.connect(audioContext.destination);
+        whirr.type = 'sawtooth';
+        whirr.frequency.setValueAtTime(100, audioContext.currentTime);
+        whirr.frequency.exponentialRampToValueAtTime(300, audioContext.currentTime + 0.3);
+        whirrGain.gain.setValueAtTime(0.08, audioContext.currentTime);
+        whirrGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+        whirr.start();
+        whirr.stop(audioContext.currentTime + 0.3);
+    }, 100);
 }
 
-#result-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-    margin-top: 20px;
+function playSuccess() {
+    initAudio();
+    [400, 600, 800].forEach((freq, i) => {
+        setTimeout(() => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            osc.start();
+            osc.stop(audioContext.currentTime + 0.15);
+        }, i * 50);
+    });
 }
 
-/* ==================== CONFETTI ==================== */
-.confetti {
-    position: fixed;
-    width: 10px;
-    height: 10px;
-    background: var(--cyan);
-    animation: confetti-fall 3s ease-out forwards;
-    z-index: 100;
-    pointer-events: none;
+function playError() {
+    initAudio();
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+    osc.frequency.setValueAtTime(600, audioContext.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.2);
+    gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+    osc.start();
+    osc.stop(audioContext.currentTime + 0.2);
 }
 
-@keyframes confetti-fall {
-    to {
-        transform: translateY(100vh) rotate(720deg);
-        opacity: 0;
+function playCelebration() {
+    initAudio();
+    const notes = [392, 494, 587, 698, 784, 880];
+    notes.forEach((freq, i) => {
+        setTimeout(() => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.value = freq;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.12, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+            osc.start();
+            osc.stop(audioContext.currentTime + 0.4);
+        }, i * 80);
+    });
+}
+
+function createConfetti() {
+    const colors = ['#00f2ff', '#ff00ff', '#ffd700', '#2ecc71', '#ff4757'];
+    for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDelay = Math.random() * 0.5 + 's';
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 3000);
+        }, i * 30);
     }
 }
 
-/* ==================== SOCIAL ICONS ==================== */
-.social-icons {
-    display: flex;
-    gap: 18px;
-    margin-top: 25px;
-    justify-content: center;
+// ==================== GAME STATE ====================
+const SET_LIMIT = 10;
+const RERUN_PENALTY = 50;
+
+let currentUser = null;
+let userProfile = null;
+let userAnalytics = null;
+
+let sessionClout = 0;
+let timeLeft = 0;
+let timerInterval = null;
+let selectedMode = '';
+let tasksCompleted = 0;
+let comboCount = 0;
+let rerunUsedInSession = false;
+let cleanStreakCount = 0;
+let cooldownLeft = 0;
+let speedDemonCount = 0;
+let usedCards = [];
+let sessionStartTime = null;
+let totalRerunsThisSession = 0;
+let totalRestartsThisSession = 0;
+let currentCardText = '';
+let currentCardTime = 30;
+
+// ==================== CARD DECKS WITH VARIABLE TIME ====================
+// Format: { text: "task", time: 30-60 seconds }
+const cardDecks = {
+    production: [
+        // Quick chaos (30s)
+        { text: "DELETE the first plugin you see. No undo.", time: 30 },
+        { text: "Mute everything except ONE element. Make it slap.", time: 30 },
+        { text: "Pan your kick hard left. Leave it.", time: 30 },
+        { text: "Add distortion to your most delicate sound", time: 30 },
+        { text: "Reverse your snare. It lives there now.", time: 30 },
+        { text: "Put a telephone EQ on your lead melody", time: 30 },
+        { text: "Duplicate your bass, pitch it UP 12 semitones", time: 30 },
+        { text: "Add 100% wet reverb to your drums for 4 bars", time: 30 },
+        { text: "Remove ALL reverb from the entire project", time: 30 },
+        { text: "Swap your kick and snare patterns", time: 30 },
+        
+        // Medium madness (40s)
+        { text: "Sidechain your MELODY to your hi-hats", time: 40 },
+        { text: "Create a riser using only reversed sounds from your track", time: 40 },
+        { text: "Make your bass the lead for 8 bars", time: 40 },
+        { text: "Chop your main loop into 8 pieces, rearrange RANDOMLY", time: 40 },
+        { text: "Add vinyl crackle but make it LOUDER than your snare", time: 40 },
+        { text: "Bounce your master, reimport it, bitcrush it", time: 40 },
+        { text: "Pitch your ENTIRE track up 7 semitones for 4 bars", time: 40 },
+        { text: "Layer your kick with a vocal chop", time: 40 },
+        { text: "Add a field recording from your phone to the mix", time: 40 },
+        { text: "Put a gate on your reverb tails, make them rhythmic", time: 40 },
+        { text: "Create a build-up using only automation, no new sounds", time: 40 },
+        { text: "Make something sound underwater then back to normal", time: 40 },
+        
+        // Complex tasks (50s)
+        { text: "Sample YOUR OWN VOICE saying something dumb, make it a hook", time: 50 },
+        { text: "Record yourself banging on your desk, replace your drums", time: 50 },
+        { text: "Create an 8-bar breakdown using ONLY reversed sounds", time: 50 },
+        { text: "Resample your master through 3 different distortions", time: 50 },
+        { text: "Make your weakest element the STAR of a 4-bar section", time: 50 },
+        { text: "Add a tempo change mid-track. Make it actually work.", time: 50 },
+        { text: "Create a drop using only 3 elements from your track", time: 50 },
+        { text: "Turn a mistake into a feature. Find one. Feature it.", time: 50 },
+        
+        // Full chaos (60s)
+        { text: "Export, import to NEW project, flip it into something unrecognizable", time: 60 },
+        { text: "Record audio through your phone speaker, use it as a layer", time: 60 },
+        { text: "Add 5 random plugins to your master. Make it sound GOOD.", time: 60 },
+        { text: "Swap roles: bass=lead, drums=melody, melody=percussion", time: 60 },
+        { text: "Create a completely new 8-bar section using ONLY existing sounds", time: 60 },
+        { text: "Make a remix of your own track. 60 seconds. Go.", time: 60 }
+    ],
+    
+    beats: [
+        // Quick hits (30s)
+        { text: "Remove your kick for 4 bars. Fill it with ANYTHING else.", time: 30 },
+        { text: "Double-time your hi-hats until they're uncomfortable", time: 30 },
+        { text: "Put reverb on your kick. Yes. Do it.", time: 30 },
+        { text: "Delete every other snare hit", time: 30 },
+        { text: "Pitch your snare UP an octave", time: 30 },
+        { text: "Add swing until it sounds DRUNK", time: 30 },
+        { text: "Layer your kick with a snap. Just a snap.", time: 30 },
+        { text: "Reverse your hi-hat pattern completely", time: 30 },
+        { text: "Add a rimshot on EVERY off-beat", time: 30 },
+        { text: "Make your drums mono. All of them.", time: 30 },
+        
+        // Medium tasks (40s)
+        { text: "Create a drum fill using ONLY kicks", time: 40 },
+        { text: "Make your drums sound like they're in a parking garage", time: 40 },
+        { text: "Add a percussion element that makes NO sense", time: 40 },
+        { text: "Create a 4-bar pattern with NO kick drum", time: 40 },
+        { text: "Chop a breakbeat beyond recognition, use the pieces", time: 40 },
+        { text: "Layer 3 snares. Make them sound like ONE weird snare.", time: 40 },
+        { text: "Add a polyrhythmic element that fights the groove", time: 40 },
+        { text: "Make a roll that speeds up AND slows down", time: 40 },
+        { text: "Use a melodic instrument as your main percussion", time: 40 },
+        { text: "Add ghost notes to EVERYTHING", time: 40 },
+        { text: "Create a 2-bar loop using found sounds only", time: 40 },
+        { text: "Sidechain your hi-hats to your snare", time: 40 },
+        
+        // Complex tasks (50s)
+        { text: "Beatbox for 15 seconds, sample it, chop it, use it", time: 50 },
+        { text: "Create drums using only household objects (record now)", time: 50 },
+        { text: "Make a half-time AND double-time switch in 8 bars", time: 50 },
+        { text: "Program drums that sound HUMAN (imperfect timing on purpose)", time: 50 },
+        { text: "Create a call-and-response between kick and snare", time: 50 },
+        { text: "Build a breakdown where SILENCE is the main rhythm", time: 50 },
+        { text: "Layer acoustic drums over electronic. Make it one kit.", time: 50 },
+        { text: "Create glitchy drums using ONLY audio effects", time: 50 },
+        
+        // Chaos tasks (60s)
+        { text: "Stomp and clap a full pattern. Record it. That's your drums now.", time: 60 },
+        { text: "Sample machinery sounds from YouTube. Build a full kit.", time: 60 },
+        { text: "Create 4 completely different drum patterns in 16 bars", time: 60 },
+        { text: "Make your drums sound like a COMPLETELY different genre", time: 60 },
+        { text: "Build a trap beat using only boom-bap samples (or vice versa)", time: 60 },
+        { text: "Create drums that tell a story: soft → chaotic → soft", time: 60 }
+    ],
+    
+    songwriting: [
+        // Quick inspiration (30s)
+        { text: "Hum a melody RIGHT NOW. Record it raw. Keep it.", time: 30 },
+        { text: "Write a one-word hook. Repeat it 4 times with different melodies.", time: 30 },
+        { text: "Change one chord to something WRONG. Leave it.", time: 30 },
+        { text: "Add a 2-note counter-melody over your hook", time: 30 },
+        { text: "Write the WORST bar you can imagine. Use it anyway.", time: 30 },
+        { text: "Whisper your next line instead of singing it", time: 30 },
+        { text: "Use only 3 notes for your next melody", time: 30 },
+        { text: "Add a rest where there absolutely shouldn't be one", time: 30 },
+        { text: "Say 'yeah' or 'uh' in a weird place. Commit.", time: 30 },
+        { text: "Sing one line in a completely different accent", time: 30 },
+        
+        // Medium creativity (40s)
+        { text: "Write a 4-bar melody using only voice memos as reference", time: 40 },
+        { text: "Sing your hook BACKWARDS phonetically. Use it.", time: 40 },
+        { text: "Write a pre-chorus in a fake language", time: 40 },
+        { text: "Create a melody that only goes DOWN, never up", time: 40 },
+        { text: "Write from the perspective of an INANIMATE OBJECT", time: 40 },
+        { text: "Add ad-libs that CONTRADICT your main lyrics", time: 40 },
+        { text: "Write a verse using only QUESTIONS", time: 40 },
+        { text: "Sing something happy over something sad (or vice versa)", time: 40 },
+        { text: "Write about the last thing you ate. Make it emotional.", time: 40 },
+        { text: "Add a harmony a 5th above. Even if it sounds weird.", time: 40 },
+        { text: "Write a line about what you see right now", time: 40 },
+        { text: "Use someone's name in the hook (anyone)", time: 40 },
+        
+        // Complex composition (50s)
+        { text: "Write and record an 8-bar verse about your LAST MEAL", time: 50 },
+        { text: "Create a call-and-response hook with YOURSELF", time: 50 },
+        { text: "Write a bridge that has NOTHING to do with your song", time: 50 },
+        { text: "Freestyle 20 seconds. Grab the best line. Build from it.", time: 50 },
+        { text: "Write a chorus that works as BOTH the intro AND outro", time: 50 },
+        { text: "Record 3 vocal takes with 3 different emotions. Layer them.", time: 50 },
+        { text: "Write lyrics that tell the same story forward AND backward", time: 50 },
+        { text: "Create a melody using a scale you've NEVER used", time: 50 },
+        
+        // Chaos creation (60s)
+        { text: "Write and record a verse about the LAST TEXT you received", time: 60 },
+        { text: "Open a random book/article. First sentence = your hook. Melodize it.", time: 60 },
+        { text: "Create a complete hook: lead vocal, harmony, AND ad-libs", time: 60 },
+        { text: "Write from 3 different characters' perspectives in ONE verse", time: 60 },
+        { text: "Record vocals THROUGH your phone INTO your DAW. That's the lead.", time: 60 },
+        { text: "Create an entire chorus melody using ONLY your name", time: 60 }
+    ]
+};
+
+const countries = ["Afghanistan","Albania","Algeria","Argentina","Australia","Austria","Bangladesh","Belgium","Brazil","Canada","Chile","China","Colombia","Czech Republic","Denmark","Egypt","Finland","France","Germany","Ghana","Greece","Hungary","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy","Jamaica","Japan","Kenya","Malaysia","Mexico","Netherlands","New Zealand","Nigeria","Norway","Pakistan","Peru","Philippines","Poland","Portugal","Romania","Russia","Saudi Arabia","Singapore","South Africa","South Korea","Spain","Sweden","Switzerland","Taiwan","Thailand","Turkey","Ukraine","United Arab Emirates","United Kingdom","United States","Venezuela","Vietnam","Zimbabwe"];
+
+const elements = {
+    screenLoading: document.getElementById('screen-loading'),
+    screenAuth: document.getElementById('screen-auth'),
+    screenOnboarding: document.getElementById('screen-onboarding'),
+    screenManual: document.getElementById('screen-manual'),
+    screenModes: document.getElementById('screen-modes'),
+    screenGame: document.getElementById('screen-game'),
+    screenResults: document.getElementById('screen-results'),
+    screenLeaderboard: document.getElementById('screen-leaderboard'),
+    authEmail: document.getElementById('auth-email'),
+    authBtn: document.getElementById('auth-btn'),
+    authMessage: document.getElementById('auth-message'),
+    onboardName: document.getElementById('onboard-name'),
+    onboardAge: document.getElementById('onboard-age'),
+    onboardCountry: document.getElementById('onboard-country'),
+    onboardSubmit: document.getElementById('onboard-submit'),
+    onboardError: document.getElementById('onboard-error'),
+    welcomeMsg: document.getElementById('welcome-msg'),
+    globalRankDisplay: document.getElementById('global-rank-display'),
+    lastScore: document.getElementById('last-score'),
+    streakCount: document.getElementById('streak-count'),
+    taskCount: document.getElementById('task-count'),
+    cloutVal: document.getElementById('clout-val'),
+    cheatError: document.getElementById('cheat-error'),
+    timer: document.getElementById('timer'),
+    comboAlert: document.getElementById('combo-alert'),
+    cardBody: document.getElementById('card-body'),
+    completeBtn: document.getElementById('complete-btn'),
+    cooldownTimer: document.getElementById('cooldown-timer'),
+    resultHeader: document.getElementById('result-header'),
+    resultClout: document.getElementById('result-clout'),
+    previousBest: document.getElementById('previous-best'),
+    perfectBadge: document.getElementById('perfect-badge'),
+    resultFooter: document.getElementById('result-footer'),
+    tryAgainBtn: document.getElementById('try-again-btn'),
+    profileIcon: document.getElementById('profile-icon'),
+    profileOverlay: document.getElementById('profile-overlay'),
+    closeProfile: document.getElementById('close-profile'),
+    profileInitial: document.getElementById('profile-initial'),
+    profileName: document.getElementById('profile-name'),
+    profileLocation: document.getElementById('profile-location'),
+    statLifetime: document.getElementById('stat-lifetime'),
+    statBest: document.getElementById('stat-best'),
+    statReruns: document.getElementById('stat-reruns'),
+    statCloutLost: document.getElementById('stat-clout-lost'),
+    logoutBtn: document.getElementById('logout-btn'),
+    leaderboardBtn: document.getElementById('leaderboard-btn'),
+    leaderboardList: document.getElementById('leaderboard-list'),
+    closeLeaderboard: document.getElementById('close-leaderboard')
+};
+
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+    const target = document.getElementById(screenId);
+    if (target) target.classList.add('active-screen');
 }
 
-.social-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--cyan);
-    font-size: 1.3rem;
-    text-decoration: none;
-    transition: 0.3s;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+function populateCountryDropdown() {
+    const select = elements.onboardCountry;
+    if (!select) return;
+    countries.forEach(country => {
+        const option = document.createElement('option');
+        option.value = country;
+        option.textContent = country;
+        select.appendChild(option);
+    });
 }
 
-.social-icon:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0,242,255,0.4);
+async function checkAuthState() {
+    try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+            currentUser = session.user;
+            await loadUserProfile();
+        } else {
+            showScreen('screen-auth');
+        }
+    } catch (err) {
+        console.error('Auth check failed:', err);
+        showScreen('screen-auth');
+    }
 }
 
-/* ==================== PROFILE TRIGGER ==================== */
-.profile-trigger {
-    position: absolute;
-    bottom: 35px;
-    right: 35px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: linear-gradient(145deg, var(--magenta), #cc00cc);
-    border: none;
-    color: #fff;
-    cursor: pointer;
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 
-        0 4px 15px rgba(255,0,255,0.5),
-        inset 0 2px 0 rgba(255,255,255,0.3);
-    transition: 0.3s;
+async function sendMagicLink() {
+    const email = elements.authEmail.value.trim();
+    if (!email || !email.includes('@')) {
+        elements.authMessage.textContent = 'Please enter a valid email address';
+        elements.authMessage.style.color = 'var(--red)';
+        playError();
+        return;
+    }
+    elements.authBtn.disabled = true;
+    elements.authBtn.textContent = 'SENDING...';
+    try {
+        const { error } = await supabaseClient.auth.signInWithOtp({
+            email: email,
+            options: { emailRedirectTo: window.location.origin }
+        });
+        if (error) {
+            elements.authMessage.textContent = error.message;
+            elements.authMessage.style.color = 'var(--red)';
+            playError();
+        } else {
+            elements.authMessage.textContent = 'Magic link sent! Check your email inbox.';
+            elements.authMessage.style.color = 'var(--green)';
+            playSuccess();
+        }
+    } catch (err) {
+        elements.authMessage.textContent = 'Network error. Please try again.';
+        elements.authMessage.style.color = 'var(--red)';
+        playError();
+    }
+    elements.authBtn.disabled = false;
+    elements.authBtn.textContent = 'SEND MAGIC LINK';
 }
 
-.profile-trigger:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 25px rgba(255,0,255,0.7);
+async function signInWithDiscord() {
+    try {
+        const { error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'discord',
+            options: {
+                redirectTo: window.location.origin
+            }
+        });
+        if (error) {
+            elements.authMessage.textContent = error.message;
+            elements.authMessage.style.color = 'var(--red)';
+            playError();
+        }
+    } catch (err) {
+        elements.authMessage.textContent = 'Discord sign-in failed. Try again.';
+        elements.authMessage.style.color = 'var(--red)';
+        playError();
+    }
 }
 
-.profile-trigger:active {
-    transform: scale(0.95);
+async function logout() {
+    try {
+        localStorage.clear();
+        sessionStorage.clear();
+        await supabaseClient.auth.signOut({ scope: 'local' });
+        currentUser = null;
+        userProfile = null;
+        userAnalytics = null;
+        if (elements.profileOverlay) elements.profileOverlay.classList.remove('active');
+        showScreen('screen-auth');
+        playClick();
+        setTimeout(() => window.location.reload(), 100);
+    } catch (err) {
+        console.error('Logout failed:', err);
+        window.location.reload();
+    }
 }
 
-/* ==================== PROFILE OVERLAY ==================== */
-.overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.9);
-    backdrop-filter: blur(10px);
-    z-index: 100;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    opacity: 0;
-    transition: opacity 0.3s;
+async function loadUserProfile() {
+    if (!currentUser) { showScreen('screen-auth'); return; }
+    try {
+        const { data, error } = await supabaseClient.rpc('get_full_profile');
+        if (error) { console.error('Profile fetch error:', error); showScreen('screen-onboarding'); return; }
+        if (!data || !data.success || !data.profile || !data.profile.onboarding_completed) { showScreen('screen-onboarding'); return; }
+        userProfile = data.profile;
+        userAnalytics = data.analytics || {};
+        updateMainScreenUI();
+        
+        // Check for login bonus
+        checkLoginBonus();
+        
+        if (!sessionStorage.getItem('manualSeen')) {
+            sessionStorage.setItem('manualSeen', 'true');
+            showScreen('screen-manual');
+        } else {
+            showScreen('screen-modes');
+        }
+    } catch (err) {
+        console.error('Profile load failed:', err);
+        showScreen('screen-onboarding');
+    }
 }
 
-.overlay.active {
-    display: flex;
-    opacity: 1;
+async function checkLoginBonus() {
+    try {
+        const { data, error } = await supabaseClient.rpc('check_login_bonus');
+        if (error) { console.error('Login bonus check failed:', error); return; }
+        if (data && data.success && data.bonus > 0) {
+            showBonusNotification(data.bonus_type, data.bonus);
+            if (userProfile) userProfile.lifetime_clout = data.new_total;
+            updateMainScreenUI();
+        }
+    } catch (err) {
+        console.error('Login bonus error:', err);
+    }
 }
 
-.overlay-content {
-    width: 100%;
-    max-width: 380px;
-    max-height: 90vh;
-    overflow-y: auto;
-    background: linear-gradient(135deg, #1e2533 0%, #141822 100%);
-    border-radius: 20px;
-    padding: 30px;
-    position: relative;
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+function showBonusNotification(bonusType, amount) {
+    const notification = document.createElement('div');
+    notification.className = 'bonus-notification';
+    notification.innerHTML = `
+        <div class="bonus-type">${bonusType}</div>
+        <div class="bonus-amount">+${amount} CLOUT</div>
+    `;
+    document.body.appendChild(notification);
+    playSuccess();
+    setTimeout(() => notification.classList.add('show'), 100);
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 500);
+    }, 3000);
 }
 
-.close-btn {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    background: none;
-    border: none;
-    color: #888;
-    font-size: 2rem;
-    cursor: pointer;
-    transition: 0.2s;
-    line-height: 1;
+function updateMainScreenUI() {
+    if (!userProfile) return;
+    elements.welcomeMsg.textContent = 'WELCOME, ' + (userProfile.artist_name || 'ARTIST');
+    elements.globalRankDisplay.textContent = userProfile.personal_best || 0;
+    elements.lastScore.textContent = (userProfile.lifetime_clout || 0) + ' LIFETIME CLOUT';
+    elements.streakCount.textContent = userProfile.current_streak || 0;
 }
 
-.close-btn:hover {
-    color: var(--red);
+async function completeOnboarding() {
+    const name = elements.onboardName.value.trim();
+    const age = parseInt(elements.onboardAge.value);
+    const country = elements.onboardCountry.value;
+    if (!name || name.length < 2) { elements.onboardError.textContent = 'Please enter a valid artist name'; elements.onboardError.style.display = 'block'; playError(); return; }
+    if (!age || age < 13 || age > 120) { elements.onboardError.textContent = 'Please enter a valid age (13+)'; elements.onboardError.style.display = 'block'; playError(); return; }
+    if (!country) { elements.onboardError.textContent = 'Please select your country'; elements.onboardError.style.display = 'block'; playError(); return; }
+    elements.onboardError.style.display = 'none';
+    elements.onboardSubmit.disabled = true;
+    elements.onboardSubmit.textContent = 'SAVING...';
+    try {
+        const { error } = await supabaseClient.rpc('complete_onboarding', { p_age: age, p_artist_name: name, p_country: country });
+        if (error) throw error;
+        userProfile = { onboarding_completed: true, artist_name: name, age: age, country: country, lifetime_clout: 0, personal_best: 0, current_streak: 0, perfect_sets: 0 };
+        playSuccess();
+        sessionStorage.setItem('manualSeen', 'true');
+        showScreen('screen-manual');
+    } catch (err) {
+        console.error("Onboarding failed:", err);
+        elements.onboardError.textContent = 'Error saving: ' + err.message;
+        elements.onboardError.style.display = 'block';
+        playError();
+    }
+    elements.onboardSubmit.disabled = false;
+    elements.onboardSubmit.textContent = "LET'S GO";
 }
 
-.profile-section {
-    text-align: center;
-    padding: 25px;
-    margin-bottom: 20px;
+function openProfile() {
+    if (!userProfile) return;
+    elements.profileInitial.textContent = userProfile.artist_name?.charAt(0) || '?';
+    elements.profileName.textContent = userProfile.artist_name || 'UNKNOWN';
+    elements.profileLocation.textContent = userProfile.country || 'Unknown';
+    elements.statLifetime.textContent = userProfile.lifetime_clout || 0;
+    elements.statBest.textContent = userProfile.personal_best || 0;
+    elements.statReruns.textContent = userAnalytics?.total_reruns || 0;
+    elements.statCloutLost.textContent = userAnalytics?.clout_lost || 0;
+    elements.profileOverlay.classList.add('active');
+    playClick();
 }
 
-.profile-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--cyan), var(--magenta));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    font-size: 2.5rem;
-    font-weight: 900;
-    color: #000;
-    box-shadow: 0 0 30px rgba(0,242,255,0.5);
+function closeProfile() { elements.profileOverlay.classList.remove('active'); playClick(); }
+
+async function openLeaderboard() {
+    closeProfile();
+    showScreen('screen-leaderboard');
+    playClick();
+    elements.leaderboardList.innerHTML = '<div style="text-align:center;color:#888;">Loading rankings...</div>';
+    try {
+        const { data, error } = await supabaseClient.from('profiles').select('artist_name, lifetime_clout, country').order('lifetime_clout', { ascending: false }).limit(50);
+        if (error) throw error;
+        if (!data || data.length === 0) { elements.leaderboardList.innerHTML = '<div style="text-align:center;color:#888;">No players yet!</div>'; return; }
+        let html = '';
+        data.forEach((player, index) => {
+            const rank = index + 1;
+            let emoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
+            const isMe = userProfile && player.artist_name === userProfile.artist_name;
+            html += '<div style="display:flex;justify-content:space-between;padding:10px;margin:5px 0;background:' + (isMe ? 'rgba(255,0,255,0.2)' : 'rgba(0,0,0,0.3)') + ';border-radius:8px;border:1px solid ' + (isMe ? 'var(--magenta)' : 'transparent') + ';"><span style="color:var(--cyan);">' + emoji + '</span><span style="flex:1;margin-left:10px;">' + player.artist_name + '</span><span style="color:var(--yellow);">' + (player.lifetime_clout || 0) + '</span></div>';
+        });
+        elements.leaderboardList.innerHTML = html;
+    } catch (err) {
+        console.error('Leaderboard error:', err);
+        elements.leaderboardList.innerHTML = '<div style="text-align:center;color:var(--red);">Failed to load</div>';
+    }
 }
 
-.profile-name {
-    font-size: 1.5rem;
-    font-weight: 900;
-    color: var(--cyan);
-    letter-spacing: 3px;
+function closeLeaderboard() { 
+    showScreen('screen-modes'); 
+    playClick(); 
 }
 
-.profile-location {
-    font-size: 0.8rem;
-    color: #888;
-    margin-top: 5px;
-    letter-spacing: 1px;
+function startGame(mode) {
+    selectedMode = mode;
+    tasksCompleted = 0;
+    sessionClout = 0;
+    comboCount = 0;
+    cleanStreakCount = 0;
+    rerunUsedInSession = false;
+    speedDemonCount = 0;
+    usedCards = [];
+    totalRerunsThisSession = 0;
+    totalRestartsThisSession = 0;
+    sessionStartTime = Date.now();
+    elements.cloutVal.textContent = "0";
+    elements.perfectBadge.style.display = "none";
+    playSuccess();
+    playCassetteInsert();
+    showScreen('screen-game');
+    drawTask();
 }
 
-.stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+function drawTask() {
+    if (tasksCompleted >= SET_LIMIT) { endSession(); return; }
+    elements.taskCount.textContent = (tasksCompleted + 1) + '/' + SET_LIMIT;
+    const deck = cardDecks[selectedMode] || cardDecks.production;
+    let availableCards = deck.filter(card => !usedCards.includes(card.text));
+    if (availableCards.length === 0) { usedCards = []; availableCards = [...deck]; }
+    const selectedCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+    currentCardText = selectedCard.text;
+    currentCardTime = selectedCard.time;
+    usedCards.push(currentCardText);
+    elements.cardBody.classList.add('cassette-load');
+    elements.cardBody.textContent = currentCardText;
+    playCassetteInsert();
+    setTimeout(() => elements.cardBody.classList.remove('cassette-load'), 600);
+    timeLeft = currentCardTime;
+    cooldownLeft = 10;
+    updateCooldownUI();
+    startTimer();
 }
 
-.stat-card {
-    padding: 15px;
-    text-align: center;
+function updateCooldownUI() {
+    if (cooldownLeft > 0) {
+        elements.completeBtn.classList.add('btn-locked');
+        elements.cooldownTimer.textContent = 'LOCKED: ' + cooldownLeft + 's';
+    } else {
+        elements.completeBtn.classList.remove('btn-locked');
+        elements.cooldownTimer.textContent = "READY";
+    }
 }
 
-.stat-value {
-    font-size: 1.8rem;
-    font-weight: 900;
-    color: var(--yellow);
-    text-shadow: 0 0 15px var(--yellow);
+function startTimer() {
+    clearInterval(timerInterval);
+    elements.timer.classList.remove('timer-low');
+    
+    // Show time immediately before interval starts
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    elements.timer.textContent = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+    
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        if (cooldownLeft > 0) { cooldownLeft--; updateCooldownUI(); }
+        if (timeLeft <= 10) {
+            elements.timer.classList.add('timer-low');
+            playAlarmBuzz((10 - timeLeft) / 10);
+        } else { playTick(); }
+        const min = Math.floor(timeLeft / 60);
+        const sec = timeLeft % 60;
+        elements.timer.textContent = (min < 10 ? "0" + min : min) + ":" + (sec < 10 ? "0" + sec : sec);
+        if (timeLeft <= 0) { clearInterval(timerInterval); comboCount = 0; playError(); showScreen('screen-modes'); }
+    }, 1000);
 }
 
-.stat-label {
-    font-size: 0.6rem;
-    color: #888;
-    letter-spacing: 1px;
-    margin-top: 5px;
-}
+function attemptComplete() { if (cooldownLeft > 0) { showCheatError(); return; } completeTask(); }
 
-.mode-bars {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+function showCheatError() { elements.cheatError.style.opacity = "1"; playError(); setTimeout(() => elements.cheatError.style.opacity = "0", 2000); }
 
-.mode-bar-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.mode-label {
-    font-size: 0.65rem;
-    color: #888;
-    width: 70px;
-    text-align: right;
-}
-
-.mode-bar-track {
-    flex: 1;
-    height: 8px;
-    background: rgba(0,0,0,0.5);
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.mode-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--cyan), var(--magenta));
-    border-radius: 4px;
-    width: 0%;
-    transition: width 0.5s ease-out;
-}
-
-.mode-count {
-    font-size: 0.75rem;
-    color: var(--cyan);
-    width: 30px;
-    font-weight: 700;
-}
-
-/* ==================== LEADERBOARD ==================== */
-#screen-leaderboard {
-    padding: 20px;
-}
-
-#screen-leaderboard h2 {
-    font-size: 1rem;
-    margin-bottom: 15px;
-}
-
-#leaderboard-list {
-    width: 100%;
-    max-height: 55vh;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--cyan) transparent;
-    padding: 10px;
-}
-
-#leaderboard-list::-webkit-scrollbar {
-    width: 6px;
-}
-
-#leaderboard-list::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-#leaderboard-list::-webkit-scrollbar-thumb {
-    background: var(--cyan);
-    border-radius: 3px;
-}
-
-.leaderboard-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px;
-    margin: 6px 0;
-    background: rgba(0,0,0,0.3);
-    border-radius: 8px;
-    border: 1px solid transparent;
-    transition: all 0.2s ease;
-}
-
-.leaderboard-item:hover {
-    background: rgba(0,0,0,0.5);
-}
-
-.leaderboard-item.gold {
-    background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,215,0,0.05));
-    border-color: rgba(255,215,0,0.5);
-}
-
-.leaderboard-item.silver {
-    background: linear-gradient(135deg, rgba(192,192,192,0.2), rgba(192,192,192,0.05));
-    border-color: rgba(192,192,192,0.5);
-}
-
-.leaderboard-item.bronze {
-    background: linear-gradient(135deg, rgba(205,127,50,0.2), rgba(205,127,50,0.05));
-    border-color: rgba(205,127,50,0.5);
-}
-
-.leaderboard-item.current-user {
-    background: linear-gradient(135deg, rgba(255,0,255,0.2), rgba(255,0,255,0.05));
-    border-color: var(--magenta);
-}
-
-.lb-rank {
-    font-size: 1.2rem;
-    min-width: 30px;
-    color: var(--cyan);
-}
-
-.lb-name {
-    flex: 1;
-    margin-left: 10px;
-    font-weight: 600;
-}
-
-.lb-country {
-    font-size: 0.7rem;
-    color: #888;
-    margin-right: 15px;
-}
-
-.lb-clout {
-    color: var(--yellow);
-    font-weight: 700;
-    font-size: 1.1rem;
-}
-
-.leaderboard-loading,
-.leaderboard-empty,
-.leaderboard-error {
-    text-align: center;
-    padding: 40px 20px;
-    color: #888;
-}
-
-.leaderboard-error {
-    color: var(--red);
-}
-
-/* ==================== RESPONSIVE ==================== */
-@media (max-width: 440px) {
-    body {
-        align-items: flex-start;
-        justify-content: flex-start;
-        padding: 0;
-        margin: 0;
+function completeTask() {
+    clearInterval(timerInterval);
+    
+    // Speed demon: finish with more than half the time left
+    let currentBonus = 0;
+    const halfTime = Math.floor(currentCardTime / 2);
+    if (timeLeft > halfTime) { currentBonus += 5; speedDemonCount++; triggerAlert("SPEED DEMON +5"); }
+    
+    tasksCompleted++;
+    sessionClout += (10 + currentBonus);
+    comboCount++;
+    cleanStreakCount++;
+    
+    playSuccess();
+    
+    if (comboCount === 3) { sessionClout += 25; setTimeout(() => triggerAlert("XP OVERDRIVE +25"), 800); comboCount = 0; }
+    if (cleanStreakCount === 6 && !rerunUsedInSession) { const bonus = Math.floor(Math.random() * 101) + 50; sessionClout += bonus; setTimeout(() => triggerAlert('CLEAN STREAK +' + bonus), 1600); }
+    
+    elements.cloutVal.textContent = sessionClout;
+    
+    // Check if set is complete
+    if (tasksCompleted >= SET_LIMIT) {
+        endSession();
+        return;
     }
     
-    #console {
-        border-radius: 0;
-        max-height: 100vh;
-        height: 100vh;
-        width: 100vw;
-        max-width: 100vw;
-        transform: none;
-        padding: 0;
-        margin: 0;
-        overflow: hidden;
+    // Show cooldown screen between cards
+    showCooldownScreen();
+}
+
+function showCooldownScreen() {
+    showScreen('screen-cooldown');
+    
+    // Update stats on cooldown screen
+    const cooldownTask = document.getElementById('cooldown-task');
+    const cooldownClout = document.getElementById('cooldown-clout');
+    if (cooldownTask) cooldownTask.textContent = tasksCompleted;
+    if (cooldownClout) cooldownClout.textContent = sessionClout;
+    
+    let cooldownTime = 10;
+    const countdownEl = document.getElementById('cooldown-countdown');
+    const progressEl = document.getElementById('cooldown-progress');
+    
+    countdownEl.textContent = cooldownTime;
+    progressEl.style.width = '100%';
+    
+    const cooldownInterval = setInterval(() => {
+        cooldownTime--;
+        countdownEl.textContent = cooldownTime;
+        progressEl.style.width = ((cooldownTime / 10) * 100) + '%';
+        
+        if (cooldownTime <= 3) {
+            playTick();
+        }
+        
+        if (cooldownTime <= 0) {
+            clearInterval(cooldownInterval);
+            playCassetteInsert();
+            showScreen('screen-game');
+            drawTask();
+        }
+    }, 1000);
+}
+
+function triggerAlert(text) { elements.comboAlert.textContent = text; elements.comboAlert.style.opacity = "1"; setTimeout(() => elements.comboAlert.style.opacity = "0", 2000); }
+
+async function rerollTask() {
+    if (sessionClout < RERUN_PENALTY) { triggerAlert('NEED ' + RERUN_PENALTY + ' CLOUT'); playError(); return; }
+    
+    // Stop current timer immediately
+    clearInterval(timerInterval);
+    
+    rerunUsedInSession = true;
+    cleanStreakCount = 0;
+    comboCount = 0;
+    totalRerunsThisSession++;
+    sessionClout -= RERUN_PENALTY;
+    elements.cloutVal.textContent = sessionClout;
+    playClick();
+    playCassetteInsert();
+    
+    if (currentUser) { 
+        supabaseClient.rpc('track_card_rerun', { p_card_text: currentCardText, p_game_mode: selectedMode }).catch(err => console.error('Track rerun failed:', err)); 
     }
     
-    .screen {
-        padding: 20px;
-        padding-bottom: 30px;
-        inset: 0;
-        border-radius: 0;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
+    // Get the deck
+    const deck = cardDecks[selectedMode] || cardDecks.production;
+    
+    // Get a NEW card that's different from current
+    let newCard = null;
+    let attempts = 0;
+    
+    while (!newCard && attempts < 50) {
+        const randomCard = deck[Math.floor(Math.random() * deck.length)];
+        if (randomCard.text !== currentCardText) {
+            newCard = randomCard;
+        }
+        attempts++;
     }
     
-    #screen-feed {
-        padding-top: 40px;
-        padding-bottom: 25px;
+    // Fallback if somehow still null
+    if (!newCard) {
+        newCard = deck[0].text === currentCardText ? deck[1] : deck[0];
     }
     
-    .logo-small {
-        font-size: 3rem;
-        letter-spacing: 6px;
-        margin-top: 0;
-        margin-bottom: 25px;
+    // Update tracking
+    currentCardText = newCard.text;
+    currentCardTime = newCard.time;
+    if (usedCards.length > 0) {
+        usedCards[usedCards.length - 1] = newCard.text;
     }
     
-    #timer {
-        font-size: 3.5rem;
+    // Update card display - force DOM update
+    elements.cardBody.textContent = '';
+    elements.cardBody.classList.add('cassette-load');
+    
+    // Use setTimeout to ensure DOM updates
+    setTimeout(() => {
+        elements.cardBody.textContent = currentCardText;
+    }, 50);
+    
+    setTimeout(() => elements.cardBody.classList.remove('cassette-load'), 600);
+    
+    // Reset timer with NEW card's time
+    timeLeft = currentCardTime;
+    cooldownLeft = 10;
+    
+    // Update timer display immediately
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    elements.timer.textContent = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+    elements.timer.classList.remove('timer-low');
+    
+    updateCooldownUI();
+    startTimer();
+    
+    triggerAlert('RERUN -' + RERUN_PENALTY + ' CLOUT');
+}
+
+function restartSession() { if (confirm("RESTART SESSION? Progress will be lost.")) { totalRestartsThisSession++; playClick(); startGame(selectedMode); } }
+function restartFromResults() { playClick(); playCassetteInsert(); startGame(selectedMode); }
+function exitGame() { clearInterval(timerInterval); playClick(); showScreen('screen-modes'); }
+
+async function endSession() {
+    clearInterval(timerInterval);
+    showScreen('screen-results');
+    const sessionDuration = Math.floor((Date.now() - sessionStartTime) / 1000);
+    const wasPerfectSet = !rerunUsedInSession && speedDemonCount >= 5;
+    let displayClout = sessionClout;
+    if (wasPerfectSet) { displayClout += 100; elements.perfectBadge.style.display = "block"; }
+    playCelebration();
+    createConfetti();
+    try {
+        const { data, error } = await supabaseClient.rpc('increment_clout', {
+            p_clout_amount: displayClout,
+            p_game_mode: selectedMode,
+            p_tasks_completed: tasksCompleted,
+            p_reruns_used: totalRerunsThisSession,
+            p_restarts: totalRestartsThisSession,
+            p_speed_demons: speedDemonCount,
+            p_was_perfect_set: wasPerfectSet,
+            p_session_duration: sessionDuration
+        });
+        if (error) { console.error('Save failed:', error); elements.resultFooter.textContent = "ERROR SAVING"; elements.resultFooter.style.color = "var(--red)"; }
+        else if (data && data.success) {
+            userProfile.lifetime_clout = data.new_lifetime_total;
+            userProfile.current_streak = data.new_streak;
+            
+            // Update streak display on main screen
+            if (elements.streakCount) elements.streakCount.textContent = data.new_streak;
+            
+            if (data.is_new_best) { 
+                userProfile.personal_best = data.final_clout; 
+                elements.resultHeader.textContent = "NEW PERSONAL BEST!"; 
+                elements.tryAgainBtn.style.display = "none"; 
+                elements.previousBest.style.display = "none"; 
+            } else { 
+                elements.resultHeader.textContent = "SESSION COMPLETE"; 
+                elements.tryAgainBtn.style.display = "block"; 
+                elements.previousBest.style.display = "block"; 
+                elements.previousBest.querySelector('span').textContent = userProfile.personal_best; 
+            }
+            
+            elements.resultClout.textContent = data.final_clout;
+            let footerText = "SESSION ARCHIVED.";
+            
+            // Show streak notification if streak increased
+            if (data.streak_increased && data.new_streak > 1) {
+                setTimeout(() => {
+                    showStreakNotification(data.new_streak, data.streak_bonus);
+                }, 1500);
+            }
+            
+            if (data.streak_bonus > 0) {
+                footerText += ' 🔥 STREAK BONUS: +' + data.streak_bonus + '!';
+            }
+            
+            elements.resultFooter.textContent = footerText;
+            elements.resultFooter.style.color = data.streak_bonus > 0 ? "var(--yellow)" : "";
+            
+            if (userAnalytics) { 
+                userAnalytics.total_reruns = (userAnalytics.total_reruns || 0) + totalRerunsThisSession; 
+                userAnalytics.clout_lost = (userAnalytics.clout_lost || 0) + (totalRerunsThisSession * RERUN_PENALTY); 
+            }
+        }
+    } catch (err) { console.error('Session error:', err); elements.resultFooter.textContent = "NETWORK ERROR"; elements.resultFooter.style.color = "var(--red)"; }
+}
+
+function showStreakNotification(streak, bonus) {
+    const notification = document.createElement('div');
+    notification.className = 'streak-notification';
+    notification.innerHTML = `
+        <div class="streak-fire">🔥</div>
+        <div class="streak-count">${streak} DAY STREAK!</div>
+        ${bonus > 0 ? `<div class="streak-bonus">+${bonus} CLOUT</div>` : ''}
+        <div class="streak-message">${getStreakMessage(streak)}</div>
+    `;
+    document.body.appendChild(notification);
+    playSuccess();
+    setTimeout(() => notification.classList.add('show'), 100);
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 500);
+    }, 3500);
+}
+
+function getStreakMessage(streak) {
+    if (streak >= 30) return "LEGENDARY STATUS! 👑";
+    if (streak >= 14) return "TWO WEEKS STRONG! 💪";
+    if (streak >= 7) return "ONE WEEK LOCKED IN! 🎯";
+    if (streak >= 3) return "BUILDING MOMENTUM! ⚡";
+    return "KEEP IT GOING! 🚀";
+}
+
+function initEventListeners() {
+    if (elements.authBtn) elements.authBtn.addEventListener('click', sendMagicLink);
+    if (elements.authEmail) elements.authEmail.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMagicLink(); });
+    
+    const discordBtn = document.getElementById('discord-btn');
+    if (discordBtn) discordBtn.addEventListener('click', signInWithDiscord);
+    
+    if (elements.onboardSubmit) elements.onboardSubmit.addEventListener('click', completeOnboarding);
+    const manualContinue = document.getElementById('manual-continue');
+    if (manualContinue) manualContinue.addEventListener('click', () => { playClick(); showScreen('screen-modes'); });
+    const showManual = document.getElementById('show-manual');
+    if (showManual) showManual.addEventListener('click', () => { playClick(); showScreen('screen-manual'); });
+    document.querySelectorAll('.mode-btn').forEach(btn => { btn.addEventListener('click', () => { const mode = btn.dataset.mode; if (mode) startGame(mode); }); });
+    if (elements.completeBtn) elements.completeBtn.addEventListener('click', attemptComplete);
+    const rerunBtn = document.getElementById('rerun-btn');
+    if (rerunBtn) rerunBtn.addEventListener('click', rerollTask);
+    const restartBtn = document.getElementById('restart-btn');
+    if (restartBtn) restartBtn.addEventListener('click', restartSession);
+    const exitBtn = document.getElementById('exit-btn');
+    if (exitBtn) exitBtn.addEventListener('click', exitGame);
+    const continueBtn = document.getElementById('continue-btn');
+    if (continueBtn) continueBtn.addEventListener('click', () => { updateMainScreenUI(); showScreen('screen-modes'); playClick(); });
+    if (elements.tryAgainBtn) elements.tryAgainBtn.addEventListener('click', restartFromResults);
+    if (elements.profileIcon) elements.profileIcon.addEventListener('click', openProfile);
+    if (elements.closeProfile) elements.closeProfile.addEventListener('click', closeProfile);
+    if (elements.logoutBtn) elements.logoutBtn.addEventListener('click', logout);
+    if (elements.leaderboardBtn) elements.leaderboardBtn.addEventListener('click', openLeaderboard);
+    if (elements.closeLeaderboard) elements.closeLeaderboard.addEventListener('click', closeLeaderboard);
+    if (elements.profileOverlay) elements.profileOverlay.addEventListener('click', (e) => { if (e.target === elements.profileOverlay) closeProfile(); });
+    
+    // Community Feed listeners
+    const communityBtn = document.getElementById('community-btn');
+    if (communityBtn) communityBtn.addEventListener('click', openFeed);
+    const closeFeedBtn = document.getElementById('close-feed-btn');
+    if (closeFeedBtn) closeFeedBtn.addEventListener('click', () => { playClick(); showScreen('screen-modes'); });
+    const submitClipBtn = document.getElementById('submit-clip-btn');
+    if (submitClipBtn) submitClipBtn.addEventListener('click', () => { playClick(); showScreen('screen-submit'); });
+    const cancelSubmitBtn = document.getElementById('cancel-submit-btn');
+    if (cancelSubmitBtn) cancelSubmitBtn.addEventListener('click', () => { playClick(); showScreen('screen-feed'); });
+    const submitPostBtn = document.getElementById('submit-post-btn');
+    if (submitPostBtn) submitPostBtn.addEventListener('click', submitFeedPost);
+    
+    // Challenge entry listeners
+    const enterChallengeBtn = document.getElementById('enter-challenge-btn');
+    if (enterChallengeBtn) enterChallengeBtn.addEventListener('click', openChallengeSubmit);
+    const submitChallengeEntryBtn = document.getElementById('submit-challenge-entry-btn');
+    if (submitChallengeEntryBtn) submitChallengeEntryBtn.addEventListener('click', submitChallengeEntry);
+    const cancelChallengeBtn = document.getElementById('cancel-challenge-btn');
+    if (cancelChallengeBtn) cancelChallengeBtn.addEventListener('click', () => { playClick(); showScreen('screen-feed'); });
+    
+    // Public profile listeners
+    const closePublicProfile = document.getElementById('close-public-profile');
+    if (closePublicProfile) closePublicProfile.addEventListener('click', () => { playClick(); showScreen('screen-feed'); });
+    
+    // Edit profile listeners
+    const editProfileBtn = document.getElementById('edit-profile-btn');
+    if (editProfileBtn) editProfileBtn.addEventListener('click', openEditProfile);
+    const saveProfileBtn = document.getElementById('save-profile-btn');
+    if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+    if (cancelEditBtn) cancelEditBtn.addEventListener('click', () => { playClick(); showScreen('screen-modes'); });
+    
+    document.body.addEventListener('click', initAudio, { once: true });
+    document.body.addEventListener('touchstart', initAudio, { once: true });
+}
+
+// ==================== COMMUNITY FEED FUNCTIONS ====================
+let currentChallenge = null;
+let currentFeedTab = 'all';
+
+async function openFeed() {
+    playClick();
+    showScreen('screen-feed');
+    await loadWinnerAnnouncement();
+    await loadWeeklyChallenge();
+    await loadFeedPosts();
+    initFeedTabs();
+}
+
+function initFeedTabs() {
+    document.querySelectorAll('.feed-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.feed-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentFeedTab = tab.dataset.tab;
+            loadFeedPosts();
+            playClick();
+        });
+    });
+}
+
+async function loadWinnerAnnouncement() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('weekly_challenges')
+            .select('*, winner_post:feed_posts!winner_post_id(artist_name)')
+            .eq('winner_announced', true)
+            .order('end_date', { ascending: false })
+            .limit(1);
+        
+        if (error) throw error;
+        
+        const winnerBanner = document.getElementById('winner-announcement');
+        if (data && data.length > 0 && data[0].winner_post) {
+            const challenge = data[0];
+            document.getElementById('winner-name').textContent = '@' + challenge.winner_post.artist_name;
+            document.getElementById('winner-challenge').textContent = challenge.title;
+            if (challenge.youtube_live_url) {
+                document.getElementById('winner-youtube-link').href = challenge.youtube_live_url;
+                document.getElementById('winner-youtube-link').style.display = 'inline-block';
+            } else {
+                document.getElementById('winner-youtube-link').style.display = 'none';
+            }
+            winnerBanner.style.display = 'block';
+        } else {
+            winnerBanner.style.display = 'none';
+        }
+    } catch (err) {
+        console.error('Failed to load winner:', err);
+    }
+}
+
+async function loadWeeklyChallenge() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('weekly_challenges')
+            .select('*')
+            .eq('is_active', true)
+            .gte('end_date', new Date().toISOString().split('T')[0])
+            .order('created_at', { ascending: false })
+            .limit(1);
+        
+        if (error) throw error;
+        
+        const challengeBanner = document.getElementById('weekly-challenge');
+        if (data && data.length > 0) {
+            currentChallenge = data[0];
+            document.getElementById('challenge-title').textContent = currentChallenge.title;
+            document.getElementById('challenge-desc').textContent = currentChallenge.description;
+            document.getElementById('challenge-prize').textContent = currentChallenge.prize ? '🏆 ' + currentChallenge.prize : '';
+            
+            const endDate = new Date(currentChallenge.end_date);
+            const now = new Date();
+            const daysLeft = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
+            document.getElementById('challenge-timer').textContent = '⏰ ' + daysLeft + ' days left';
+            
+            challengeBanner.style.display = 'block';
+        } else {
+            challengeBanner.style.display = 'none';
+            currentChallenge = null;
+        }
+    } catch (err) {
+        console.error('Failed to load weekly challenge:', err);
+    }
+}
+
+async function loadFeedPosts() {
+    const feedList = document.getElementById('feed-list');
+    feedList.innerHTML = '<div style="text-align:center;color:#888;padding:20px;">Loading clips...</div>';
+    
+    try {
+        let query = supabaseClient
+            .from('feed_posts')
+            .select('*')
+            .eq('is_approved', true)
+            .order('is_pinned', { ascending: false })
+            .order('created_at', { ascending: false })
+            .limit(20);
+        
+        if (currentFeedTab === 'challenges') {
+            query = query.eq('is_challenge_entry', true);
+        }
+        
+        const { data, error } = await query;
+        
+        if (error) throw error;
+        
+        if (!data || data.length === 0) {
+            feedList.innerHTML = '<div style="text-align:center;color:#888;padding:40px;">' + 
+                (currentFeedTab === 'challenges' ? 'No challenge entries yet!' : 'No clips yet! Be the first to submit.') + '</div>';
+            return;
+        }
+        
+        // Find highest engagement score for challenge entries
+        let highestScore = 0;
+        if (currentFeedTab === 'challenges') {
+            data.forEach(post => {
+                if ((post.engagement_score || 0) > highestScore) {
+                    highestScore = post.engagement_score || 0;
+                }
+            });
+        }
+        
+        let html = '';
+        for (const post of data) {
+            const videoId = extractTikTokId(post.tiktok_url);
+            const modeLabel = post.game_mode === 'production' ? 'ENGINEER' : 
+                             post.game_mode === 'beats' ? 'BEATS' : 
+                             post.game_mode === 'songwriting' ? 'WRITER' : 
+                             post.game_mode === 'challenge' ? 'CHALLENGE' : post.game_mode;
+            
+            const isChallenge = post.is_challenge_entry;
+            const postClass = isChallenge ? 'feed-post challenge-entry' : (post.is_pinned ? 'feed-post pinned' : 'feed-post');
+            const isLeading = isChallenge && highestScore > 0 && (post.engagement_score || 0) === highestScore;
+            const isOwnPost = currentUser && post.user_id === currentUser.id;
+            
+            html += `
+                <div class="${postClass}" data-post-id="${post.id}">
+                    <div class="feed-post-header">
+                        <span class="feed-post-author" onclick="viewPublicProfile('${post.artist_name}')" style="cursor:pointer;">@${post.artist_name}${isChallenge ? '<span class="challenge-entry-badge">🎯</span>' : ''}</span>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            ${isChallenge ? `<span class="engagement-score ${isLeading ? 'leading' : ''}">🔥 ${post.engagement_score || 0} ${isLeading ? '👑' : ''}</span>` : `<span class="feed-post-mode">${modeLabel}</span>`}
+                            ${isOwnPost ? `<button class="feed-delete-btn" onclick="deletePost('${post.id}')" title="Delete">🗑️</button>` : ''}
+                        </div>
+                    </div>
+                    <div class="feed-post-card">"${post.card_text}"</div>
+                    ${post.description ? '<div class="feed-post-desc">' + post.description + '</div>' : ''}
+                    <div class="feed-tiktok-preview" id="preview-${post.id}" onclick="expandVideo('${post.id}', '${videoId}', '${post.tiktok_url}')">
+                        <div class="tiktok-preview-overlay">
+                            <span class="tiktok-play-btn">▶</span>
+                            <span class="tiktok-tap-text">Tap to watch</span>
+                        </div>
+                    </div>
+                    <div class="feed-post-actions">
+                        <button class="feed-like-btn" onclick="toggleLike('${post.id}', this)">
+                            ❤️ <span>${post.likes_count || 0}</span>
+                        </button>
+                        <button class="feed-comment-btn" onclick="toggleComments('${post.id}')">
+                            💬 <span class="comment-count-${post.id}">0</span>
+                        </button>
+                    </div>
+                    <div class="feed-comments" id="comments-${post.id}" style="display: none;">
+                        <div class="comments-list" id="comments-list-${post.id}"></div>
+                        <div class="feed-comment-input">
+                            <button class="emoji-btn" onclick="toggleEmojiPicker('${post.id}')">😀</button>
+                            <input type="text" placeholder="Add a comment..." id="comment-input-${post.id}" onkeypress="if(event.key==='Enter')addComment('${post.id}')" maxlength="150">
+                            <button onclick="addComment('${post.id}')">Post</button>
+                        </div>
+                        <div class="emoji-picker" id="emoji-picker-${post.id}" style="display:none;">
+                            <span onclick="insertEmoji('${post.id}','🔥')">🔥</span>
+                            <span onclick="insertEmoji('${post.id}','💯')">💯</span>
+                            <span onclick="insertEmoji('${post.id}','🎵')">🎵</span>
+                            <span onclick="insertEmoji('${post.id}','🎹')">🎹</span>
+                            <span onclick="insertEmoji('${post.id}','🎤')">🎤</span>
+                            <span onclick="insertEmoji('${post.id}','🎧')">🎧</span>
+                            <span onclick="insertEmoji('${post.id}','⚡')">⚡</span>
+                            <span onclick="insertEmoji('${post.id}','💪')">💪</span>
+                            <span onclick="insertEmoji('${post.id}','👀')">👀</span>
+                            <span onclick="insertEmoji('${post.id}','😂')">😂</span>
+                            <span onclick="insertEmoji('${post.id}','🙌')">🙌</span>
+                            <span onclick="insertEmoji('${post.id}','❤️')">❤️</span>
+                            <span onclick="insertEmoji('${post.id}','👏')">👏</span>
+                            <span onclick="insertEmoji('${post.id}','🤯')">🤯</span>
+                            <span onclick="insertEmoji('${post.id}','🎯')">🎯</span>
+                            <span onclick="insertEmoji('${post.id}','✨')">✨</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        feedList.innerHTML = html;
+        
+        // Load comment counts
+        for (const post of data) {
+            loadCommentCount(post.id);
+        }
+    } catch (err) {
+        console.error('Failed to load feed:', err);
+        feedList.innerHTML = '<div style="text-align:center;color:var(--red);padding:20px;">Failed to load clips</div>';
+    }
+}
+
+function extractTikTokId(url) {
+    const match = url.match(/video\/(\d+)/) || url.match(/tiktok\.com\/@[\w.-]+\/video\/(\d+)/);
+    return match ? match[1] : '';
+}
+
+function expandVideo(postId, videoId, tiktokUrl) {
+    const preview = document.getElementById(`preview-${postId}`);
+    if (videoId) {
+        preview.innerHTML = `<iframe src="https://www.tiktok.com/embed/v2/${videoId}" allowfullscreen style="width:100%;height:400px;border:none;border-radius:8px;"></iframe>`;
+        preview.classList.add('expanded');
+    } else {
+        window.open(tiktokUrl, '_blank');
+    }
+}
+
+function toggleEmojiPicker(postId) {
+    const picker = document.getElementById(`emoji-picker-${postId}`);
+    picker.style.display = picker.style.display === 'none' ? 'flex' : 'none';
+}
+
+function insertEmoji(postId, emoji) {
+    const input = document.getElementById(`comment-input-${postId}`);
+    input.value += emoji;
+    input.focus();
+}
+
+// Profanity filter
+const profanityList = ['fuck','shit','ass','bitch','dick','pussy','cock','cunt','nigger','nigga','faggot','retard','whore','slut'];
+
+function filterProfanity(text) {
+    let filtered = text;
+    profanityList.forEach(word => {
+        const regex = new RegExp(word, 'gi');
+        filtered = filtered.replace(regex, '*'.repeat(word.length));
+    });
+    return filtered;
+}
+
+function containsProfanity(text) {
+    const lowerText = text.toLowerCase();
+    return profanityList.some(word => lowerText.includes(word));
+}
+
+function getTikTokLink(url) {
+    return url;
+}
+
+async function deletePost(postId) {
+    if (!confirm('Delete this post?')) return;
+    
+    try {
+        const { error } = await supabaseClient
+            .from('feed_posts')
+            .delete()
+            .eq('id', postId)
+            .eq('user_id', currentUser.id);
+        
+        if (error) throw error;
+        
+        playSuccess();
+        loadFeedPosts();
+    } catch (err) {
+        console.error('Failed to delete post:', err);
+        playError();
+        alert('Failed to delete post');
+    }
+}
+
+// ==================== PUBLIC PROFILE FUNCTIONS ====================
+async function viewPublicProfile(artistName) {
+    playClick();
+    showScreen('screen-public-profile');
+    
+    // Reset display
+    document.getElementById('public-avatar').innerHTML = '?';
+    document.getElementById('public-name').textContent = artistName;
+    document.getElementById('public-location').textContent = '🌍 Loading...';
+    document.getElementById('public-bio').textContent = '';
+    document.getElementById('public-clout').textContent = '0';
+    document.getElementById('public-streak').textContent = '0';
+    document.getElementById('public-sets').textContent = '0';
+    document.getElementById('public-socials').innerHTML = '';
+    
+    try {
+        const { data, error } = await supabaseClient.rpc('get_public_profile', {
+            p_artist_name: artistName
+        });
+        
+        if (error) throw error;
+        
+        if (data && data.success) {
+            const p = data.profile;
+            
+            // Avatar
+            const avatarEl = document.getElementById('public-avatar');
+            if (p.avatar_url) {
+                avatarEl.innerHTML = `<img src="${p.avatar_url}" alt="${p.artist_name}">`;
+            } else {
+                avatarEl.textContent = p.artist_name.charAt(0).toUpperCase();
+            }
+            
+            // Basic info
+            document.getElementById('public-name').textContent = p.artist_name;
+            document.getElementById('public-location').textContent = '🌍 ' + (p.country || 'Unknown');
+            document.getElementById('public-bio').textContent = p.bio || 'No bio yet...';
+            
+            // Stats
+            document.getElementById('public-clout').textContent = p.lifetime_clout || 0;
+            document.getElementById('public-streak').textContent = p.current_streak || 0;
+            document.getElementById('public-sets').textContent = p.total_sets || 0;
+            
+            // Social links
+            let socialsHtml = '';
+            if (p.tiktok_username) {
+                const tiktok = p.tiktok_username.replace('@', '');
+                socialsHtml += `<a href="https://tiktok.com/@${tiktok}" target="_blank" class="public-social-link tiktok">🎵 TikTok</a>`;
+            }
+            if (p.youtube_url) {
+                socialsHtml += `<a href="${p.youtube_url}" target="_blank" class="public-social-link youtube">▶️ YouTube</a>`;
+            }
+            if (p.instagram_username) {
+                const insta = p.instagram_username.replace('@', '');
+                socialsHtml += `<a href="https://instagram.com/${insta}" target="_blank" class="public-social-link instagram">📷 Instagram</a>`;
+            }
+            document.getElementById('public-socials').innerHTML = socialsHtml || '<span style="color:#666;font-size:0.7rem;">No socials linked</span>';
+        }
+    } catch (err) {
+        console.error('Failed to load public profile:', err);
+        document.getElementById('public-bio').textContent = 'Failed to load profile';
+    }
+}
+
+function openEditProfile() {
+    playClick();
+    closeProfile();
+    showScreen('screen-edit-profile');
+    
+    // Pre-fill with current data
+    if (userProfile) {
+        document.getElementById('edit-bio').value = userProfile.bio || '';
+        document.getElementById('edit-tiktok').value = userProfile.tiktok_username || '';
+        document.getElementById('edit-youtube').value = userProfile.youtube_url || '';
+        document.getElementById('edit-instagram').value = userProfile.instagram_username || '';
+        
+        // Show avatar preview
+        const preview = document.getElementById('avatar-preview');
+        if (userProfile.avatar_url) {
+            preview.innerHTML = `<img src="${userProfile.avatar_url}" alt="Avatar">`;
+        } else {
+            preview.textContent = userProfile.artist_name ? userProfile.artist_name.charAt(0).toUpperCase() : '?';
+        }
+    }
+    document.getElementById('edit-profile-message').textContent = '';
+    
+    // Set up file upload listener
+    const fileInput = document.getElementById('edit-avatar-file');
+    if (fileInput) {
+        fileInput.value = '';
+        fileInput.addEventListener('change', handleAvatarUpload);
     }
     
-    #card {
-        font-size: 1.2rem;
-        padding: 18px;
+    const removeBtn = document.getElementById('remove-avatar-btn');
+    if (removeBtn) {
+        removeBtn.addEventListener('click', removeAvatar);
+    }
+}
+
+async function handleAvatarUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Validate file
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    if (file.size > maxSize) {
+        alert('Image too large! Max 2MB');
+        return;
     }
     
-    .profile-trigger {
-        bottom: 20px;
-        right: 20px;
-        width: 42px;
-        height: 42px;
+    const validTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+        alert('Invalid file type! Use PNG, JPG, GIF, or WEBP');
+        return;
     }
     
-    .btn {
-        padding: 16px;
-        font-size: 0.95rem;
+    const preview = document.getElementById('avatar-preview');
+    const container = document.querySelector('.avatar-upload-container');
+    container.classList.add('avatar-uploading');
+    preview.innerHTML = '⏳';
+    
+    try {
+        // Create unique filename
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${currentUser.id}/avatar.${fileExt}`;
+        
+        // Upload to Supabase Storage
+        const { data, error } = await supabaseClient.storage
+            .from('avatars')
+            .upload(fileName, file, { 
+                upsert: true,
+                contentType: file.type
+            });
+        
+        if (error) throw error;
+        
+        // Get public URL
+        const { data: urlData } = supabaseClient.storage
+            .from('avatars')
+            .getPublicUrl(fileName);
+        
+        const avatarUrl = urlData.publicUrl + '?t=' + Date.now(); // Cache bust
+        
+        // Update profile in database
+        await supabaseClient.rpc('update_my_profile', {
+            p_avatar_url: avatarUrl
+        });
+        
+        // Update local profile
+        if (userProfile) userProfile.avatar_url = avatarUrl;
+        
+        // Show preview
+        preview.innerHTML = `<img src="${avatarUrl}" alt="Avatar">`;
+        playSuccess();
+        
+    } catch (err) {
+        console.error('Avatar upload failed:', err);
+        alert('Upload failed: ' + err.message);
+        preview.textContent = userProfile?.artist_name?.charAt(0).toUpperCase() || '?';
+        playError();
     }
     
-    #rank-panel {
-        padding: 18px;
-        margin-bottom: 18px;
+    container.classList.remove('avatar-uploading');
+}
+
+async function removeAvatar() {
+    if (!confirm('Remove your avatar?')) return;
+    
+    try {
+        // Delete from storage
+        const fileName = `${currentUser.id}/avatar`;
+        await supabaseClient.storage
+            .from('avatars')
+            .remove([`${fileName}.png`, `${fileName}.jpg`, `${fileName}.jpeg`, `${fileName}.gif`, `${fileName}.webp`]);
+        
+        // Update profile
+        await supabaseClient.rpc('update_my_profile', {
+            p_avatar_url: null
+        });
+        
+        if (userProfile) userProfile.avatar_url = null;
+        
+        const preview = document.getElementById('avatar-preview');
+        preview.textContent = userProfile?.artist_name?.charAt(0).toUpperCase() || '?';
+        
+        playSuccess();
+    } catch (err) {
+        console.error('Failed to remove avatar:', err);
+        playError();
+    }
+}
+
+async function saveProfile() {
+    const bio = document.getElementById('edit-bio').value.trim();
+    const tiktok = document.getElementById('edit-tiktok').value.trim();
+    const youtube = document.getElementById('edit-youtube').value.trim();
+    const instagram = document.getElementById('edit-instagram').value.trim();
+    const messageEl = document.getElementById('edit-profile-message');
+    
+    const saveBtn = document.getElementById('save-profile-btn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'SAVING...';
+    
+    try {
+        const { data, error } = await supabaseClient.rpc('update_my_profile', {
+            p_bio: bio || null,
+            p_tiktok_username: tiktok || null,
+            p_youtube_url: youtube || null,
+            p_instagram_username: instagram || null
+        });
+        
+        if (error) throw error;
+        
+        // Update local profile
+        if (userProfile) {
+            userProfile.bio = bio;
+            userProfile.tiktok_username = tiktok;
+            userProfile.youtube_url = youtube;
+            userProfile.instagram_username = instagram;
+        }
+        
+        messageEl.textContent = 'Profile saved!';
+        messageEl.style.color = 'var(--green)';
+        playSuccess();
+        
+        setTimeout(() => {
+            showScreen('screen-modes');
+        }, 1500);
+        
+    } catch (err) {
+        console.error('Failed to save profile:', err);
+        messageEl.textContent = 'Failed to save: ' + err.message;
+        messageEl.style.color = 'var(--red)';
+        playError();
     }
     
-    h2 {
-        font-size: 0.75rem;
-        margin-bottom: 15px;
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'SAVE';
+}
+
+async function loadCommentCount(postId) {
+    try {
+        const { count, error } = await supabaseClient
+            .from('feed_comments')
+            .select('*', { count: 'exact', head: true })
+            .eq('post_id', postId);
+        
+        if (!error) {
+            const countEl = document.querySelector(`.comment-count-${postId}`);
+            if (countEl) countEl.textContent = count || 0;
+        }
+    } catch (err) {
+        console.error('Failed to load comment count:', err);
+    }
+}
+
+async function toggleComments(postId) {
+    const commentsDiv = document.getElementById(`comments-${postId}`);
+    if (commentsDiv.style.display === 'none') {
+        commentsDiv.style.display = 'block';
+        await loadComments(postId);
+    } else {
+        commentsDiv.style.display = 'none';
+    }
+    playClick();
+}
+
+async function loadComments(postId) {
+    const commentsList = document.getElementById(`comments-list-${postId}`);
+    commentsList.innerHTML = '<div style="color:#666;font-size:0.65rem;">Loading...</div>';
+    
+    try {
+        const { data, error } = await supabaseClient
+            .from('feed_comments')
+            .select('*')
+            .eq('post_id', postId)
+            .order('created_at', { ascending: true })
+            .limit(20);
+        
+        if (error) throw error;
+        
+        if (!data || data.length === 0) {
+            commentsList.innerHTML = '<div style="color:#666;font-size:0.65rem;">No comments yet</div>';
+            return;
+        }
+        
+        let html = '';
+        data.forEach(comment => {
+            html += `
+                <div class="feed-comment">
+                    <span class="feed-comment-author">@${comment.artist_name}</span>
+                    <span class="feed-comment-text">${comment.comment_text}</span>
+                </div>
+            `;
+        });
+        commentsList.innerHTML = html;
+    } catch (err) {
+        console.error('Failed to load comments:', err);
+        commentsList.innerHTML = '<div style="color:var(--red);font-size:0.65rem;">Failed to load</div>';
+    }
+}
+
+async function addComment(postId) {
+    const input = document.getElementById(`comment-input-${postId}`);
+    let commentText = input.value.trim();
+    
+    if (!commentText) return;
+    if (!currentUser) {
+        alert('Please sign in to comment');
+        return;
     }
     
-    .feed-container {
-        max-height: 55vh;
-        flex: 1;
-        min-height: 0;
+    // Check for profanity and filter it
+    if (containsProfanity(commentText)) {
+        commentText = filterProfanity(commentText);
     }
     
-    .feed-actions-small {
-        margin-top: auto;
-        padding-top: 10px;
-        flex-shrink: 0;
+    try {
+        const { data, error } = await supabaseClient.rpc('add_comment', {
+            p_post_id: postId,
+            p_comment_text: commentText
+        });
+        
+        if (error) throw error;
+        
+        input.value = '';
+        
+        // Hide emoji picker
+        const picker = document.getElementById(`emoji-picker-${postId}`);
+        if (picker) picker.style.display = 'none';
+        
+        await loadComments(postId);
+        await loadCommentCount(postId);
+        playSuccess();
+        
+        // Check for engagement bonus
+        const bonusResult = await supabaseClient.rpc('check_engagement_bonus', { p_action_type: 'comment' });
+        if (bonusResult.data && bonusResult.data.bonus > 0) {
+            showBonusNotification(bonusResult.data.bonus_type, bonusResult.data.bonus);
+        }
+    } catch (err) {
+        console.error('Failed to add comment:', err);
+        playError();
     }
 }
 
-/* ==================== PWA INSTALL PROMPT ==================== */
-.install-prompt {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(135deg, #1e2533 0%, #141822 100%);
-    padding: 20px;
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-    z-index: 200;
-    border-top: 1px solid var(--glass-border);
-}
-
-.install-prompt.show {
-    display: flex;
-}
-
-.install-prompt p {
-    font-size: 0.85rem;
-    color: #ccc;
-    flex: 1;
-}
-
-.install-prompt button {
-    padding: 10px 20px;
-    font-size: 0.8rem;
-}
-
-.install-prompt .dismiss {
-    background: transparent;
-    border: 1px solid #555;
-    color: #888;
-    padding: 8px 15px;
-}
-
-/* ==================== STREAK NOTIFICATION ==================== */
-.streak-notification {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.5);
-    background: linear-gradient(135deg, rgba(0,0,0,0.98), rgba(30,20,10,0.98));
-    border: 3px solid #ff6b00;
-    border-radius: 20px;
-    padding: 30px 50px;
-    text-align: center;
-    z-index: 1001;
-    opacity: 0;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 60px rgba(255,107,0,0.6), inset 0 0 40px rgba(255,107,0,0.1);
-}
-
-.streak-notification.show {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-.streak-fire {
-    font-size: 4rem;
-    animation: fire-bounce 0.5s ease-in-out infinite alternate;
-}
-
-@keyframes fire-bounce {
-    from { transform: scale(1) rotate(-5deg); }
-    to { transform: scale(1.2) rotate(5deg); }
-}
-
-.streak-count {
-    font-size: 2rem;
-    color: #ff6b00;
-    font-weight: 900;
-    text-shadow: 0 0 20px #ff6b00;
-    margin: 10px 0;
-}
-
-.streak-bonus {
-    font-size: 1.5rem;
-    color: var(--yellow);
-    font-weight: 900;
-    text-shadow: 0 0 15px var(--yellow);
-}
-
-.streak-message {
-    font-size: 0.8rem;
-    color: #aaa;
-    margin-top: 10px;
-    letter-spacing: 2px;
-}
-
-/* ==================== BONUS NOTIFICATION ==================== */
-.bonus-notification {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.5);
-    background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,30,0.95));
-    border: 3px solid var(--yellow);
-    border-radius: 20px;
-    padding: 30px 50px;
-    text-align: center;
-    z-index: 1000;
-    opacity: 0;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 50px rgba(255,215,0,0.5), inset 0 0 30px rgba(255,215,0,0.1);
-}
-
-.bonus-notification.show {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-.bonus-type {
-    font-size: 0.8rem;
-    color: var(--cyan);
-    font-weight: 700;
-    letter-spacing: 3px;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-}
-
-.bonus-amount {
-    font-size: 2.5rem;
-    color: var(--yellow);
-    font-weight: 900;
-    text-shadow: 0 0 20px var(--yellow);
-    animation: bonus-pulse 0.5s ease-in-out infinite alternate;
-}
-
-@keyframes bonus-pulse {
-    from { transform: scale(1); }
-    to { transform: scale(1.1); }
-}
-
-/* ==================== COOLDOWN SCREEN ==================== */
-#screen-cooldown {
-    background: linear-gradient(135deg, #0a0d12 0%, #141822 50%, #0a0d12 100%);
-}
-
-.cooldown-title {
-    font-size: 1.5rem;
-    font-weight: 900;
-    color: var(--cyan);
-    letter-spacing: 8px;
-    margin-bottom: 20px;
-    text-shadow: 0 0 30px var(--cyan);
-    animation: cooldown-pulse 1s ease-in-out infinite;
-}
-
-@keyframes cooldown-pulse {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 1; }
-}
-
-.cooldown-number {
-    font-size: 8rem;
-    font-weight: 900;
-    color: var(--cyan);
-    text-shadow: 0 0 50px var(--cyan), 0 0 100px rgba(0,242,255,0.5);
-    line-height: 1;
-    font-family: 'Orbitron', monospace;
-}
-
-.cooldown-message {
-    font-size: 0.85rem;
-    color: #666;
-    margin-top: 20px;
-    letter-spacing: 2px;
-    text-align: center;
-}
-
-.cooldown-progress-bar {
-    width: 80%;
-    max-width: 300px;
-    height: 4px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 2px;
-    margin-top: 30px;
-    overflow: hidden;
-}
-
-.cooldown-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--cyan), var(--magenta));
-    border-radius: 2px;
-    width: 100%;
-    transition: width 1s linear;
-}
-
-.cooldown-stats {
-    display: flex;
-    gap: 10px;
-    margin-top: 25px;
-    font-size: 0.7rem;
-    color: #666;
-    letter-spacing: 1px;
-}
-
-.cooldown-clout-val {
-    color: var(--yellow);
-    font-weight: 700;
-}
-
-/* ==================== COMMUNITY BUTTON ==================== */
-.btn-community {
-    background: linear-gradient(145deg, var(--magenta), #cc00cc, #990099, #660066);
-    color: #fff;
-    font-weight: 900;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-    box-shadow: 
-        0 6px 0 #660066,
-        0 8px 16px rgba(255,0,255,0.4),
-        inset 0 2px 0 rgba(255,255,255,0.2),
-        inset 0 -2px 8px rgba(0,0,0,0.2);
-}
-
-.btn-community:active {
-    box-shadow: 
-        0 0 0 #660066,
-        0 2px 8px rgba(255,0,255,0.4),
-        inset 0 2px 0 rgba(255,255,255,0.2);
-}
-
-/* ==================== FEED STYLES ==================== */
-#screen-feed {
-    padding: 15px;
-}
-
-.weekly-challenge-banner {
-    background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,215,0,0.05));
-    border: 1px solid var(--yellow);
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 8px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-}
-
-.challenge-badge {
-    font-size: 0.55rem;
-    color: var(--yellow);
-    font-weight: 900;
-    letter-spacing: 1px;
-    margin-bottom: 4px;
-}
-
-.challenge-title {
-    font-size: 0.85rem;
-    color: #fff;
-    font-weight: 900;
-    margin-bottom: 3px;
-}
-
-.challenge-desc {
-    font-size: 0.65rem;
-    color: #aaa;
-    margin-bottom: 5px;
-}
-
-.challenge-prize {
-    font-size: 0.7rem;
-    color: var(--green);
-    font-weight: 700;
-}
-
-.challenge-timer {
-    font-size: 0.55rem;
-    color: var(--cyan);
-    margin-top: 3px;
-}
-
-.feed-container {
-    flex: 1;
-    overflow-y: auto;
-    width: 100%;
-    max-height: 60vh;
-    scrollbar-width: thin;
-    scrollbar-color: var(--magenta) transparent;
-}
-
-.feed-container::-webkit-scrollbar {
-    width: 4px;
-}
-
-.feed-container::-webkit-scrollbar-thumb {
-    background: var(--magenta);
-    border-radius: 2px;
-}
-
-.feed-post {
-    background: rgba(0,0,0,0.3);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 10px;
-}
-
-.feed-post.pinned {
-    border-color: var(--yellow);
-    background: rgba(255,215,0,0.05);
-}
-
-.feed-post-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.feed-post-author {
-    font-size: 0.8rem;
-    color: var(--cyan);
-    font-weight: 700;
-}
-
-.feed-post-mode {
-    font-size: 0.6rem;
-    color: #666;
-    background: rgba(255,255,255,0.1);
-    padding: 2px 8px;
-    border-radius: 10px;
-}
-
-.feed-post-card {
-    font-size: 0.75rem;
-    color: var(--magenta);
-    font-style: italic;
-    margin-bottom: 8px;
-}
-
-.feed-post-desc {
-    font-size: 0.7rem;
-    color: #aaa;
-    margin-bottom: 10px;
-}
-
-.feed-post-video {
-    width: 100%;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 10px;
-    background: #000;
-    min-height: 200px;
-}
-
-.feed-post-video iframe {
-    width: 100%;
-    height: 300px;
-    border: none;
-}
-
-/* ==================== TIKTOK LINK (COMPACT) ==================== */
-.feed-tiktok-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: linear-gradient(135deg, #000, #1a1a2e);
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 12px;
-    margin: 10px 0;
-    color: #fff;
-    text-decoration: none;
-    font-size: 0.75rem;
-    font-weight: 600;
-    transition: all 0.2s;
-}
-
-.feed-tiktok-link:hover {
-    background: linear-gradient(135deg, #1a1a2e, #2a2a4e);
-    border-color: var(--cyan);
-    transform: scale(1.02);
-}
-
-.tiktok-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    background: linear-gradient(135deg, #ff0050, #00f2ea);
-    border-radius: 6px;
-    font-size: 0.9rem;
-}
-
-/* ==================== TIKTOK PREVIEW (EXPANDABLE) ==================== */
-.feed-tiktok-preview {
-    position: relative;
-    width: 100%;
-    height: 80px;
-    background: linear-gradient(135deg, #000, #1a1a2e);
-    border: 1px solid #333;
-    border-radius: 8px;
-    margin: 10px 0;
-    cursor: pointer;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.feed-tiktok-preview:hover {
-    border-color: var(--cyan);
-    box-shadow: 0 0 15px rgba(0,242,255,0.2);
-}
-
-.feed-tiktok-preview.expanded {
-    height: 400px;
-    cursor: default;
-}
-
-.tiktok-preview-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, rgba(255,0,80,0.1), rgba(0,242,234,0.1));
-    gap: 5px;
-}
-
-.tiktok-play-btn {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #ff0050, #00f2ea);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    color: #fff;
-    box-shadow: 0 0 20px rgba(255,0,80,0.5);
-    transition: transform 0.2s;
-}
-
-.feed-tiktok-preview:hover .tiktok-play-btn {
-    transform: scale(1.1);
-}
-
-.tiktok-tap-text {
-    font-size: 0.65rem;
-    color: #888;
-    letter-spacing: 1px;
-}
-
-/* ==================== EMOJI PICKER ==================== */
-.emoji-picker {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    padding: 8px;
-    background: rgba(0,0,0,0.5);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin-top: 8px;
-}
-
-.emoji-picker span {
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 5px;
-    transition: 0.2s;
-}
-
-.emoji-picker span:hover {
-    background: rgba(255,255,255,0.1);
-    transform: scale(1.2);
-}
-
-.emoji-btn {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: 0.2s;
-}
-
-.emoji-btn:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: var(--cyan);
-}
-
-.feed-comment-input {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-    align-items: center;
-}
-
-.feed-comment-input input {
-    flex: 1;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 8px 12px;
-    color: #fff;
-    font-size: 0.7rem;
-    outline: none;
-}
-
-.feed-comment-input input:focus {
-    border-color: var(--cyan);
-}
-
-.feed-comment-input button {
-    background: var(--cyan);
-    border: none;
-    border-radius: 15px;
-    padding: 8px 15px;
-    color: #000;
-    font-size: 0.7rem;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-/* ==================== DELETE BUTTON ==================== */
-.feed-delete-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 0.8rem;
-    opacity: 0.5;
-    transition: 0.2s;
-    padding: 2px 5px;
-}
-
-.feed-delete-btn:hover {
-    opacity: 1;
-    transform: scale(1.2);
-}
-
-.feed-post-actions {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-}
-
-.feed-like-btn, .feed-comment-btn {
-    background: none;
-    border: none;
-    color: #888;
-    font-size: 0.8rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    transition: 0.2s;
-    padding: 5px;
-}
-
-.feed-like-btn:hover {
-    color: var(--red);
-}
-
-.feed-like-btn.liked {
-    color: var(--red);
-}
-
-.feed-comment-btn:hover {
-    color: var(--cyan);
-}
-
-.feed-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.feed-actions-small {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-    width: 100%;
-}
-
-.btn-feed-small {
-    flex: 1;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 6px;
-    font-weight: 700;
-    font-size: 0.6rem;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.btn-primary-small {
-    background: linear-gradient(145deg, var(--cyan), #00a8cc);
-    color: #000;
-    box-shadow: 0 3px 0 #007a8c;
-}
-
-.btn-secondary-small {
-    background: linear-gradient(145deg, #2a2f3a, #1a1d26);
-    color: #888;
-    box-shadow: 0 3px 0 #000;
-}
-
-.btn-challenge-enter-small {
-    background: linear-gradient(145deg, var(--yellow), #ccac00);
-    color: #000;
-    font-weight: 900;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.65rem;
-    cursor: pointer;
-    margin-top: 8px;
-    box-shadow: 0 2px 0 #997a00;
-}
-
-/* ==================== ENGAGEMENT SCORE ==================== */
-.engagement-score {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,215,0,0.05));
-    border: 1px solid var(--yellow);
-    border-radius: 12px;
-    padding: 3px 8px;
-    font-size: 0.6rem;
-    color: var(--yellow);
-    font-weight: 700;
-}
-
-.engagement-score.leading {
-    background: linear-gradient(135deg, rgba(255,215,0,0.4), rgba(255,215,0,0.2));
-    box-shadow: 0 0 10px rgba(255,215,0,0.3);
-    animation: pulse-gold 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse-gold {
-    0%, 100% { box-shadow: 0 0 10px rgba(255,215,0,0.3); }
-    50% { box-shadow: 0 0 20px rgba(255,215,0,0.6); }
-}
-
-/* ==================== CHALLENGE ENTRY GOLD STYLE ==================== */
-.feed-post.challenge-entry {
-    background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.02));
-    border: 2px solid var(--yellow);
-    box-shadow: 0 0 15px rgba(255,215,0,0.2);
-}
-
-.feed-post.challenge-entry .feed-post-author {
-    color: var(--yellow);
-}
-
-.challenge-entry-badge {
-    display: inline-block;
-    background: var(--yellow);
-    color: #000;
-    font-size: 0.55rem;
-    font-weight: 900;
-    padding: 2px 6px;
-    border-radius: 4px;
-    margin-left: 8px;
-}
-
-/* ==================== WINNER BANNER ==================== */
-.winner-banner {
-    background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,215,0,0.05));
-    border: 2px solid var(--yellow);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 10px;
-    text-align: center;
-    animation: winner-glow 2s ease-in-out infinite alternate;
-}
-
-@keyframes winner-glow {
-    from { box-shadow: 0 0 10px rgba(255,215,0,0.3); }
-    to { box-shadow: 0 0 25px rgba(255,215,0,0.6); }
-}
-
-.winner-badge {
-    font-size: 0.7rem;
-    color: var(--yellow);
-    font-weight: 900;
-    letter-spacing: 2px;
-    margin-bottom: 8px;
-}
-
-.winner-name {
-    font-size: 1.2rem;
-    color: #fff;
-    font-weight: 900;
-}
-
-.winner-challenge {
-    font-size: 0.75rem;
-    color: #aaa;
-    margin: 5px 0 10px;
-}
-
-.winner-youtube-btn {
-    display: inline-block;
-    background: #ff0000;
-    color: #fff;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-decoration: none;
-    transition: 0.2s;
-}
-
-.winner-youtube-btn:hover {
-    background: #cc0000;
-    transform: scale(1.05);
-}
-
-/* ==================== FEED TABS ==================== */
-.feed-tabs {
-    display: flex;
-    gap: 5px;
-    margin-bottom: 8px;
-    width: 100%;
-}
-
-.feed-tab {
-    flex: 1;
-    padding: 10px;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: #888;
-    font-size: 0.7rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.feed-tab:hover {
-    background: rgba(255,255,255,0.05);
-}
-
-.feed-tab.active {
-    background: rgba(255,0,255,0.2);
-    border-color: var(--magenta);
-    color: var(--magenta);
-}
-
-/* ==================== CHALLENGE ENTER BUTTON ==================== */
-.btn-challenge-enter {
-    background: linear-gradient(145deg, var(--yellow), #e6c200, #ccac00, #b39700);
-    color: #000;
-    font-weight: 900;
-    text-shadow: 0 1px 2px rgba(255,255,255,0.3);
-    box-shadow: 
-        0 4px 0 #997a00,
-        0 6px 12px rgba(255,215,0,0.4),
-        inset 0 2px 0 rgba(255,255,255,0.3);
-    margin-top: 10px;
-    padding: 12px;
-    font-size: 0.8rem;
-}
-
-.btn-challenge-enter:active {
-    box-shadow: 
-        0 0 0 #997a00,
-        0 2px 8px rgba(255,215,0,0.4);
-}
-
-.challenge-schedule {
-    font-size: 0.6rem;
-    color: #888;
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-/* ==================== COMMENTS ==================== */
-.feed-comments {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-}
-
-.feed-comment {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 8px;
-    font-size: 0.7rem;
-}
-
-.feed-comment-author {
-    color: var(--cyan);
-    font-weight: 700;
-}
-
-.feed-comment-text {
-    color: #aaa;
-    flex: 1;
-}
-
-/* ==================== SUBMIT SCREEN ==================== */
-#screen-submit .form-group {
-    margin-bottom: 0;
-}
+function getTikTokEmbed(url) {
+    const match = url.match(/video\/(\d+)/) || url.match(/tiktok\.com\/@[\w.-]+\/video\/(\d+)/);
+    if (match && match[1]) {
+        return `<iframe src="https://www.tiktok.com/embed/v2/${match[1]}" allowfullscreen></iframe>`;
+    }
+    return `<a href="${url}" target="_blank" style="color:var(--cyan);display:block;padding:20px;text-align:center;">Watch on TikTok ↗</a>`;
+}
+
+async function toggleLike(postId, btn) {
+    if (!currentUser) {
+        alert('Please sign in to like posts');
+        return;
+    }
+    
+    try {
+        const { data, error } = await supabaseClient.rpc('toggle_like', { p_post_id: postId });
+        if (error) throw error;
+        
+        if (data.success) {
+            const countSpan = btn.querySelector('span');
+            let count = parseInt(countSpan.textContent) || 0;
+            if (data.liked) {
+                btn.classList.add('liked');
+                countSpan.textContent = count + 1;
+                
+                // Check for engagement bonus
+                const bonusResult = await supabaseClient.rpc('check_engagement_bonus', { p_action_type: 'like' });
+                if (bonusResult.data && bonusResult.data.bonus > 0) {
+                    showBonusNotification(bonusResult.data.bonus_type, bonusResult.data.bonus);
+                }
+            } else {
+                btn.classList.remove('liked');
+                countSpan.textContent = Math.max(0, count - 1);
+            }
+            playClick();
+        }
+    } catch (err) {
+        console.error('Failed to toggle like:', err);
+    }
+}
+
+function openChallengeSubmit() {
+    if (!currentChallenge) {
+        alert('No active challenge right now');
+        return;
+    }
+    document.getElementById('challenge-entry-title').textContent = currentChallenge.title;
+    document.getElementById('challenge-entry-card').textContent = '"' + currentChallenge.description + '"';
+    playClick();
+    showScreen('screen-challenge-submit');
+}
+
+async function submitChallengeEntry() {
+    const tiktokUrl = document.getElementById('challenge-tiktok-url').value.trim();
+    const description = document.getElementById('challenge-description').value.trim();
+    const messageEl = document.getElementById('challenge-submit-message');
+    
+    if (!tiktokUrl || !tiktokUrl.includes('tiktok.com')) {
+        messageEl.textContent = 'Please enter a valid TikTok URL';
+        messageEl.style.color = 'var(--red)';
+        playError();
+        return;
+    }
+    
+    const submitBtn = document.getElementById('submit-challenge-entry-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'SUBMITTING...';
+    
+    try {
+        const { data, error } = await supabaseClient.rpc('submit_challenge_entry', {
+            p_tiktok_url: tiktokUrl,
+            p_description: description || null
+        });
+        
+        if (error) throw error;
+        
+        if (data.success) {
+            messageEl.textContent = 'Challenge entry submitted! Good luck! 🎯';
+            messageEl.style.color = 'var(--green)';
+            playSuccess();
+            
+            // Show bonus notification if any
+            if (data.bonus && data.bonus > 0) {
+                showBonusNotification(data.bonus_type, data.bonus);
+            }
+            
+            document.getElementById('challenge-tiktok-url').value = '';
+            document.getElementById('challenge-description').value = '';
+            
+            setTimeout(() => {
+                showScreen('screen-feed');
+                loadFeedPosts();
+                messageEl.textContent = '';
+            }, 2000);
+        } else {
+            throw new Error(data.error || 'Submission failed');
+        }
+    } catch (err) {
+        console.error('Failed to submit challenge entry:', err);
+        messageEl.textContent = 'Failed: ' + err.message;
+        messageEl.style.color = 'var(--red)';
+        playError();
+    }
+    
+    submitBtn.disabled = false;
+    submitBtn.textContent = '🎯 SUBMIT ENTRY';
+}
+
+async function submitFeedPost() {
+    const tiktokUrl = document.getElementById('submit-tiktok-url').value.trim();
+    const cardText = document.getElementById('submit-card-text').value.trim();
+    const gameMode = document.getElementById('submit-game-mode').value;
+    const description = document.getElementById('submit-description').value.trim();
+    const messageEl = document.getElementById('submit-message');
+    
+    if (!tiktokUrl || !tiktokUrl.includes('tiktok.com')) {
+        messageEl.textContent = 'Please enter a valid TikTok URL';
+        messageEl.style.color = 'var(--red)';
+        playError();
+        return;
+    }
+    if (!cardText) {
+        messageEl.textContent = 'Please enter the challenge card';
+        messageEl.style.color = 'var(--red)';
+        playError();
+        return;
+    }
+    if (!gameMode) {
+        messageEl.textContent = 'Please select a game mode';
+        messageEl.style.color = 'var(--red)';
+        playError();
+        return;
+    }
+    
+    const submitBtn = document.getElementById('submit-post-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'SUBMITTING...';
+    
+    try {
+        const { data, error } = await supabaseClient.rpc('submit_feed_post', {
+            p_tiktok_url: tiktokUrl,
+            p_card_text: cardText,
+            p_game_mode: gameMode,
+            p_description: description || null
+        });
+        
+        if (error) throw error;
+        
+        if (data.success) {
+            messageEl.textContent = 'Clip submitted!';
+            messageEl.style.color = 'var(--green)';
+            playSuccess();
+            
+            // Show bonus notification if any
+            if (data.bonus && data.bonus > 0) {
+                showBonusNotification(data.bonus_type, data.bonus);
+            }
+            
+            document.getElementById('submit-tiktok-url').value = '';
+            document.getElementById('submit-card-text').value = '';
+            document.getElementById('submit-game-mode').value = '';
+            document.getElementById('submit-description').value = '';
+            
+            setTimeout(() => {
+                showScreen('screen-feed');
+                loadFeedPosts();
+                messageEl.textContent = '';
+            }, 2000);
+        } else {
+            throw new Error(data.error || 'Submission failed');
+        }
+    } catch (err) {
+        console.error('Failed to submit post:', err);
+        messageEl.textContent = 'Failed to submit: ' + err.message;
+        messageEl.style.color = 'var(--red)';
+        playError();
+    }
+    
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'SUBMIT';
+}
+
+supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    console.log('Auth state:', event);
+    if (event === 'SIGNED_IN' && session) { currentUser = session.user; await loadUserProfile(); }
+    else if (event === 'SIGNED_OUT') { currentUser = null; userProfile = null; userAnalytics = null; showScreen('screen-auth'); }
+});
+
+// Don't register a service worker - it causes more problems than it solves for this app
+// If you want offline support later, uncomment and create a proper sw.js
+
+async function init() {
+    // Manage cache and service worker first
+    const shouldContinue = await manageCacheAndSW();
+    if (!shouldContinue) return; // Page will reload
+    
+    populateCountryDropdown();
+    initEventListeners();
+    await checkAuthState();
+}
+
+if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
