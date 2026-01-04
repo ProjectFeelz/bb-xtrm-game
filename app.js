@@ -554,11 +554,27 @@ async function logout() {
 async function loadUserProfile() {
     if (!currentUser) { showScreen('screen-auth'); return; }
     try {
+        console.log('Loading profile for user:', currentUser.id);
         const { data, error } = await supabaseClient.rpc('get_full_profile');
+        console.log('Profile response:', data, error);
+        
         if (error) { console.error('Profile fetch error:', error); showScreen('screen-onboarding'); return; }
-        if (!data || !data.success || !data.profile || !data.profile.onboarding_completed) { showScreen('screen-onboarding'); return; }
+        if (!data || !data.success) { 
+            console.error('Profile not successful:', data);
+            showScreen('screen-onboarding'); 
+            return; 
+        }
+        if (!data.profile || !data.profile.onboarding_completed) { 
+            console.log('Onboarding not completed');
+            showScreen('screen-onboarding'); 
+            return; 
+        }
+        
         userProfile = data.profile;
         userAnalytics = data.analytics || {};
+        console.log('User profile loaded:', userProfile);
+        console.log('User analytics loaded:', userAnalytics);
+        
         updateMainScreenUI();
         
         // Check for login bonus
