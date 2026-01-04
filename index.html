@@ -180,8 +180,8 @@
     </div>
 
     <!-- COMMUNITY FEED SCREEN -->
-    <div id="screen-feed" class="screen">
-        <h2 style="color: var(--magenta); margin-bottom: 15px; font-size: 1rem;">🎬 COMMUNITY CLIPS</h2>
+    <div id="screen-feed" class="screen" style="padding: 15px; justify-content: flex-start;">
+        <h2 style="color: var(--magenta); margin-bottom: 10px; font-size: 0.85rem;">🎬 COMMUNITY CLIPS</h2>
         
         <!-- Winner Announcement Banner -->
         <div id="winner-announcement" class="winner-banner" style="display: none;">
@@ -198,16 +198,13 @@
             <div id="challenge-desc" class="challenge-desc"></div>
             <div id="challenge-prize" class="challenge-prize"></div>
             <div id="challenge-timer" class="challenge-timer"></div>
-            <div class="challenge-schedule">
-                <span>🗓️ Starts Monday</span> • <span>🎥 Winner announced Wednesday on YT Live</span>
-            </div>
-            <button id="enter-challenge-btn" class="btn btn-challenge-enter">🎯 ENTER THIS CHALLENGE</button>
+            <button id="enter-challenge-btn" class="btn-challenge-enter-small">🎯 ENTER CHALLENGE</button>
         </div>
         
         <!-- Feed Tabs -->
         <div class="feed-tabs">
-            <button class="feed-tab active" data-tab="all">ALL CLIPS</button>
-            <button class="feed-tab" data-tab="challenges">🏆 CHALLENGE ENTRIES</button>
+            <button class="feed-tab active" data-tab="all">ALL</button>
+            <button class="feed-tab" data-tab="challenges">🏆 ENTRIES</button>
         </div>
         
         <!-- Feed Posts -->
@@ -216,9 +213,9 @@
         </div>
         
         <!-- Bottom Actions -->
-        <div class="feed-actions">
-            <button id="submit-clip-btn" class="btn btn-primary" style="flex: 1;">+ SUBMIT CLIP</button>
-            <button id="close-feed-btn" class="btn btn-secondary" style="flex: 1;">BACK</button>
+        <div class="feed-actions-small">
+            <button id="submit-clip-btn" class="btn-feed-small btn-primary-small">+ CLIP</button>
+            <button id="close-feed-btn" class="btn-feed-small btn-secondary-small">BACK</button>
         </div>
     </div>
 
