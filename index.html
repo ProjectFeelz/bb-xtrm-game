@@ -147,6 +147,16 @@
         </div>
     </div>
 
+    <!-- COOLDOWN SCREEN (Between Cards) -->
+    <div id="screen-cooldown" class="screen">
+        <div class="cooldown-title">COOLDOWN</div>
+        <div id="cooldown-countdown" class="cooldown-number">10</div>
+        <div class="cooldown-message">Take a breath. Next card incoming...</div>
+        <div class="cooldown-progress-bar">
+            <div id="cooldown-progress" class="cooldown-progress-fill"></div>
+        </div>
+    </div>
+
     <!-- RESULTS SCREEN -->
     <div id="screen-results" class="screen">
         <h2 id="result-header" style="font-size: 1.1rem;">SET COMPLETE</h2>
@@ -173,13 +183,31 @@
     <div id="screen-feed" class="screen">
         <h2 style="color: var(--magenta); margin-bottom: 15px; font-size: 1rem;">🎬 COMMUNITY CLIPS</h2>
         
+        <!-- Winner Announcement Banner -->
+        <div id="winner-announcement" class="winner-banner" style="display: none;">
+            <div class="winner-badge">🏆 LAST WEEK'S WINNER</div>
+            <div id="winner-name" class="winner-name"></div>
+            <div id="winner-challenge" class="winner-challenge"></div>
+            <a id="winner-youtube-link" href="#" target="_blank" class="winner-youtube-btn">📺 WATCH THE ANNOUNCEMENT</a>
+        </div>
+        
         <!-- Weekly Challenge Banner -->
         <div id="weekly-challenge" class="weekly-challenge-banner" style="display: none;">
-            <div class="challenge-badge">📍 WEEKLY CHALLENGE</div>
+            <div class="challenge-badge">📍 THIS WEEK'S CHALLENGE</div>
             <div id="challenge-title" class="challenge-title"></div>
             <div id="challenge-desc" class="challenge-desc"></div>
             <div id="challenge-prize" class="challenge-prize"></div>
             <div id="challenge-timer" class="challenge-timer"></div>
+            <div class="challenge-schedule">
+                <span>🗓️ Starts Monday</span> • <span>🎥 Winner announced Wednesday on YT Live</span>
+            </div>
+            <button id="enter-challenge-btn" class="btn btn-challenge-enter">🎯 ENTER THIS CHALLENGE</button>
+        </div>
+        
+        <!-- Feed Tabs -->
+        <div class="feed-tabs">
+            <button class="feed-tab active" data-tab="all">ALL CLIPS</button>
+            <button class="feed-tab" data-tab="challenges">🏆 CHALLENGE ENTRIES</button>
         </div>
         
         <!-- Feed Posts -->
@@ -230,6 +258,36 @@
         <div style="display: flex; gap: 10px; margin-top: 15px; width: 100%;">
             <button id="submit-post-btn" class="btn btn-primary" style="flex: 1;">SUBMIT</button>
             <button id="cancel-submit-btn" class="btn btn-secondary" style="flex: 1;">CANCEL</button>
+        </div>
+    </div>
+
+    <!-- SUBMIT CHALLENGE ENTRY SCREEN -->
+    <div id="screen-challenge-submit" class="screen">
+        <h2 style="color: var(--yellow); margin-bottom: 15px; font-size: 1rem;">🎯 ENTER THE CHALLENGE</h2>
+        
+        <div class="challenge-entry-info glass-panel" style="padding: 15px; margin-bottom: 15px; border-color: var(--yellow);">
+            <div style="color: var(--yellow); font-size: 0.7rem; margin-bottom: 5px;">THIS WEEK'S CHALLENGE:</div>
+            <div id="challenge-entry-title" style="font-size: 1rem; font-weight: 900; color: #fff;"></div>
+            <div id="challenge-entry-card" style="font-size: 0.8rem; color: var(--cyan); margin-top: 5px;"></div>
+        </div>
+        
+        <div class="glass-panel" style="padding: 20px; width: 100%;">
+            <div class="form-group">
+                <label class="form-label">TIKTOK URL</label>
+                <input type="url" id="challenge-tiktok-url" class="cassette-field" placeholder="https://tiktok.com/..." style="font-size: 0.8rem;">
+            </div>
+            
+            <div class="form-group" style="margin-top: 15px;">
+                <label class="form-label">CAPTION (OPTIONAL)</label>
+                <input type="text" id="challenge-description" class="cassette-field" placeholder="Tell us about your entry..." style="font-size: 0.8rem;">
+            </div>
+        </div>
+        
+        <p id="challenge-submit-message" style="margin-top: 10px; font-size: 0.75rem; color: #888; min-height: 20px; text-align: center;"></p>
+        
+        <div style="display: flex; gap: 10px; margin-top: 15px; width: 100%;">
+            <button id="submit-challenge-entry-btn" class="btn btn-challenge-enter" style="flex: 1;">🎯 SUBMIT ENTRY</button>
+            <button id="cancel-challenge-btn" class="btn btn-secondary" style="flex: 1;">CANCEL</button>
         </div>
     </div>
 
