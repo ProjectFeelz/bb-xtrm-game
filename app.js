@@ -541,18 +541,58 @@ function attemptComplete() { if (cooldownLeft > 0) { showCheatError(); return; }
 function showCheatError() { elements.cheatError.style.opacity = "1"; playError(); setTimeout(() => elements.cheatError.style.opacity = "0", 2000); }
 
 function completeTask() {
+    clearInterval(timerInterval);
+    
     let currentBonus = 0;
     if (timeLeft > 15) { currentBonus += 5; speedDemonCount++; triggerAlert("SPEED DEMON +5"); }
+    
     tasksCompleted++;
     sessionClout += (10 + currentBonus);
     comboCount++;
     cleanStreakCount++;
+    
     playSuccess();
-    playCassetteInsert();
+    
     if (comboCount === 3) { sessionClout += 25; setTimeout(() => triggerAlert("XP OVERDRIVE +25"), 800); comboCount = 0; }
     if (cleanStreakCount === 6 && !rerunUsedInSession) { const bonus = Math.floor(Math.random() * 101) + 50; sessionClout += bonus; setTimeout(() => triggerAlert('CLEAN STREAK +' + bonus), 1600); }
+    
     elements.cloutVal.textContent = sessionClout;
-    drawTask();
+    
+    // Check if set is complete
+    if (tasksCompleted >= SET_LIMIT) {
+        endSession();
+        return;
+    }
+    
+    // Show cooldown screen between cards
+    showCooldownScreen();
+}
+
+function showCooldownScreen() {
+    showScreen('screen-cooldown');
+    let cooldownTime = 10;
+    const countdownEl = document.getElementById('cooldown-countdown');
+    const progressEl = document.getElementById('cooldown-progress');
+    
+    countdownEl.textContent = cooldownTime;
+    progressEl.style.width = '100%';
+    
+    const cooldownInterval = setInterval(() => {
+        cooldownTime--;
+        countdownEl.textContent = cooldownTime;
+        progressEl.style.width = ((cooldownTime / 10) * 100) + '%';
+        
+        if (cooldownTime <= 3) {
+            playTick();
+        }
+        
+        if (cooldownTime <= 0) {
+            clearInterval(cooldownInterval);
+            playCassetteInsert();
+            showScreen('screen-game');
+            drawTask();
+        }
+    }, 1000);
 }
 
 function triggerAlert(text) { elements.comboAlert.textContent = text; elements.comboAlert.style.opacity = "1"; setTimeout(() => elements.comboAlert.style.opacity = "0", 2000); }
@@ -667,16 +707,72 @@ function initEventListeners() {
     const submitPostBtn = document.getElementById('submit-post-btn');
     if (submitPostBtn) submitPostBtn.addEventListener('click', submitFeedPost);
     
+    // Challenge entry listeners
+    const enterChallengeBtn = document.getElementById('enter-challenge-btn');
+    if (enterChallengeBtn) enterChallengeBtn.addEventListener('click', openChallengeSubmit);
+    const submitChallengeEntryBtn = document.getElementById('submit-challenge-entry-btn');
+    if (submitChallengeEntryBtn) submitChallengeEntryBtn.addEventListener('click', submitChallengeEntry);
+    const cancelChallengeBtn = document.getElementById('cancel-challenge-btn');
+    if (cancelChallengeBtn) cancelChallengeBtn.addEventListener('click', () => { playClick(); showScreen('screen-feed'); });
+    
     document.body.addEventListener('click', initAudio, { once: true });
     document.body.addEventListener('touchstart', initAudio, { once: true });
 }
 
 // ==================== COMMUNITY FEED FUNCTIONS ====================
+let currentChallenge = null;
+let currentFeedTab = 'all';
+
 async function openFeed() {
     playClick();
     showScreen('screen-feed');
+    await loadWinnerAnnouncement();
     await loadWeeklyChallenge();
     await loadFeedPosts();
+    initFeedTabs();
+}
+
+function initFeedTabs() {
+    document.querySelectorAll('.feed-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.feed-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentFeedTab = tab.dataset.tab;
+            loadFeedPosts();
+            playClick();
+        });
+    });
+}
+
+async function loadWinnerAnnouncement() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('weekly_challenges')
+            .select('*, winner_post:feed_posts!winner_post_id(artist_name)')
+            .eq('winner_announced', true)
+            .order('end_date', { ascending: false })
+            .limit(1);
+        
+        if (error) throw error;
+        
+        const winnerBanner = document.getElementById('winner-announcement');
+        if (data && data.length > 0 && data[0].winner_post) {
+            const challenge = data[0];
+            document.getElementById('winner-name').textContent = '@' + challenge.winner_post.artist_name;
+            document.getElementById('winner-challenge').textContent = challenge.title;
+            if (challenge.youtube_live_url) {
+                document.getElementById('winner-youtube-link').href = challenge.youtube_live_url;
+                document.getElementById('winner-youtube-link').style.display = 'inline-block';
+            } else {
+                document.getElementById('winner-youtube-link').style.display = 'none';
+            }
+            winnerBanner.style.display = 'block';
+        } else {
+            winnerBanner.style.display = 'none';
+        }
+    } catch (err) {
+        console.error('Failed to load winner:', err);
+    }
 }
 
 async function loadWeeklyChallenge() {
@@ -693,12 +789,12 @@ async function loadWeeklyChallenge() {
         
         const challengeBanner = document.getElementById('weekly-challenge');
         if (data && data.length > 0) {
-            const challenge = data[0];
-            document.getElementById('challenge-title').textContent = challenge.title;
-            document.getElementById('challenge-desc').textContent = '"' + challenge.card_text + '"';
-            document.getElementById('challenge-prize').textContent = challenge.prize ? '🏆 ' + challenge.prize : '';
+            currentChallenge = data[0];
+            document.getElementById('challenge-title').textContent = currentChallenge.title;
+            document.getElementById('challenge-desc').textContent = currentChallenge.description;
+            document.getElementById('challenge-prize').textContent = currentChallenge.prize ? '🏆 ' + currentChallenge.prize : '';
             
-            const endDate = new Date(challenge.end_date);
+            const endDate = new Date(currentChallenge.end_date);
             const now = new Date();
             const daysLeft = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
             document.getElementById('challenge-timer').textContent = '⏰ ' + daysLeft + ' days left';
@@ -706,6 +802,7 @@ async function loadWeeklyChallenge() {
             challengeBanner.style.display = 'block';
         } else {
             challengeBanner.style.display = 'none';
+            currentChallenge = null;
         }
     } catch (err) {
         console.error('Failed to load weekly challenge:', err);
@@ -717,7 +814,7 @@ async function loadFeedPosts() {
     feedList.innerHTML = '<div style="text-align:center;color:#888;padding:20px;">Loading clips...</div>';
     
     try {
-        const { data, error } = await supabaseClient
+        let query = supabaseClient
             .from('feed_posts')
             .select('*')
             .eq('is_approved', true)
@@ -725,22 +822,35 @@ async function loadFeedPosts() {
             .order('created_at', { ascending: false })
             .limit(20);
         
+        if (currentFeedTab === 'challenges') {
+            query = query.eq('is_challenge_entry', true);
+        }
+        
+        const { data, error } = await query;
+        
         if (error) throw error;
         
         if (!data || data.length === 0) {
-            feedList.innerHTML = '<div style="text-align:center;color:#888;padding:40px;">No clips yet! Be the first to submit.</div>';
+            feedList.innerHTML = '<div style="text-align:center;color:#888;padding:40px;">' + 
+                (currentFeedTab === 'challenges' ? 'No challenge entries yet!' : 'No clips yet! Be the first to submit.') + '</div>';
             return;
         }
         
         let html = '';
-        data.forEach(post => {
+        for (const post of data) {
             const tiktokEmbed = getTikTokEmbed(post.tiktok_url);
-            const modeLabel = post.game_mode === 'production' ? 'ENGINEER' : post.game_mode === 'beats' ? 'BEATS' : 'WRITER';
+            const modeLabel = post.game_mode === 'production' ? 'ENGINEER' : 
+                             post.game_mode === 'beats' ? 'BEATS' : 
+                             post.game_mode === 'songwriting' ? 'WRITER' : 
+                             post.game_mode === 'challenge' ? 'CHALLENGE' : post.game_mode;
+            
+            const isChallenge = post.is_challenge_entry;
+            const postClass = isChallenge ? 'feed-post challenge-entry' : (post.is_pinned ? 'feed-post pinned' : 'feed-post');
             
             html += `
-                <div class="feed-post ${post.is_pinned ? 'pinned' : ''}">
+                <div class="${postClass}" data-post-id="${post.id}">
                     <div class="feed-post-header">
-                        <span class="feed-post-author">@${post.artist_name}</span>
+                        <span class="feed-post-author">@${post.artist_name}${isChallenge ? '<span class="challenge-entry-badge">🎯 CHALLENGE</span>' : ''}</span>
                         <span class="feed-post-mode">${modeLabel}</span>
                     </div>
                     <div class="feed-post-card">"${post.card_text}"</div>
@@ -750,25 +860,128 @@ async function loadFeedPosts() {
                         <button class="feed-like-btn" onclick="toggleLike('${post.id}', this)">
                             ❤️ <span>${post.likes_count || 0}</span>
                         </button>
+                        <button class="feed-comment-btn" onclick="toggleComments('${post.id}')">
+                            💬 <span class="comment-count-${post.id}">0</span>
+                        </button>
+                    </div>
+                    <div class="feed-comments" id="comments-${post.id}" style="display: none;">
+                        <div class="comments-list" id="comments-list-${post.id}"></div>
+                        <div class="feed-comment-input">
+                            <input type="text" placeholder="Add a comment..." id="comment-input-${post.id}" onkeypress="if(event.key==='Enter')addComment('${post.id}')">
+                            <button onclick="addComment('${post.id}')">Post</button>
+                        </div>
                     </div>
                 </div>
             `;
-        });
+        }
         
         feedList.innerHTML = html;
+        
+        // Load comment counts
+        for (const post of data) {
+            loadCommentCount(post.id);
+        }
     } catch (err) {
         console.error('Failed to load feed:', err);
         feedList.innerHTML = '<div style="text-align:center;color:var(--red);padding:20px;">Failed to load clips</div>';
     }
 }
 
+async function loadCommentCount(postId) {
+    try {
+        const { count, error } = await supabaseClient
+            .from('feed_comments')
+            .select('*', { count: 'exact', head: true })
+            .eq('post_id', postId);
+        
+        if (!error) {
+            const countEl = document.querySelector(`.comment-count-${postId}`);
+            if (countEl) countEl.textContent = count || 0;
+        }
+    } catch (err) {
+        console.error('Failed to load comment count:', err);
+    }
+}
+
+async function toggleComments(postId) {
+    const commentsDiv = document.getElementById(`comments-${postId}`);
+    if (commentsDiv.style.display === 'none') {
+        commentsDiv.style.display = 'block';
+        await loadComments(postId);
+    } else {
+        commentsDiv.style.display = 'none';
+    }
+    playClick();
+}
+
+async function loadComments(postId) {
+    const commentsList = document.getElementById(`comments-list-${postId}`);
+    commentsList.innerHTML = '<div style="color:#666;font-size:0.65rem;">Loading...</div>';
+    
+    try {
+        const { data, error } = await supabaseClient
+            .from('feed_comments')
+            .select('*')
+            .eq('post_id', postId)
+            .order('created_at', { ascending: true })
+            .limit(20);
+        
+        if (error) throw error;
+        
+        if (!data || data.length === 0) {
+            commentsList.innerHTML = '<div style="color:#666;font-size:0.65rem;">No comments yet</div>';
+            return;
+        }
+        
+        let html = '';
+        data.forEach(comment => {
+            html += `
+                <div class="feed-comment">
+                    <span class="feed-comment-author">@${comment.artist_name}</span>
+                    <span class="feed-comment-text">${comment.comment_text}</span>
+                </div>
+            `;
+        });
+        commentsList.innerHTML = html;
+    } catch (err) {
+        console.error('Failed to load comments:', err);
+        commentsList.innerHTML = '<div style="color:var(--red);font-size:0.65rem;">Failed to load</div>';
+    }
+}
+
+async function addComment(postId) {
+    const input = document.getElementById(`comment-input-${postId}`);
+    const commentText = input.value.trim();
+    
+    if (!commentText) return;
+    if (!currentUser) {
+        alert('Please sign in to comment');
+        return;
+    }
+    
+    try {
+        const { data, error } = await supabaseClient.rpc('add_comment', {
+            p_post_id: postId,
+            p_comment_text: commentText
+        });
+        
+        if (error) throw error;
+        
+        input.value = '';
+        await loadComments(postId);
+        await loadCommentCount(postId);
+        playSuccess();
+    } catch (err) {
+        console.error('Failed to add comment:', err);
+        playError();
+    }
+}
+
 function getTikTokEmbed(url) {
-    // Extract TikTok video ID from URL
     const match = url.match(/video\/(\d+)/) || url.match(/tiktok\.com\/@[\w.-]+\/video\/(\d+)/);
     if (match && match[1]) {
         return `<iframe src="https://www.tiktok.com/embed/v2/${match[1]}" allowfullscreen></iframe>`;
     }
-    // Fallback: just show a link
     return `<a href="${url}" target="_blank" style="color:var(--cyan);display:block;padding:20px;text-align:center;">Watch on TikTok ↗</a>`;
 }
 
@@ -799,6 +1012,68 @@ async function toggleLike(postId, btn) {
     }
 }
 
+function openChallengeSubmit() {
+    if (!currentChallenge) {
+        alert('No active challenge right now');
+        return;
+    }
+    document.getElementById('challenge-entry-title').textContent = currentChallenge.title;
+    document.getElementById('challenge-entry-card').textContent = '"' + currentChallenge.description + '"';
+    playClick();
+    showScreen('screen-challenge-submit');
+}
+
+async function submitChallengeEntry() {
+    const tiktokUrl = document.getElementById('challenge-tiktok-url').value.trim();
+    const description = document.getElementById('challenge-description').value.trim();
+    const messageEl = document.getElementById('challenge-submit-message');
+    
+    if (!tiktokUrl || !tiktokUrl.includes('tiktok.com')) {
+        messageEl.textContent = 'Please enter a valid TikTok URL';
+        messageEl.style.color = 'var(--red)';
+        playError();
+        return;
+    }
+    
+    const submitBtn = document.getElementById('submit-challenge-entry-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'SUBMITTING...';
+    
+    try {
+        const { data, error } = await supabaseClient.rpc('submit_challenge_entry', {
+            p_tiktok_url: tiktokUrl,
+            p_description: description || null
+        });
+        
+        if (error) throw error;
+        
+        if (data.success) {
+            messageEl.textContent = 'Challenge entry submitted! Good luck! 🎯';
+            messageEl.style.color = 'var(--green)';
+            playSuccess();
+            
+            document.getElementById('challenge-tiktok-url').value = '';
+            document.getElementById('challenge-description').value = '';
+            
+            setTimeout(() => {
+                showScreen('screen-feed');
+                loadFeedPosts();
+                messageEl.textContent = '';
+            }, 2000);
+        } else {
+            throw new Error(data.error || 'Submission failed');
+        }
+    } catch (err) {
+        console.error('Failed to submit challenge entry:', err);
+        messageEl.textContent = 'Failed: ' + err.message;
+        messageEl.style.color = 'var(--red)';
+        playError();
+    }
+    
+    submitBtn.disabled = false;
+    submitBtn.textContent = '🎯 SUBMIT ENTRY';
+}
+
 async function submitFeedPost() {
     const tiktokUrl = document.getElementById('submit-tiktok-url').value.trim();
     const cardText = document.getElementById('submit-card-text').value.trim();
@@ -806,7 +1081,6 @@ async function submitFeedPost() {
     const description = document.getElementById('submit-description').value.trim();
     const messageEl = document.getElementById('submit-message');
     
-    // Validation
     if (!tiktokUrl || !tiktokUrl.includes('tiktok.com')) {
         messageEl.textContent = 'Please enter a valid TikTok URL';
         messageEl.style.color = 'var(--red)';
@@ -841,19 +1115,18 @@ async function submitFeedPost() {
         if (error) throw error;
         
         if (data.success) {
-            messageEl.textContent = 'Clip submitted! Awaiting approval.';
+            messageEl.textContent = 'Clip submitted!';
             messageEl.style.color = 'var(--green)';
             playSuccess();
             
-            // Clear form
             document.getElementById('submit-tiktok-url').value = '';
             document.getElementById('submit-card-text').value = '';
             document.getElementById('submit-game-mode').value = '';
             document.getElementById('submit-description').value = '';
             
-            // Go back to feed after 2 seconds
             setTimeout(() => {
                 showScreen('screen-feed');
+                loadFeedPosts();
                 messageEl.textContent = '';
             }, 2000);
         } else {
