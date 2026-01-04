@@ -230,7 +230,7 @@ function createConfetti() {
 
 // ==================== GAME STATE ====================
 const SET_LIMIT = 10;
-const RERUN_PENALTY = 50;
+const RERUN_PENALTY = 25;
 
 let currentUser = null;
 let userProfile = null;
@@ -912,9 +912,17 @@ async function endSession() {
     const sessionDuration = Math.floor((Date.now() - sessionStartTime) / 1000);
     const wasPerfectSet = !rerunUsedInSession && speedDemonCount >= 5;
     let displayClout = sessionClout;
-    if (wasPerfectSet) { displayClout += 100; elements.perfectBadge.style.display = "block"; }
+    if (wasPerfectSet) { displayClout += 100; elements.perfectBadge.style.display = "block"; } else { elements.perfectBadge.style.display = "none"; }
+    
+    // Show clout immediately
+    elements.resultClout.textContent = displayClout;
+    elements.resultHeader.textContent = "SET COMPLETE";
+    elements.resultFooter.textContent = "BANKING CLOUT...";
+    elements.resultFooter.style.color = "";
+    
     playCelebration();
     createConfetti();
+    
     try {
         const { data, error } = await supabaseClient.rpc('increment_clout', {
             p_clout_amount: displayClout,
@@ -926,10 +934,19 @@ async function endSession() {
             p_was_perfect_set: wasPerfectSet,
             p_session_duration: sessionDuration
         });
-        if (error) { console.error('Save failed:', error); elements.resultFooter.textContent = "ERROR SAVING"; elements.resultFooter.style.color = "var(--red)"; }
-        else if (data && data.success) {
+        
+        if (error) { 
+            console.error('Save failed:', error); 
+            elements.resultFooter.textContent = "ERROR SAVING - CLOUT NOT RECORDED"; 
+            elements.resultFooter.style.color = "var(--red)"; 
+            return;
+        }
+        
+        if (data && data.success) {
             userProfile.lifetime_clout = data.new_lifetime_total;
             userProfile.current_streak = data.new_streak;
+            userProfile.total_reruns = (userProfile.total_reruns || 0) + totalRerunsThisSession;
+            userProfile.clout_lost = (userProfile.clout_lost || 0) + (totalRerunsThisSession * RERUN_PENALTY);
             
             // Update streak display on main screen
             if (elements.streakCount) elements.streakCount.textContent = data.new_streak;
@@ -967,8 +984,14 @@ async function endSession() {
                 userAnalytics.total_reruns = (userAnalytics.total_reruns || 0) + totalRerunsThisSession; 
                 userAnalytics.clout_lost = (userAnalytics.clout_lost || 0) + (totalRerunsThisSession * RERUN_PENALTY); 
             }
+        } else {
+            elements.resultFooter.textContent = "SESSION ARCHIVED.";
         }
-    } catch (err) { console.error('Session error:', err); elements.resultFooter.textContent = "NETWORK ERROR"; elements.resultFooter.style.color = "var(--red)"; }
+    } catch (err) { 
+        console.error('Session error:', err); 
+        elements.resultFooter.textContent = "NETWORK ERROR - CLOUT NOT RECORDED"; 
+        elements.resultFooter.style.color = "var(--red)"; 
+    }
 }
 
 function showStreakNotification(streak, bonus) {
