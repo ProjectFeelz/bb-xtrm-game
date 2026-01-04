@@ -596,16 +596,46 @@ h2 {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--cyan);
-    font-size: 1.3rem;
+    color: #fff;
     text-decoration: none;
     transition: 0.3s;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
+.social-icon svg {
+    fill: #aaa;
+    transition: 0.3s;
+}
+
 .social-icon:hover {
     transform: translateY(-3px);
+}
+
+.social-icon.website:hover {
+    border-color: var(--cyan);
     box-shadow: 0 6px 20px rgba(0,242,255,0.4);
+}
+
+.social-icon.website:hover svg {
+    fill: var(--cyan);
+}
+
+.social-icon.youtube:hover {
+    border-color: #ff0000;
+    box-shadow: 0 6px 20px rgba(255,0,0,0.4);
+}
+
+.social-icon.youtube:hover svg {
+    fill: #ff0000;
+}
+
+.social-icon.discord:hover {
+    border-color: #5865f2;
+    box-shadow: 0 6px 20px rgba(88,101,242,0.4);
+}
+
+.social-icon.discord:hover svg {
+    fill: #5865f2;
 }
 
 /* ==================== PROFILE TRIGGER ==================== */
