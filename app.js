@@ -263,7 +263,6 @@ function createConfetti() {
     }
   ]
 }
-*/
 
 // Add this meta tag to your index.html <head> section:
 /*
