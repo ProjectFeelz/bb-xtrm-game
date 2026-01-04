@@ -163,7 +163,6 @@ function createConfetti() {
 
 // ==================== GAME STATE ====================
 const SET_LIMIT = 10;
-const TASK_TIME = 26;
 const RERUN_PENALTY = 50;
 
 let currentUser = null;
@@ -185,34 +184,147 @@ let sessionStartTime = null;
 let totalRerunsThisSession = 0;
 let totalRestartsThisSession = 0;
 let currentCardText = '';
+let currentCardTime = 30;
 
+// ==================== CARD DECKS WITH VARIABLE TIME ====================
+// Format: { text: "task", time: 30-60 seconds }
 const cardDecks = {
     production: [
-        'High-pass everything below 200Hz', 'Layer an extra snare quietly', 'Bus all melodic elements together',
-        'Add a subtle 1/8 delay', 'Lightly saturate the bass', 'Pan the hats 30% right',
-        'Double the vocal take', 'Add a reverse reverb tail', 'Add ~20% swing to the MIDI',
-        'Sidechain the pad to the kick', 'Boost presence around 3k on vocals', 'Automate a gentle low-pass sweep (8 bars)',
-        'Sneak in a foley texture', 'Soft-clip the master peak', 'Widen the chorus only',
-        'Mono the sub-bass', 'Shift a melody up one octave', 'Gate the pads rhythmically',
-        'Ping-pong delay on the hats', 'Shorten all kick decays', 'Mute the lead instrument (8 bars)',
-        'Bitcrush the melody slightly', 'Clip the drum bus instead of compressing', 'Distort the parallel bus',
-        'Swap reverb for delay on one element', 'Automate a filter using LFO', 'Hard-pan one background element',
-        'Chorus on bass (low mix)', 'Print a resample and commit', 'Remove one plugin you rely on'
+        // Quick chaos (30s)
+        { text: "DELETE the first plugin you see. No undo.", time: 30 },
+        { text: "Mute everything except ONE element. Make it slap.", time: 30 },
+        { text: "Pan your kick hard left. Leave it.", time: 30 },
+        { text: "Add distortion to your most delicate sound", time: 30 },
+        { text: "Reverse your snare. It lives there now.", time: 30 },
+        { text: "Put a telephone EQ on your lead melody", time: 30 },
+        { text: "Duplicate your bass, pitch it UP 12 semitones", time: 30 },
+        { text: "Add 100% wet reverb to your drums for 4 bars", time: 30 },
+        { text: "Remove ALL reverb from the entire project", time: 30 },
+        { text: "Swap your kick and snare patterns", time: 30 },
+        
+        // Medium madness (40s)
+        { text: "Sidechain your MELODY to your hi-hats", time: 40 },
+        { text: "Create a riser using only reversed sounds from your track", time: 40 },
+        { text: "Make your bass the lead for 8 bars", time: 40 },
+        { text: "Chop your main loop into 8 pieces, rearrange RANDOMLY", time: 40 },
+        { text: "Add vinyl crackle but make it LOUDER than your snare", time: 40 },
+        { text: "Bounce your master, reimport it, bitcrush it", time: 40 },
+        { text: "Pitch your ENTIRE track up 7 semitones for 4 bars", time: 40 },
+        { text: "Layer your kick with a vocal chop", time: 40 },
+        { text: "Add a field recording from your phone to the mix", time: 40 },
+        { text: "Put a gate on your reverb tails, make them rhythmic", time: 40 },
+        { text: "Create a build-up using only automation, no new sounds", time: 40 },
+        { text: "Make something sound underwater then back to normal", time: 40 },
+        
+        // Complex tasks (50s)
+        { text: "Sample YOUR OWN VOICE saying something dumb, make it a hook", time: 50 },
+        { text: "Record yourself banging on your desk, replace your drums", time: 50 },
+        { text: "Create an 8-bar breakdown using ONLY reversed sounds", time: 50 },
+        { text: "Resample your master through 3 different distortions", time: 50 },
+        { text: "Make your weakest element the STAR of a 4-bar section", time: 50 },
+        { text: "Add a tempo change mid-track. Make it actually work.", time: 50 },
+        { text: "Create a drop using only 3 elements from your track", time: 50 },
+        { text: "Turn a mistake into a feature. Find one. Feature it.", time: 50 },
+        
+        // Full chaos (60s)
+        { text: "Export, import to NEW project, flip it into something unrecognizable", time: 60 },
+        { text: "Record audio through your phone speaker, use it as a layer", time: 60 },
+        { text: "Add 5 random plugins to your master. Make it sound GOOD.", time: 60 },
+        { text: "Swap roles: bass=lead, drums=melody, melody=percussion", time: 60 },
+        { text: "Create a completely new 8-bar section using ONLY existing sounds", time: 60 },
+        { text: "Make a remix of your own track. 60 seconds. Go.", time: 60 }
     ],
-    songwriting: [
-        'Rhyme with "stone"', 'Use a weather metaphor', 'Mention a specific color',
-        'Tell a 4-line mini story', 'Alliterate the next line', 'End the line with a verb',
-        'Write about a machine', 'Describe a smell', 'Use a word with 4+ syllables',
-        'Reference a 90s movie', 'Switch perspective to "them"', 'Include a line about time or a clock',
-        'Use an AABB rhyme scheme', 'Internal rhymes only', 'Name a real city',
-        'Start a line with "Never"', 'Drop in a technical term', 'Repeat one word for emphasis'
-    ],
+    
     beats: [
-        'Swap the snare for a clap', 'Nudge the hats 5ms late', 'Add a shaker loop',
-        'Reverse the crash', 'Half-time the hi-hats', 'Humanize kick velocities',
-        'Woodblock on beat 4', 'Delete every 4th kick', 'Add a rimshot on the "and"',
-        'Ghost-note the snares', 'Pitch the hats down', 'Tambourine on 2 and 4',
-        'Randomize hat velocities', 'Filter the drums (2 bars)', 'Snare roll at the end'
+        // Quick hits (30s)
+        { text: "Remove your kick for 4 bars. Fill it with ANYTHING else.", time: 30 },
+        { text: "Double-time your hi-hats until they're uncomfortable", time: 30 },
+        { text: "Put reverb on your kick. Yes. Do it.", time: 30 },
+        { text: "Delete every other snare hit", time: 30 },
+        { text: "Pitch your snare UP an octave", time: 30 },
+        { text: "Add swing until it sounds DRUNK", time: 30 },
+        { text: "Layer your kick with a snap. Just a snap.", time: 30 },
+        { text: "Reverse your hi-hat pattern completely", time: 30 },
+        { text: "Add a rimshot on EVERY off-beat", time: 30 },
+        { text: "Make your drums mono. All of them.", time: 30 },
+        
+        // Medium tasks (40s)
+        { text: "Create a drum fill using ONLY kicks", time: 40 },
+        { text: "Make your drums sound like they're in a parking garage", time: 40 },
+        { text: "Add a percussion element that makes NO sense", time: 40 },
+        { text: "Create a 4-bar pattern with NO kick drum", time: 40 },
+        { text: "Chop a breakbeat beyond recognition, use the pieces", time: 40 },
+        { text: "Layer 3 snares. Make them sound like ONE weird snare.", time: 40 },
+        { text: "Add a polyrhythmic element that fights the groove", time: 40 },
+        { text: "Make a roll that speeds up AND slows down", time: 40 },
+        { text: "Use a melodic instrument as your main percussion", time: 40 },
+        { text: "Add ghost notes to EVERYTHING", time: 40 },
+        { text: "Create a 2-bar loop using found sounds only", time: 40 },
+        { text: "Sidechain your hi-hats to your snare", time: 40 },
+        
+        // Complex tasks (50s)
+        { text: "Beatbox for 15 seconds, sample it, chop it, use it", time: 50 },
+        { text: "Create drums using only household objects (record now)", time: 50 },
+        { text: "Make a half-time AND double-time switch in 8 bars", time: 50 },
+        { text: "Program drums that sound HUMAN (imperfect timing on purpose)", time: 50 },
+        { text: "Create a call-and-response between kick and snare", time: 50 },
+        { text: "Build a breakdown where SILENCE is the main rhythm", time: 50 },
+        { text: "Layer acoustic drums over electronic. Make it one kit.", time: 50 },
+        { text: "Create glitchy drums using ONLY audio effects", time: 50 },
+        
+        // Chaos tasks (60s)
+        { text: "Stomp and clap a full pattern. Record it. That's your drums now.", time: 60 },
+        { text: "Sample machinery sounds from YouTube. Build a full kit.", time: 60 },
+        { text: "Create 4 completely different drum patterns in 16 bars", time: 60 },
+        { text: "Make your drums sound like a COMPLETELY different genre", time: 60 },
+        { text: "Build a trap beat using only boom-bap samples (or vice versa)", time: 60 },
+        { text: "Create drums that tell a story: soft → chaotic → soft", time: 60 }
+    ],
+    
+    songwriting: [
+        // Quick inspiration (30s)
+        { text: "Hum a melody RIGHT NOW. Record it raw. Keep it.", time: 30 },
+        { text: "Write a one-word hook. Repeat it 4 times with different melodies.", time: 30 },
+        { text: "Change one chord to something WRONG. Leave it.", time: 30 },
+        { text: "Add a 2-note counter-melody over your hook", time: 30 },
+        { text: "Write the WORST bar you can imagine. Use it anyway.", time: 30 },
+        { text: "Whisper your next line instead of singing it", time: 30 },
+        { text: "Use only 3 notes for your next melody", time: 30 },
+        { text: "Add a rest where there absolutely shouldn't be one", time: 30 },
+        { text: "Say 'yeah' or 'uh' in a weird place. Commit.", time: 30 },
+        { text: "Sing one line in a completely different accent", time: 30 },
+        
+        // Medium creativity (40s)
+        { text: "Write a 4-bar melody using only voice memos as reference", time: 40 },
+        { text: "Sing your hook BACKWARDS phonetically. Use it.", time: 40 },
+        { text: "Write a pre-chorus in a fake language", time: 40 },
+        { text: "Create a melody that only goes DOWN, never up", time: 40 },
+        { text: "Write from the perspective of an INANIMATE OBJECT", time: 40 },
+        { text: "Add ad-libs that CONTRADICT your main lyrics", time: 40 },
+        { text: "Write a verse using only QUESTIONS", time: 40 },
+        { text: "Sing something happy over something sad (or vice versa)", time: 40 },
+        { text: "Write about the last thing you ate. Make it emotional.", time: 40 },
+        { text: "Add a harmony a 5th above. Even if it sounds weird.", time: 40 },
+        { text: "Write a line about what you see right now", time: 40 },
+        { text: "Use someone's name in the hook (anyone)", time: 40 },
+        
+        // Complex composition (50s)
+        { text: "Write and record an 8-bar verse about your LAST MEAL", time: 50 },
+        { text: "Create a call-and-response hook with YOURSELF", time: 50 },
+        { text: "Write a bridge that has NOTHING to do with your song", time: 50 },
+        { text: "Freestyle 20 seconds. Grab the best line. Build from it.", time: 50 },
+        { text: "Write a chorus that works as BOTH the intro AND outro", time: 50 },
+        { text: "Record 3 vocal takes with 3 different emotions. Layer them.", time: 50 },
+        { text: "Write lyrics that tell the same story forward AND backward", time: 50 },
+        { text: "Create a melody using a scale you've NEVER used", time: 50 },
+        
+        // Chaos creation (60s)
+        { text: "Write and record a verse about the LAST TEXT you received", time: 60 },
+        { text: "Open a random book/article. First sentence = your hook. Melodize it.", time: 60 },
+        { text: "Create a complete hook: lead vocal, harmony, AND ad-libs", time: 60 },
+        { text: "Write from 3 different characters' perspectives in ONE verse", time: 60 },
+        { text: "Record vocals THROUGH your phone INTO your DAW. That's the lead.", time: 60 },
+        { text: "Create an entire chorus melody using ONLY your name", time: 60 }
     ]
 };
 
@@ -381,6 +493,10 @@ async function loadUserProfile() {
         userProfile = data.profile;
         userAnalytics = data.analytics || {};
         updateMainScreenUI();
+        
+        // Check for login bonus
+        checkLoginBonus();
+        
         if (!sessionStorage.getItem('manualSeen')) {
             sessionStorage.setItem('manualSeen', 'true');
             showScreen('screen-manual');
@@ -391,6 +507,36 @@ async function loadUserProfile() {
         console.error('Profile load failed:', err);
         showScreen('screen-onboarding');
     }
+}
+
+async function checkLoginBonus() {
+    try {
+        const { data, error } = await supabaseClient.rpc('check_login_bonus');
+        if (error) { console.error('Login bonus check failed:', error); return; }
+        if (data && data.success && data.bonus > 0) {
+            showBonusNotification(data.bonus_type, data.bonus);
+            if (userProfile) userProfile.lifetime_clout = data.new_total;
+            updateMainScreenUI();
+        }
+    } catch (err) {
+        console.error('Login bonus error:', err);
+    }
+}
+
+function showBonusNotification(bonusType, amount) {
+    const notification = document.createElement('div');
+    notification.className = 'bonus-notification';
+    notification.innerHTML = `
+        <div class="bonus-type">${bonusType}</div>
+        <div class="bonus-amount">+${amount} CLOUT</div>
+    `;
+    document.body.appendChild(notification);
+    playSuccess();
+    setTimeout(() => notification.classList.add('show'), 100);
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 500);
+    }, 3000);
 }
 
 function updateMainScreenUI() {
@@ -495,15 +641,17 @@ function drawTask() {
     if (tasksCompleted >= SET_LIMIT) { endSession(); return; }
     elements.taskCount.textContent = (tasksCompleted + 1) + '/' + SET_LIMIT;
     const deck = cardDecks[selectedMode] || cardDecks.production;
-    let availableCards = deck.filter(card => !usedCards.includes(card));
+    let availableCards = deck.filter(card => !usedCards.includes(card.text));
     if (availableCards.length === 0) { usedCards = []; availableCards = [...deck]; }
-    currentCardText = availableCards[Math.floor(Math.random() * availableCards.length)];
+    const selectedCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+    currentCardText = selectedCard.text;
+    currentCardTime = selectedCard.time;
     usedCards.push(currentCardText);
     elements.cardBody.classList.add('cassette-load');
     elements.cardBody.textContent = currentCardText;
     playCassetteInsert();
     setTimeout(() => elements.cardBody.classList.remove('cassette-load'), 600);
-    timeLeft = TASK_TIME;
+    timeLeft = currentCardTime;
     cooldownLeft = 10;
     updateCooldownUI();
     startTimer();
@@ -543,8 +691,10 @@ function showCheatError() { elements.cheatError.style.opacity = "1"; playError()
 function completeTask() {
     clearInterval(timerInterval);
     
+    // Speed demon: finish with more than half the time left
     let currentBonus = 0;
-    if (timeLeft > 15) { currentBonus += 5; speedDemonCount++; triggerAlert("SPEED DEMON +5"); }
+    const halfTime = Math.floor(currentCardTime / 2);
+    if (timeLeft > halfTime) { currentBonus += 5; speedDemonCount++; triggerAlert("SPEED DEMON +5"); }
     
     tasksCompleted++;
     sessionClout += (10 + currentBonus);
@@ -608,20 +758,30 @@ async function rerollTask() {
     playClick();
     playCassetteInsert();
     if (currentUser) { supabaseClient.rpc('track_card_rerun', { p_card_text: currentCardText, p_game_mode: selectedMode }).catch(err => console.error('Track rerun failed:', err)); }
+    
+    // Get new card (different from current)
     const deck = cardDecks[selectedMode] || cardDecks.production;
-    let availableCards = deck.filter(card => !usedCards.includes(card) && card !== currentCardText);
-    if (availableCards.length === 0) availableCards = deck.filter(card => card !== currentCardText);
+    let availableCards = deck.filter(card => !usedCards.includes(card.text) && card.text !== currentCardText);
+    if (availableCards.length === 0) availableCards = deck.filter(card => card.text !== currentCardText);
     const newCard = availableCards[Math.floor(Math.random() * availableCards.length)];
-    usedCards[usedCards.length - 1] = newCard;
-    currentCardText = newCard;
+    
+    // Update used cards
+    usedCards[usedCards.length - 1] = newCard.text;
+    currentCardText = newCard.text;
+    currentCardTime = newCard.time;
+    
+    // Update display
     elements.cardBody.classList.add('cassette-load');
     elements.cardBody.textContent = currentCardText;
     setTimeout(() => elements.cardBody.classList.remove('cassette-load'), 600);
+    
+    // Reset timer with NEW card's time
     clearInterval(timerInterval);
-    timeLeft = TASK_TIME;
+    timeLeft = currentCardTime;
     cooldownLeft = 10;
     updateCooldownUI();
     startTimer();
+    
     triggerAlert('RERUN -' + RERUN_PENALTY + ' CLOUT');
 }
 
@@ -982,6 +1142,12 @@ async function addComment(postId) {
         await loadComments(postId);
         await loadCommentCount(postId);
         playSuccess();
+        
+        // Check for engagement bonus
+        const bonusResult = await supabaseClient.rpc('check_engagement_bonus', { p_action_type: 'comment' });
+        if (bonusResult.data && bonusResult.data.bonus > 0) {
+            showBonusNotification(bonusResult.data.bonus_type, bonusResult.data.bonus);
+        }
     } catch (err) {
         console.error('Failed to add comment:', err);
         playError();
@@ -1012,6 +1178,12 @@ async function toggleLike(postId, btn) {
             if (data.liked) {
                 btn.classList.add('liked');
                 countSpan.textContent = count + 1;
+                
+                // Check for engagement bonus
+                const bonusResult = await supabaseClient.rpc('check_engagement_bonus', { p_action_type: 'like' });
+                if (bonusResult.data && bonusResult.data.bonus > 0) {
+                    showBonusNotification(bonusResult.data.bonus_type, bonusResult.data.bonus);
+                }
             } else {
                 btn.classList.remove('liked');
                 countSpan.textContent = Math.max(0, count - 1);
@@ -1062,6 +1234,11 @@ async function submitChallengeEntry() {
             messageEl.textContent = 'Challenge entry submitted! Good luck! 🎯';
             messageEl.style.color = 'var(--green)';
             playSuccess();
+            
+            // Show bonus notification if any
+            if (data.bonus && data.bonus > 0) {
+                showBonusNotification(data.bonus_type, data.bonus);
+            }
             
             document.getElementById('challenge-tiktok-url').value = '';
             document.getElementById('challenge-description').value = '';
@@ -1129,6 +1306,11 @@ async function submitFeedPost() {
             messageEl.textContent = 'Clip submitted!';
             messageEl.style.color = 'var(--green)';
             playSuccess();
+            
+            // Show bonus notification if any
+            if (data.bonus && data.bonus > 0) {
+                showBonusNotification(data.bonus_type, data.bonus);
+            }
             
             document.getElementById('submit-tiktok-url').value = '';
             document.getElementById('submit-card-text').value = '';
