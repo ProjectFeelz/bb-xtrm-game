@@ -1021,6 +1021,60 @@ h2 {
     padding: 8px 15px;
 }
 
+/* ==================== STREAK NOTIFICATION ==================== */
+.streak-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    background: linear-gradient(135deg, rgba(0,0,0,0.98), rgba(30,20,10,0.98));
+    border: 3px solid #ff6b00;
+    border-radius: 20px;
+    padding: 30px 50px;
+    text-align: center;
+    z-index: 1001;
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 60px rgba(255,107,0,0.6), inset 0 0 40px rgba(255,107,0,0.1);
+}
+
+.streak-notification.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.streak-fire {
+    font-size: 4rem;
+    animation: fire-bounce 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes fire-bounce {
+    from { transform: scale(1) rotate(-5deg); }
+    to { transform: scale(1.2) rotate(5deg); }
+}
+
+.streak-count {
+    font-size: 2rem;
+    color: #ff6b00;
+    font-weight: 900;
+    text-shadow: 0 0 20px #ff6b00;
+    margin: 10px 0;
+}
+
+.streak-bonus {
+    font-size: 1.5rem;
+    color: var(--yellow);
+    font-weight: 900;
+    text-shadow: 0 0 15px var(--yellow);
+}
+
+.streak-message {
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-top: 10px;
+    letter-spacing: 2px;
+}
+
 /* ==================== BONUS NOTIFICATION ==================== */
 .bonus-notification {
     position: fixed;
