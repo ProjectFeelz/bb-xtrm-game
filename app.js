@@ -1130,7 +1130,7 @@ async function loadFeedPosts() {
         
         let html = '';
         for (const post of data) {
-            const tiktokEmbed = getTikTokEmbed(post.tiktok_url);
+            const videoId = extractTikTokId(post.tiktok_url);
             const modeLabel = post.game_mode === 'production' ? 'ENGINEER' : 
                              post.game_mode === 'beats' ? 'BEATS' : 
                              post.game_mode === 'songwriting' ? 'WRITER' : 
@@ -1139,16 +1139,25 @@ async function loadFeedPosts() {
             const isChallenge = post.is_challenge_entry;
             const postClass = isChallenge ? 'feed-post challenge-entry' : (post.is_pinned ? 'feed-post pinned' : 'feed-post');
             const isLeading = isChallenge && highestScore > 0 && (post.engagement_score || 0) === highestScore;
+            const isOwnPost = currentUser && post.user_id === currentUser.id;
             
             html += `
                 <div class="${postClass}" data-post-id="${post.id}">
                     <div class="feed-post-header">
                         <span class="feed-post-author">@${post.artist_name}${isChallenge ? '<span class="challenge-entry-badge">🎯</span>' : ''}</span>
-                        ${isChallenge ? `<span class="engagement-score ${isLeading ? 'leading' : ''}">🔥 ${post.engagement_score || 0} ${isLeading ? '👑' : ''}</span>` : `<span class="feed-post-mode">${modeLabel}</span>`}
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            ${isChallenge ? `<span class="engagement-score ${isLeading ? 'leading' : ''}">🔥 ${post.engagement_score || 0} ${isLeading ? '👑' : ''}</span>` : `<span class="feed-post-mode">${modeLabel}</span>`}
+                            ${isOwnPost ? `<button class="feed-delete-btn" onclick="deletePost('${post.id}')" title="Delete">🗑️</button>` : ''}
+                        </div>
                     </div>
                     <div class="feed-post-card">"${post.card_text}"</div>
                     ${post.description ? '<div class="feed-post-desc">' + post.description + '</div>' : ''}
-                    <div class="feed-post-video">${tiktokEmbed}</div>
+                    <div class="feed-tiktok-preview" id="preview-${post.id}" onclick="expandVideo('${post.id}', '${videoId}', '${post.tiktok_url}')">
+                        <div class="tiktok-preview-overlay">
+                            <span class="tiktok-play-btn">▶</span>
+                            <span class="tiktok-tap-text">Tap to watch</span>
+                        </div>
+                    </div>
                     <div class="feed-post-actions">
                         <button class="feed-like-btn" onclick="toggleLike('${post.id}', this)">
                             ❤️ <span>${post.likes_count || 0}</span>
@@ -1160,8 +1169,27 @@ async function loadFeedPosts() {
                     <div class="feed-comments" id="comments-${post.id}" style="display: none;">
                         <div class="comments-list" id="comments-list-${post.id}"></div>
                         <div class="feed-comment-input">
-                            <input type="text" placeholder="Add a comment..." id="comment-input-${post.id}" onkeypress="if(event.key==='Enter')addComment('${post.id}')">
+                            <button class="emoji-btn" onclick="toggleEmojiPicker('${post.id}')">😀</button>
+                            <input type="text" placeholder="Add a comment..." id="comment-input-${post.id}" onkeypress="if(event.key==='Enter')addComment('${post.id}')" maxlength="150">
                             <button onclick="addComment('${post.id}')">Post</button>
+                        </div>
+                        <div class="emoji-picker" id="emoji-picker-${post.id}" style="display:none;">
+                            <span onclick="insertEmoji('${post.id}','🔥')">🔥</span>
+                            <span onclick="insertEmoji('${post.id}','💯')">💯</span>
+                            <span onclick="insertEmoji('${post.id}','🎵')">🎵</span>
+                            <span onclick="insertEmoji('${post.id}','🎹')">🎹</span>
+                            <span onclick="insertEmoji('${post.id}','🎤')">🎤</span>
+                            <span onclick="insertEmoji('${post.id}','🎧')">🎧</span>
+                            <span onclick="insertEmoji('${post.id}','⚡')">⚡</span>
+                            <span onclick="insertEmoji('${post.id}','💪')">💪</span>
+                            <span onclick="insertEmoji('${post.id}','👀')">👀</span>
+                            <span onclick="insertEmoji('${post.id}','😂')">😂</span>
+                            <span onclick="insertEmoji('${post.id}','🙌')">🙌</span>
+                            <span onclick="insertEmoji('${post.id}','❤️')">❤️</span>
+                            <span onclick="insertEmoji('${post.id}','👏')">👏</span>
+                            <span onclick="insertEmoji('${post.id}','🤯')">🤯</span>
+                            <span onclick="insertEmoji('${post.id}','🎯')">🎯</span>
+                            <span onclick="insertEmoji('${post.id}','✨')">✨</span>
                         </div>
                     </div>
                 </div>
@@ -1177,6 +1205,74 @@ async function loadFeedPosts() {
     } catch (err) {
         console.error('Failed to load feed:', err);
         feedList.innerHTML = '<div style="text-align:center;color:var(--red);padding:20px;">Failed to load clips</div>';
+    }
+}
+
+function extractTikTokId(url) {
+    const match = url.match(/video\/(\d+)/) || url.match(/tiktok\.com\/@[\w.-]+\/video\/(\d+)/);
+    return match ? match[1] : '';
+}
+
+function expandVideo(postId, videoId, tiktokUrl) {
+    const preview = document.getElementById(`preview-${postId}`);
+    if (videoId) {
+        preview.innerHTML = `<iframe src="https://www.tiktok.com/embed/v2/${videoId}" allowfullscreen style="width:100%;height:400px;border:none;border-radius:8px;"></iframe>`;
+        preview.classList.add('expanded');
+    } else {
+        window.open(tiktokUrl, '_blank');
+    }
+}
+
+function toggleEmojiPicker(postId) {
+    const picker = document.getElementById(`emoji-picker-${postId}`);
+    picker.style.display = picker.style.display === 'none' ? 'flex' : 'none';
+}
+
+function insertEmoji(postId, emoji) {
+    const input = document.getElementById(`comment-input-${postId}`);
+    input.value += emoji;
+    input.focus();
+}
+
+// Profanity filter
+const profanityList = ['fuck','shit','ass','bitch','dick','pussy','cock','cunt','nigger','nigga','faggot','retard','whore','slut'];
+
+function filterProfanity(text) {
+    let filtered = text;
+    profanityList.forEach(word => {
+        const regex = new RegExp(word, 'gi');
+        filtered = filtered.replace(regex, '*'.repeat(word.length));
+    });
+    return filtered;
+}
+
+function containsProfanity(text) {
+    const lowerText = text.toLowerCase();
+    return profanityList.some(word => lowerText.includes(word));
+}
+
+function getTikTokLink(url) {
+    return url;
+}
+
+async function deletePost(postId) {
+    if (!confirm('Delete this post?')) return;
+    
+    try {
+        const { error } = await supabaseClient
+            .from('feed_posts')
+            .delete()
+            .eq('id', postId)
+            .eq('user_id', currentUser.id);
+        
+        if (error) throw error;
+        
+        playSuccess();
+        loadFeedPosts();
+    } catch (err) {
+        console.error('Failed to delete post:', err);
+        playError();
+        alert('Failed to delete post');
     }
 }
 
@@ -1244,12 +1340,17 @@ async function loadComments(postId) {
 
 async function addComment(postId) {
     const input = document.getElementById(`comment-input-${postId}`);
-    const commentText = input.value.trim();
+    let commentText = input.value.trim();
     
     if (!commentText) return;
     if (!currentUser) {
         alert('Please sign in to comment');
         return;
+    }
+    
+    // Check for profanity and filter it
+    if (containsProfanity(commentText)) {
+        commentText = filterProfanity(commentText);
     }
     
     try {
@@ -1261,6 +1362,11 @@ async function addComment(postId) {
         if (error) throw error;
         
         input.value = '';
+        
+        // Hide emoji picker
+        const picker = document.getElementById(`emoji-picker-${postId}`);
+        if (picker) picker.style.display = 'none';
+        
         await loadComments(postId);
         await loadCommentCount(postId);
         playSuccess();
