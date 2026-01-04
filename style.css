@@ -363,6 +363,25 @@ h2 {
     padding: 15px;
 }
 
+.btn-discord {
+    background: linear-gradient(145deg, #5865F2, #4752C4, #3C45A5, #2D3580);
+    color: #fff;
+    font-weight: 900;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    box-shadow: 
+        0 6px 0 #2D3580,
+        0 8px 16px rgba(88,101,242,0.4),
+        inset 0 2px 0 rgba(255,255,255,0.2),
+        inset 0 -2px 8px rgba(0,0,0,0.2);
+}
+
+.btn-discord:active {
+    box-shadow: 
+        0 0 0 #2D3580,
+        0 2px 8px rgba(88,101,242,0.4),
+        inset 0 2px 0 rgba(255,255,255,0.2);
+}
+
 /* ==================== GAME UI ==================== */
 #cheat-error { 
     color: var(--red); 
