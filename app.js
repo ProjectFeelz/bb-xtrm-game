@@ -263,6 +263,7 @@ function createConfetti() {
     }
   ]
 }
+*/
 
 // Add this meta tag to your index.html <head> section:
 /*
@@ -545,21 +546,6 @@ function playCelebration() {
             osc.stop(audioContext.currentTime + 0.4);
         }, i * 80);
     });
-}
-
-function createConfetti() {
-    const colors = ['#00f2ff', '#ff00ff', '#ffd700', '#2ecc71', '#ff4757'];
-    for (let i = 0; i < 50; i++) {
-        setTimeout(() => {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.animationDelay = Math.random() * 0.5 + 's';
-            document.body.appendChild(confetti);
-            setTimeout(() => confetti.remove(), 3000);
-        }, i * 30);
-    }
 }
 
 // ==================== GAME STATE ====================
