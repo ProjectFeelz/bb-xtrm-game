@@ -737,6 +737,12 @@ function updateCooldownUI() {
 function startTimer() {
     clearInterval(timerInterval);
     elements.timer.classList.remove('timer-low');
+    
+    // Show time immediately before interval starts
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    elements.timer.textContent = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+    
     timerInterval = setInterval(() => {
         timeLeft--;
         if (cooldownLeft > 0) { cooldownLeft--; updateCooldownUI(); }
@@ -744,9 +750,9 @@ function startTimer() {
             elements.timer.classList.add('timer-low');
             playAlarmBuzz((10 - timeLeft) / 10);
         } else { playTick(); }
-        const m = Math.floor(timeLeft / 60);
-        const s = timeLeft % 60;
-        elements.timer.textContent = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+        const min = Math.floor(timeLeft / 60);
+        const sec = timeLeft % 60;
+        elements.timer.textContent = (min < 10 ? "0" + min : min) + ":" + (sec < 10 ? "0" + sec : sec);
         if (timeLeft <= 0) { clearInterval(timerInterval); comboCount = 0; playError(); showScreen('screen-modes'); }
     }, 1000);
 }
@@ -787,6 +793,13 @@ function completeTask() {
 
 function showCooldownScreen() {
     showScreen('screen-cooldown');
+    
+    // Update stats on cooldown screen
+    const cooldownTask = document.getElementById('cooldown-task');
+    const cooldownClout = document.getElementById('cooldown-clout');
+    if (cooldownTask) cooldownTask.textContent = tasksCompleted;
+    if (cooldownClout) cooldownClout.textContent = sessionClout;
+    
     let cooldownTime = 10;
     const countdownEl = document.getElementById('cooldown-countdown');
     const progressEl = document.getElementById('cooldown-progress');
@@ -816,6 +829,10 @@ function triggerAlert(text) { elements.comboAlert.textContent = text; elements.c
 
 async function rerollTask() {
     if (sessionClout < RERUN_PENALTY) { triggerAlert('NEED ' + RERUN_PENALTY + ' CLOUT'); playError(); return; }
+    
+    // Stop current timer immediately
+    clearInterval(timerInterval);
+    
     rerunUsedInSession = true;
     cleanStreakCount = 0;
     comboCount = 0;
@@ -824,28 +841,47 @@ async function rerollTask() {
     elements.cloutVal.textContent = sessionClout;
     playClick();
     playCassetteInsert();
-    if (currentUser) { supabaseClient.rpc('track_card_rerun', { p_card_text: currentCardText, p_game_mode: selectedMode }).catch(err => console.error('Track rerun failed:', err)); }
+    
+    if (currentUser) { 
+        supabaseClient.rpc('track_card_rerun', { p_card_text: currentCardText, p_game_mode: selectedMode }).catch(err => console.error('Track rerun failed:', err)); 
+    }
     
     // Get new card (different from current)
     const deck = cardDecks[selectedMode] || cardDecks.production;
     let availableCards = deck.filter(card => !usedCards.includes(card.text) && card.text !== currentCardText);
     if (availableCards.length === 0) availableCards = deck.filter(card => card.text !== currentCardText);
+    
+    if (availableCards.length === 0) {
+        // Fallback: just pick any card that's different
+        availableCards = deck.filter(card => card.text !== currentCardText);
+    }
+    
     const newCard = availableCards[Math.floor(Math.random() * availableCards.length)];
     
-    // Update used cards
-    usedCards[usedCards.length - 1] = newCard.text;
+    // Update tracking
+    if (usedCards.length > 0) {
+        usedCards[usedCards.length - 1] = newCard.text;
+    } else {
+        usedCards.push(newCard.text);
+    }
     currentCardText = newCard.text;
     currentCardTime = newCard.time;
     
-    // Update display
+    // Update card display
     elements.cardBody.classList.add('cassette-load');
     elements.cardBody.textContent = currentCardText;
     setTimeout(() => elements.cardBody.classList.remove('cassette-load'), 600);
     
     // Reset timer with NEW card's time
-    clearInterval(timerInterval);
     timeLeft = currentCardTime;
     cooldownLeft = 10;
+    
+    // Update timer display immediately
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    elements.timer.textContent = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+    elements.timer.classList.remove('timer-low');
+    
     updateCooldownUI();
     startTimer();
     
