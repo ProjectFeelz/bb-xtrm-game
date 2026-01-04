@@ -1888,7 +1888,7 @@ h2 {
 .public-social-link {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
     padding: 8px 15px;
     background: rgba(0,0,0,0.4);
     border: 1px solid var(--border);
@@ -1899,24 +1899,54 @@ h2 {
     transition: 0.2s;
 }
 
+.public-social-link svg {
+    flex-shrink: 0;
+}
+
 .public-social-link:hover {
-    border-color: var(--cyan);
-    background: rgba(0,242,255,0.1);
+    transform: scale(1.05);
+}
+
+.public-social-link.tiktok {
+    background: linear-gradient(135deg, #000, #111);
+    border-color: #333;
 }
 
 .public-social-link.tiktok:hover {
     border-color: #ff0050;
-    background: rgba(255,0,80,0.1);
+    box-shadow: 0 0 10px rgba(255,0,80,0.3);
+}
+
+.public-social-link.tiktok svg {
+    color: #ff0050;
+}
+
+.public-social-link.youtube {
+    background: linear-gradient(135deg, #1a0000, #330000);
+    border-color: #660000;
 }
 
 .public-social-link.youtube:hover {
     border-color: #ff0000;
-    background: rgba(255,0,0,0.1);
+    box-shadow: 0 0 10px rgba(255,0,0,0.3);
+}
+
+.public-social-link.youtube svg {
+    color: #ff0000;
+}
+
+.public-social-link.instagram {
+    background: linear-gradient(135deg, #1a0a1a, #2a1a2a);
+    border-color: #4a2a4a;
 }
 
 .public-social-link.instagram:hover {
     border-color: #e1306c;
-    background: rgba(225,48,108,0.1);
+    box-shadow: 0 0 10px rgba(225,48,108,0.3);
+}
+
+.public-social-link.instagram svg {
+    color: #e1306c;
 }
 
 /* ==================== EDIT PROFILE ==================== */
