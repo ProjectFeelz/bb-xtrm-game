@@ -1153,6 +1153,7 @@ h2 {
     color: #666;
     margin-top: 20px;
     letter-spacing: 2px;
+    text-align: center;
 }
 
 .cooldown-progress-bar {
