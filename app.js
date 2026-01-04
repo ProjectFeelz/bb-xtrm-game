@@ -654,8 +654,220 @@ function initEventListeners() {
     if (elements.leaderboardBtn) elements.leaderboardBtn.addEventListener('click', openLeaderboard);
     if (elements.closeLeaderboard) elements.closeLeaderboard.addEventListener('click', closeLeaderboard);
     if (elements.profileOverlay) elements.profileOverlay.addEventListener('click', (e) => { if (e.target === elements.profileOverlay) closeProfile(); });
+    
+    // Community Feed listeners
+    const communityBtn = document.getElementById('community-btn');
+    if (communityBtn) communityBtn.addEventListener('click', openFeed);
+    const closeFeedBtn = document.getElementById('close-feed-btn');
+    if (closeFeedBtn) closeFeedBtn.addEventListener('click', () => { playClick(); showScreen('screen-modes'); });
+    const submitClipBtn = document.getElementById('submit-clip-btn');
+    if (submitClipBtn) submitClipBtn.addEventListener('click', () => { playClick(); showScreen('screen-submit'); });
+    const cancelSubmitBtn = document.getElementById('cancel-submit-btn');
+    if (cancelSubmitBtn) cancelSubmitBtn.addEventListener('click', () => { playClick(); showScreen('screen-feed'); });
+    const submitPostBtn = document.getElementById('submit-post-btn');
+    if (submitPostBtn) submitPostBtn.addEventListener('click', submitFeedPost);
+    
     document.body.addEventListener('click', initAudio, { once: true });
     document.body.addEventListener('touchstart', initAudio, { once: true });
+}
+
+// ==================== COMMUNITY FEED FUNCTIONS ====================
+async function openFeed() {
+    playClick();
+    showScreen('screen-feed');
+    await loadWeeklyChallenge();
+    await loadFeedPosts();
+}
+
+async function loadWeeklyChallenge() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('weekly_challenges')
+            .select('*')
+            .eq('is_active', true)
+            .gte('end_date', new Date().toISOString().split('T')[0])
+            .order('created_at', { ascending: false })
+            .limit(1);
+        
+        if (error) throw error;
+        
+        const challengeBanner = document.getElementById('weekly-challenge');
+        if (data && data.length > 0) {
+            const challenge = data[0];
+            document.getElementById('challenge-title').textContent = challenge.title;
+            document.getElementById('challenge-desc').textContent = '"' + challenge.card_text + '"';
+            document.getElementById('challenge-prize').textContent = challenge.prize ? '🏆 ' + challenge.prize : '';
+            
+            const endDate = new Date(challenge.end_date);
+            const now = new Date();
+            const daysLeft = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
+            document.getElementById('challenge-timer').textContent = '⏰ ' + daysLeft + ' days left';
+            
+            challengeBanner.style.display = 'block';
+        } else {
+            challengeBanner.style.display = 'none';
+        }
+    } catch (err) {
+        console.error('Failed to load weekly challenge:', err);
+    }
+}
+
+async function loadFeedPosts() {
+    const feedList = document.getElementById('feed-list');
+    feedList.innerHTML = '<div style="text-align:center;color:#888;padding:20px;">Loading clips...</div>';
+    
+    try {
+        const { data, error } = await supabaseClient
+            .from('feed_posts')
+            .select('*')
+            .eq('is_approved', true)
+            .order('is_pinned', { ascending: false })
+            .order('created_at', { ascending: false })
+            .limit(20);
+        
+        if (error) throw error;
+        
+        if (!data || data.length === 0) {
+            feedList.innerHTML = '<div style="text-align:center;color:#888;padding:40px;">No clips yet! Be the first to submit.</div>';
+            return;
+        }
+        
+        let html = '';
+        data.forEach(post => {
+            const tiktokEmbed = getTikTokEmbed(post.tiktok_url);
+            const modeLabel = post.game_mode === 'production' ? 'ENGINEER' : post.game_mode === 'beats' ? 'BEATS' : 'WRITER';
+            
+            html += `
+                <div class="feed-post ${post.is_pinned ? 'pinned' : ''}">
+                    <div class="feed-post-header">
+                        <span class="feed-post-author">@${post.artist_name}</span>
+                        <span class="feed-post-mode">${modeLabel}</span>
+                    </div>
+                    <div class="feed-post-card">"${post.card_text}"</div>
+                    ${post.description ? '<div class="feed-post-desc">' + post.description + '</div>' : ''}
+                    <div class="feed-post-video">${tiktokEmbed}</div>
+                    <div class="feed-post-actions">
+                        <button class="feed-like-btn" onclick="toggleLike('${post.id}', this)">
+                            ❤️ <span>${post.likes_count || 0}</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        feedList.innerHTML = html;
+    } catch (err) {
+        console.error('Failed to load feed:', err);
+        feedList.innerHTML = '<div style="text-align:center;color:var(--red);padding:20px;">Failed to load clips</div>';
+    }
+}
+
+function getTikTokEmbed(url) {
+    // Extract TikTok video ID from URL
+    const match = url.match(/video\/(\d+)/) || url.match(/tiktok\.com\/@[\w.-]+\/video\/(\d+)/);
+    if (match && match[1]) {
+        return `<iframe src="https://www.tiktok.com/embed/v2/${match[1]}" allowfullscreen></iframe>`;
+    }
+    // Fallback: just show a link
+    return `<a href="${url}" target="_blank" style="color:var(--cyan);display:block;padding:20px;text-align:center;">Watch on TikTok ↗</a>`;
+}
+
+async function toggleLike(postId, btn) {
+    if (!currentUser) {
+        alert('Please sign in to like posts');
+        return;
+    }
+    
+    try {
+        const { data, error } = await supabaseClient.rpc('toggle_like', { p_post_id: postId });
+        if (error) throw error;
+        
+        if (data.success) {
+            const countSpan = btn.querySelector('span');
+            let count = parseInt(countSpan.textContent) || 0;
+            if (data.liked) {
+                btn.classList.add('liked');
+                countSpan.textContent = count + 1;
+            } else {
+                btn.classList.remove('liked');
+                countSpan.textContent = Math.max(0, count - 1);
+            }
+            playClick();
+        }
+    } catch (err) {
+        console.error('Failed to toggle like:', err);
+    }
+}
+
+async function submitFeedPost() {
+    const tiktokUrl = document.getElementById('submit-tiktok-url').value.trim();
+    const cardText = document.getElementById('submit-card-text').value.trim();
+    const gameMode = document.getElementById('submit-game-mode').value;
+    const description = document.getElementById('submit-description').value.trim();
+    const messageEl = document.getElementById('submit-message');
+    
+    // Validation
+    if (!tiktokUrl || !tiktokUrl.includes('tiktok.com')) {
+        messageEl.textContent = 'Please enter a valid TikTok URL';
+        messageEl.style.color = 'var(--red)';
+        playError();
+        return;
+    }
+    if (!cardText) {
+        messageEl.textContent = 'Please enter the challenge card';
+        messageEl.style.color = 'var(--red)';
+        playError();
+        return;
+    }
+    if (!gameMode) {
+        messageEl.textContent = 'Please select a game mode';
+        messageEl.style.color = 'var(--red)';
+        playError();
+        return;
+    }
+    
+    const submitBtn = document.getElementById('submit-post-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'SUBMITTING...';
+    
+    try {
+        const { data, error } = await supabaseClient.rpc('submit_feed_post', {
+            p_tiktok_url: tiktokUrl,
+            p_card_text: cardText,
+            p_game_mode: gameMode,
+            p_description: description || null
+        });
+        
+        if (error) throw error;
+        
+        if (data.success) {
+            messageEl.textContent = 'Clip submitted! Awaiting approval.';
+            messageEl.style.color = 'var(--green)';
+            playSuccess();
+            
+            // Clear form
+            document.getElementById('submit-tiktok-url').value = '';
+            document.getElementById('submit-card-text').value = '';
+            document.getElementById('submit-game-mode').value = '';
+            document.getElementById('submit-description').value = '';
+            
+            // Go back to feed after 2 seconds
+            setTimeout(() => {
+                showScreen('screen-feed');
+                messageEl.textContent = '';
+            }, 2000);
+        } else {
+            throw new Error(data.error || 'Submission failed');
+        }
+    } catch (err) {
+        console.error('Failed to submit post:', err);
+        messageEl.textContent = 'Failed to submit: ' + err.message;
+        messageEl.style.color = 'var(--red)';
+        playError();
+    }
+    
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'SUBMIT';
 }
 
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
