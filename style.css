@@ -913,19 +913,23 @@ h2 {
         transform: none;
         padding: 0;
         margin: 0;
+        overflow: hidden;
     }
     
     .screen {
         padding: 20px;
+        padding-bottom: 30px;
         inset: 0;
         border-radius: 0;
         height: 100%;
         display: flex;
         flex-direction: column;
+        overflow-y: auto;
     }
     
     #screen-feed {
         padding-top: 40px;
+        padding-bottom: 25px;
     }
     
     .logo-small {
@@ -967,12 +971,15 @@ h2 {
     }
     
     .feed-container {
-        max-height: none;
+        max-height: 55vh;
         flex: 1;
+        min-height: 0;
     }
     
     .feed-actions-small {
-        padding-bottom: 20px;
+        margin-top: auto;
+        padding-top: 10px;
+        flex-shrink: 0;
     }
 }
 
