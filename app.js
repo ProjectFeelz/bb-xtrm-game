@@ -1176,6 +1176,7 @@ async function loadFeedPosts() {
     feedList.innerHTML = '<div style="text-align:center;color:#888;padding:20px;">Loading clips...</div>';
     
     try {
+        console.log('Loading feed posts...');
         let query = supabaseClient
             .from('feed_posts')
             .select('*')
@@ -1189,6 +1190,8 @@ async function loadFeedPosts() {
         }
         
         const { data, error } = await query;
+        
+        console.log('Feed response:', data, error);
         
         if (error) throw error;
         
