@@ -1021,6 +1021,50 @@ h2 {
     padding: 8px 15px;
 }
 
+/* ==================== BONUS NOTIFICATION ==================== */
+.bonus-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,30,0.95));
+    border: 3px solid var(--yellow);
+    border-radius: 20px;
+    padding: 30px 50px;
+    text-align: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 50px rgba(255,215,0,0.5), inset 0 0 30px rgba(255,215,0,0.1);
+}
+
+.bonus-notification.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.bonus-type {
+    font-size: 0.8rem;
+    color: var(--cyan);
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.bonus-amount {
+    font-size: 2.5rem;
+    color: var(--yellow);
+    font-weight: 900;
+    text-shadow: 0 0 20px var(--yellow);
+    animation: bonus-pulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes bonus-pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+}
+
 /* ==================== COOLDOWN SCREEN ==================== */
 #screen-cooldown {
     background: linear-gradient(135deg, #0a0d12 0%, #141822 50%, #0a0d12 100%);
