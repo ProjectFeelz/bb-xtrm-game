@@ -334,6 +334,26 @@ async function sendMagicLink() {
     elements.authBtn.textContent = 'SEND MAGIC LINK';
 }
 
+async function signInWithDiscord() {
+    try {
+        const { error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'discord',
+            options: {
+                redirectTo: window.location.origin
+            }
+        });
+        if (error) {
+            elements.authMessage.textContent = error.message;
+            elements.authMessage.style.color = 'var(--red)';
+            playError();
+        }
+    } catch (err) {
+        elements.authMessage.textContent = 'Discord sign-in failed. Try again.';
+        elements.authMessage.style.color = 'var(--red)';
+        playError();
+    }
+}
+
 async function logout() {
     try {
         localStorage.clear();
@@ -608,6 +628,10 @@ async function endSession() {
 function initEventListeners() {
     if (elements.authBtn) elements.authBtn.addEventListener('click', sendMagicLink);
     if (elements.authEmail) elements.authEmail.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMagicLink(); });
+    
+    const discordBtn = document.getElementById('discord-btn');
+    if (discordBtn) discordBtn.addEventListener('click', signInWithDiscord);
+    
     if (elements.onboardSubmit) elements.onboardSubmit.addEventListener('click', completeOnboarding);
     const manualContinue = document.getElementById('manual-continue');
     if (manualContinue) manualContinue.addEventListener('click', () => { playClick(); showScreen('screen-modes'); });
