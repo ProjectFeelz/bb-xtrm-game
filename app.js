@@ -862,11 +862,6 @@ async function rerollTask() {
     elements.cloutVal.textContent = sessionClout;
     playClick();
     
-    // Track rerun (don't wait for it)
-    if (currentUser) { 
-        supabaseClient.rpc('track_card_rerun', { p_card_text: currentCardText, p_game_mode: selectedMode }).catch(() => {}); 
-    }
-    
     // Get the deck
     const deck = cardDecks[selectedMode] || cardDecks.production;
     if (!deck || deck.length === 0) {
