@@ -230,7 +230,7 @@ function createConfetti() {
 
 // ==================== GAME STATE ====================
 const SET_LIMIT = 10;
-const RERUN_PENALTY = 25;
+const RERUN_PENALTY = 50;
 
 let currentUser = null;
 let userProfile = null;
