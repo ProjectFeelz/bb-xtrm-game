@@ -179,34 +179,6 @@ function updateTimerDisplay() {
     elements.timer.textContent = (min < 10 ? "0" + min : min) + ":" + (sec < 10 ? "0" + sec : sec);
 }
 
-// B) LIMIT ANIMATION FRAMES
-// Add this CSS to your style.css or in a <style> tag in index.html:
-
-/*
-/* Reduce animation stress on mobile */
-@media (max-width: 768px) {
-    /* Disable heavy animations */
-    .confetti {
-        display: none !important;
-    }
-    
-    /* Simplify transitions */
-    * {
-        transition-duration: 0.2s !important;
-    }
-    
-    /* Reduce shadow complexity */
-    .glass-panel {
-        box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
-    }
-}
-
-/* Prevent layout thrashing */
-* {
-    will-change: auto !important;
-}
-*/
-
 // C) CLEANUP INTERVALS AND TIMEOUTS
 // Add this cleanup function and call it when switching screens:
 
