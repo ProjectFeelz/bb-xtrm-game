@@ -1094,7 +1094,16 @@ async function completeOnboarding() {
 
 function openProfile() {
     if (!userProfile) return;
-    elements.profileInitial.textContent = userProfile.artist_name?.charAt(0) || '?';
+    
+    // Set avatar
+    const avatarEl = elements.profileInitial.parentElement; // Get the avatar container
+    if (userProfile.avatar_url) {
+        elements.profileInitial.innerHTML = `<img src="${userProfile.avatar_url}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    } else {
+        elements.profileInitial.textContent = userProfile.artist_name?.charAt(0) || '?';
+        elements.profileInitial.innerHTML = userProfile.artist_name?.charAt(0) || '?'; // Keep as text
+    }
+    
     elements.profileName.textContent = userProfile.artist_name || 'UNKNOWN';
     elements.profileLocation.textContent = userProfile.country || 'Unknown';
     elements.statLifetime.textContent = userProfile.lifetime_clout || 0;
