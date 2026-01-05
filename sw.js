@@ -1,5 +1,5 @@
-// BB XTRM - Minimal Service Worker for PWA Install
-const CACHE_VERSION = 'bbxtrm-v1.0.7';
+// BB XTRM - Service Worker (Fixed - No POST caching)
+const CACHE_VERSION = 'bbxtrm-v1.0.8';
 const CACHE_ASSETS = [
   '/',
   '/index.html',
@@ -38,20 +38,32 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch - network first, cache fallback (lightweight)
+// Fetch - ONLY cache GET requests (no POST/PUT/DELETE)
 self.addEventListener('fetch', (event) => {
+  // Skip caching for non-GET requests (POST, PUT, DELETE)
+  if (event.request.method !== 'GET') {
+    return;
+  }
+  
+  // Skip caching for Supabase API calls
+  if (event.request.url.includes('supabase.co')) {
+    return;
+  }
+  
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Clone and cache the response
-        const responseClone = response.clone();
-        caches.open(CACHE_VERSION).then((cache) => {
-          cache.put(event.request, responseClone);
-        });
+        // Only cache successful GET responses
+        if (response && response.status === 200 && event.request.method === 'GET') {
+          const responseClone = response.clone();
+          caches.open(CACHE_VERSION).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+        }
         return response;
       })
       .catch(() => {
-        // If network fails, try cache
+        // If network fails, try cache (only for GET)
         return caches.match(event.request);
       })
   );
