@@ -3229,38 +3229,38 @@ body.in-game #profile-icon {
     background: rgba(0, 0, 0, 0.95) !important;
     backdrop-filter: blur(10px) !important;
     display: none !important;
-    align-items: center !important;
-    justify-content: center !important;
     z-index: 100 !important;
 }
 
 #profile-overlay.active {
     display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
-/* Container - NO BACKGROUND BOX */
+/* Content container - matches other screens */
 .overlay-content {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    width: 90% !important;
-    max-width: 500px !important;
-    max-height: 90vh !important;
+    width: 100vw !important;
+    max-width: 600px !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
     overflow-y: auto !important;
-    padding: 80px 20px 40px 20px !important;
-    position: relative !important;
+    background: linear-gradient(135deg, #1e2533 0%, #141822 100%) !important;
+    padding: 80px 20px 100px 20px !important;
+    border-radius: 0 !important;
+    border: none !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     gap: 15px !important;
 }
 
-/* Close button - FIXED IN TOP RIGHT CORNER */
+/* Close button - fixed top right */
 .close-btn {
     position: fixed !important;
     top: 20px !important;
     right: 20px !important;
-    z-index: 1000 !important;
+    z-index: 101 !important;
     background: rgba(255, 255, 255, 0.1) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
     border-radius: 50% !important;
@@ -3282,27 +3282,22 @@ body.in-game #profile-icon {
     transform: scale(1.1) !important;
 }
 
-/* Profile section - with background */
+/* Profile section - with proper background */
 .profile-section {
     width: 100% !important;
-    max-width: 100% !important;
-    background: rgba(26, 29, 38, 0.8) !important;
+    max-width: 600px !important;
+    background: rgba(26, 29, 38, 0.6) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     padding: 25px !important;
-    margin-bottom: 0 !important;
     border-radius: 12px !important;
     text-align: center !important;
     backdrop-filter: blur(10px) !important;
 }
 
-/* Profile avatar - PERFECT CIRCLE, NO CONTAINER */
+/* Profile avatar - perfect circle */
 .profile-avatar {
     width: 100px !important;
     height: 100px !important;
-    min-width: 100px !important;
-    min-height: 100px !important;
-    max-width: 100px !important;
-    max-height: 100px !important;
     border-radius: 50% !important;
     overflow: hidden !important;
     margin: 0 auto 15px auto !important;
@@ -3322,7 +3317,6 @@ body.in-game #profile-icon {
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
-    border-radius: 50% !important;
 }
 
 #profile-initial {
@@ -3345,6 +3339,27 @@ body.in-game #profile-icon {
     font-size: 0.8rem !important;
     color: #888 !important;
     margin-top: 5px !important;
+    margin-bottom: 10px !important;
+}
+
+/* Bio section */
+.profile-bio {
+    font-size: 0.85rem !important;
+    color: #aaa !important;
+    font-style: italic !important;
+    margin-top: 10px !important;
+    padding: 10px !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border-radius: 8px !important;
+    min-height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.profile-bio:empty::before {
+    content: "No bio yet";
+    color: #555;
 }
 
 /* Stats grid */
@@ -3353,12 +3368,11 @@ body.in-game #profile-icon {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 15px !important;
     width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
+    max-width: 600px !important;
 }
 
 .stat-card {
-    background: rgba(26, 29, 38, 0.8) !important;
+    background: rgba(26, 29, 38, 0.6) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     padding: 20px !important;
     text-align: center !important;
@@ -3380,11 +3394,50 @@ body.in-game #profile-icon {
     margin-top: 5px !important;
 }
 
-/* All buttons in profile */
+/* All buttons */
 #profile-overlay .btn {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
+    width: calc(100% - 40px) !important;
+    max-width: 600px !important;
+    margin: 0 20px !important;
+}
+
+#profile-overlay h2 {
+    color: var(--magenta) !important;
+    margin-bottom: 15px !important;
+    text-align: center !important;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .overlay-content {
+        padding: 60px 15px 100px 15px !important;
+    }
+    
+    .close-btn {
+        top: 15px !important;
+        right: 15px !important;
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 1.8rem !important;
+    }
+    
+    .profile-avatar {
+        width: 80px !important;
+        height: 80px !important;
+    }
+    
+    .stats-grid {
+        gap: 12px !important;
+    }
+    
+    .stat-card {
+        padding: 15px !important;
+    }
+    
+    #profile-overlay .btn {
+        width: calc(100% - 30px) !important;
+        margin: 0 15px !important;
+    }
 }
 
 /* Ensure all children are centered and properly sized */
