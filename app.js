@@ -1133,6 +1133,9 @@ function openProfile() {
     // Update text fields
     if (elements.profileName) elements.profileName.textContent = userProfile.artist_name || 'UNKNOWN';
     if (elements.profileLocation) elements.profileLocation.textContent = userProfile.country || 'Unknown';
+    // ADD BIO
+    const bioElement = document.getElementById('profile-bio');
+    if (bioElement) bioElement.textContent = userProfile.bio || '';
     if (elements.statLifetime) elements.statLifetime.textContent = userProfile.lifetime_clout || 0;
     if (elements.statBest) elements.statBest.textContent = userProfile.personal_best || 0;
     if (elements.statReruns) elements.statReruns.textContent = userProfile.total_reruns || 0;
