@@ -2776,3 +2776,166 @@ body.in-game #profile-icon {
         padding: 40px 15px !important;
     }
 }
+/* ═══════════════════════════════════════════════════════════════
+   PWA INSTALL BANNER STYLING
+   ═══════════════════════════════════════════════════════════════ */
+
+.install-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #1e2533 0%, #141822 100%);
+    border-bottom: 2px solid var(--cyan);
+    padding: 15px 20px;
+    z-index: 9999;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.install-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.install-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.install-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.install-title {
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: var(--cyan);
+    margin-bottom: 2px;
+    letter-spacing: 1px;
+}
+
+.install-subtitle {
+    font-size: 0.7rem;
+    color: #888;
+    letter-spacing: 0.5px;
+}
+
+.install-button {
+    background: linear-gradient(145deg, var(--cyan), #00a8cc);
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 900;
+    font-size: 0.75rem;
+    cursor: pointer;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 0 #007a8c, 0 6px 12px rgba(0, 242, 255, 0.3);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+}
+
+.install-button:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #007a8c, 0 2px 8px rgba(0, 242, 255, 0.3);
+}
+
+.install-close {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+    flex-shrink: 0;
+}
+
+.install-close:hover {
+    color: var(--red);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .install-banner {
+        padding: 12px 15px;
+    }
+    
+    .install-banner-content {
+        gap: 10px;
+    }
+    
+    .install-icon {
+        font-size: 1.5rem;
+    }
+    
+    .install-title {
+        font-size: 0.8rem;
+    }
+    
+    .install-subtitle {
+        font-size: 0.65rem;
+    }
+    
+    .install-button {
+        padding: 8px 15px;
+        font-size: 0.7rem;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 380px) {
+    .install-subtitle {
+        display: none;
+    }
+    
+    .install-button {
+        padding: 8px 12px;
+        font-size: 0.65rem;
+    }
+}
+```
+
+---
+
+## 🎯 **WHAT THIS DOES:**
+
+✅ **Styled banner** at the top with BB XTRM theme
+✅ **Cyan gradient** matching your app design
+✅ **Phone icon** 📱
+✅ **"Install BB XTRM"** title
+✅ **"Get the full app experience"** subtitle
+✅ **Green INSTALL button** with proper styling
+✅ **X close button** in top right
+✅ **Slide-down animation** when it appears
+✅ **Mobile responsive** - looks good on all screen sizes
+
+---
+
+## 📱 **HOW IT WILL LOOK:**
+```
+┌────────────────────────────────────────┐
+│ 📱  Install BB XTRM    [INSTALL]  ✕   │
+│     Get the full app experience        │
+└────────────────────────────────────────┘
