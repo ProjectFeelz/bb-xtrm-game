@@ -96,7 +96,57 @@ async function manageCacheAndSW() {
     
     return true;
 }
+async function clearAllCaches() {
+    try {
+        if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
+            console.log('✅ Browser caches cleared');
+        }
+        
+        if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (const registration of registrations) {
+                await registration.unregister();
+            }
+            console.log('✅ Service workers unregistered');
+        }
+        
+        sessionStorage.clear();
+        console.log('✅ Session storage cleared');
+        
+    } catch (error) {
+        console.error('❌ Error clearing caches:', error);
+    }
+}
 
+async function forceResetApp() {
+    if (!confirm('Reset app and clear all caches? You will stay logged in.')) {
+        return;
+    }
+    
+    try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        
+        await clearAllCaches();
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        if (session) {
+            localStorage.setItem('bb-xtrm-auth', JSON.stringify(session));
+        }
+        
+        localStorage.setItem('app_version', '1.0.7');
+        
+        playSuccess();
+        alert('App reset complete! Reloading...');
+        window.location.reload(true);
+        
+    } catch (error) {
+        console.error('Reset failed:', error);
+        alert('Reset failed. Please try again.');
+    }
+}
 // ═══════════════════════════════════════════════════════════════
 // FIX 2: DISABLE SERVICE WORKER (PREVENTING CACHING ISSUES)
 // ═══════════════════════════════════════════════════════════════
