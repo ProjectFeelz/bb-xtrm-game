@@ -1314,7 +1314,7 @@ function showStreakNotification(streak, bonus) {
     notification.className = 'streak-notification';
     notification.innerHTML = `
         <div class="streak-fire">🔥</div>
-        <div class="streak-count">${streak} DAY STREAK!</div>
+        <div class="streak-count">${streak} PLAY STREAK!</div>
         ${bonus > 0 ? `<div class="streak-bonus">+${bonus} CLOUT</div>` : ''}
         <div class="streak-message">${getStreakMessage(streak)}</div>
     `;
