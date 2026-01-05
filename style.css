@@ -2939,3 +2939,91 @@ body.in-game #profile-icon {
 │ 📱  Install BB XTRM    [INSTALL]  ✕   │
 │     Get the full app experience        │
 └────────────────────────────────────────┘
+/* ═══════════════════════════════════════════════════════════════
+   FIX: RESULTS SCREEN CENTERING, AUTH MESSAGE, DISCORD BUTTON
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Fix results screen - center everything */
+#screen-results {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 60px 20px 100px 20px !important;
+}
+
+#screen-results h2,
+#screen-results #result-clout,
+#screen-results #previous-best,
+#screen-results #perfect-badge,
+#screen-results #result-footer {
+    width: 100% !important;
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+#result-buttons {
+    width: calc(100% - 40px) !important;
+    max-width: 600px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Fix auth screen - center magic link message */
+#auth-message {
+    text-align: center !important;
+    width: 100% !important;
+    display: block !important;
+}
+
+#auth-form {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+}
+
+/* Move Discord button lower with more spacing */
+#auth-form > div:has(.btn-discord) {
+    margin-top: 20px !important;
+}
+
+.btn-discord {
+    margin-top: 10px !important;
+}
+
+/* Add more space after the OR divider */
+#auth-form > div:has(span:contains("OR")) {
+    margin: 25px 0 !important;
+}
+
+/* Specific fix for the divider container */
+#auth-form > div[style*="display: flex"][style*="align-items: center"] {
+    margin: 25px 0 !important;
+}
+
+/* Profile icon - make sure it stays visible */
+#profile-icon {
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 20px !important;
+    z-index: 100 !important;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    #screen-results {
+        padding: 40px 15px 100px 15px !important;
+    }
+    
+    #result-buttons {
+        width: calc(100% - 30px) !important;
+    }
+    
+    #profile-icon {
+        bottom: 20px !important;
+        right: 15px !important;
+    }
+}
