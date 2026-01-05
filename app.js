@@ -295,14 +295,32 @@ function cleanupTimers() {
 
 // Update showScreen to cleanup on screen change:
 function showScreen(screenId) {
-    // Clean up timers before switching
-    cleanupTimers();
-    
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
     const target = document.getElementById(screenId);
     if (target) target.classList.add('active-screen');
+    
+    // Hide profile button during gameplay
+    updateProfileButtonVisibility();
 }
 
+// Hide profile button during gameplay
+function updateProfileButtonVisibility() {
+    const profileBtn = document.getElementById('profile-icon');
+    const activeScreen = document.querySelector('.screen.active-screen');
+    
+    if (!profileBtn || !activeScreen) return;
+    
+    const screenId = activeScreen.id;
+    
+    // Hide on game and cooldown screens
+    if (screenId === 'screen-game' || screenId === 'screen-cooldown') {
+        profileBtn.style.display = 'none';
+        profileBtn.style.opacity = '0';
+    } else {
+        profileBtn.style.display = 'flex';
+        profileBtn.style.opacity = '1';
+    }
+}
 // D) LIMIT CONFETTI (CPU INTENSIVE)
 // Replace createConfetti() with this lighter version:
 
