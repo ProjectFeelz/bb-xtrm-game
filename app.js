@@ -1095,21 +1095,30 @@ async function completeOnboarding() {
 function openProfile() {
     if (!userProfile) return;
     
-    // Set avatar
-    const avatarEl = elements.profileInitial.parentElement; // Get the avatar container
-    if (userProfile.avatar_url) {
-        elements.profileInitial.innerHTML = `<img src="${userProfile.avatar_url}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-    } else {
-        elements.profileInitial.textContent = userProfile.artist_name?.charAt(0) || '?';
-        elements.profileInitial.innerHTML = userProfile.artist_name?.charAt(0) || '?'; // Keep as text
+    // Update avatar
+    const avatarContainer = document.querySelector('.profile-avatar');
+    const avatarInitial = document.getElementById('profile-initial');
+    
+    if (userProfile.avatar_url && avatarContainer) {
+        // Clear the initial and show image
+        avatarInitial.style.display = 'none';
+        avatarContainer.style.background = 'transparent';
+        avatarContainer.innerHTML = `<img src="${userProfile.avatar_url}" alt="${userProfile.artist_name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    } else if (avatarInitial) {
+        // Show initial letter
+        avatarInitial.style.display = 'flex';
+        avatarInitial.textContent = userProfile.artist_name?.charAt(0).toUpperCase() || '?';
     }
     
+    // Update text fields
     elements.profileName.textContent = userProfile.artist_name || 'UNKNOWN';
     elements.profileLocation.textContent = userProfile.country || 'Unknown';
     elements.statLifetime.textContent = userProfile.lifetime_clout || 0;
     elements.statBest.textContent = userProfile.personal_best || 0;
     elements.statReruns.textContent = userProfile.total_reruns || userAnalytics?.total_reruns || 0;
     elements.statCloutLost.textContent = userProfile.clout_lost || userAnalytics?.clout_lost_to_reruns || 0;
+    
+    // Show overlay
     elements.profileOverlay.classList.add('active');
     playClick();
 }
