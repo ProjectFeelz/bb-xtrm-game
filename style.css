@@ -3109,3 +3109,94 @@ body.in-game #profile-icon {
     justify-content: center !important;
     padding-top: 0 !important;
 }
+/* ═══════════════════════════════════════════════════════════════
+   FIX: PROFILE OVERLAY - PROPER CENTERING ON ALL SCREEN SIZES
+   ═══════════════════════════════════════════════════════════════ */
+
+#profile-overlay .overlay-content {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    max-width: 600px !important;
+    margin: 0 auto !important;
+    padding: 60px 20px 40px 20px !important;
+}
+
+/* All children should be centered */
+#profile-overlay .overlay-content > * {
+    width: 100% !important;
+    max-width: 600px !important;
+}
+
+/* Profile section - centered */
+.profile-section {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 25px !important;
+    margin-bottom: 20px !important;
+}
+
+/* Stats grid - 2x2 layout, centered */
+.stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 15px !important;
+    width: 100% !important;
+    margin: 20px 0 !important;
+}
+
+.stat-card {
+    padding: 20px !important;
+    text-align: center !important;
+}
+
+/* Buttons - full width in container */
+#profile-overlay .btn {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* Close button - fixed position */
+.close-btn {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+}
+
+/* Desktop - limit max width */
+@media (min-width: 769px) {
+    #profile-overlay .overlay-content {
+        max-width: 500px !important;
+    }
+    
+    .stats-grid {
+        max-width: 500px !important;
+    }
+}
+
+/* Very wide screens - keep everything centered */
+@media (min-width: 1200px) {
+    #profile-overlay .overlay-content {
+        max-width: 550px !important;
+    }
+}
+
+/* Mobile - full width with padding */
+@media (max-width: 768px) {
+    #profile-overlay .overlay-content {
+        padding: 60px 20px 40px 20px !important;
+    }
+    
+    .stats-grid {
+        gap: 12px !important;
+    }
+    
+    .stat-card {
+        padding: 15px !important;
+    }
+}
