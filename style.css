@@ -2233,3 +2233,265 @@ img,
 iframe {
     loading: lazy;
 }
+/* ═══════════════════════════════════════════════════════════════
+   BB XTRM - COMPLETE MOBILE FIX + GREEN BUTTON GRADIENTS
+   - Fills entire screen (including sides)
+   - Adds gradients to green mode buttons
+   - Changes button text to black
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════
+   PART 1: FILL ENTIRE SCREEN (NO SIDE GAPS)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Remove all margins and padding from html/body */
+html, body {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Make screens fill entire width (no side padding) */
+.screen {
+    width: 100vw; /* Full viewport width */
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 0 80px 0; /* ZERO side padding - fills to edges */
+    box-sizing: border-box;
+    margin: 0;
+}
+
+/* BUT keep inner content with some breathing room */
+.screen > * {
+    width: 90%; /* Content takes 90% width */
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Exception: Allow some elements to fill full width if needed */
+.screen .full-width {
+    width: 100%;
+    max-width: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PART 2: GREEN MODE BUTTONS - ADD GRADIENTS & BLACK TEXT
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Target the three green mode buttons specifically */
+.mode-btn[data-mode="production"],
+.mode-btn[data-mode="beats"], 
+.mode-btn[data-mode="songwriting"] {
+    /* Beautiful gradient like purple/pink buttons */
+    background: linear-gradient(135deg, #84cc16 0%, #65a30d 50%, #4d7c0f 100%);
+    
+    /* Change text to BLACK for better contrast */
+    color: #000000 !important;
+    
+    /* Keep the green border */
+    border: 2px solid #84cc16;
+    
+    /* Add subtle glow */
+    box-shadow: 0 0 20px rgba(132, 204, 22, 0.3);
+    
+    /* Make text bold and crisp */
+    font-weight: 700;
+    text-shadow: none; /* Remove any text glow for black text */
+}
+
+/* Hover effect for green buttons */
+.mode-btn[data-mode="production"]:hover,
+.mode-btn[data-mode="beats"]:hover,
+.mode-btn[data-mode="songwriting"]:hover {
+    background: linear-gradient(135deg, #a3e635 0%, #84cc16 50%, #65a30d 100%);
+    box-shadow: 0 0 30px rgba(132, 204, 22, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Active/pressed state */
+.mode-btn[data-mode="production"]:active,
+.mode-btn[data-mode="beats"]:active,
+.mode-btn[data-mode="songwriting"]:active {
+    background: linear-gradient(135deg, #65a30d 0%, #4d7c0f 50%, #3f6212 100%);
+    transform: translateY(0);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OPTIONAL: If you want to style them individually
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ENGINEER button - Lime to forest green */
+.mode-btn[data-mode="production"] {
+    background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%);
+}
+
+/* BEATS button - Darker green gradient */
+.mode-btn[data-mode="beats"] {
+    background: linear-gradient(135deg, #a3e635 0%, #84cc16 100%);
+}
+
+/* WRITER button - Yellow-green gradient */
+.mode-btn[data-mode="songwriting"] {
+    background: linear-gradient(135deg, #bef264 0%, #84cc16 100%);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PART 3: MOBILE SCREEN CENTERING
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Main modes screen */
+#screen-modes {
+    justify-content: center;
+    padding-top: 40px;
+    padding-bottom: 100px;
+}
+
+/* Game screen */
+#screen-game {
+    justify-content: flex-start;
+    padding-top: 20px;
+    padding-bottom: 140px;
+}
+
+/* Results screen */
+#screen-results {
+    justify-content: center;
+    padding-top: 80px;
+    padding-bottom: 80px;
+}
+
+/* Profile icon - keep visible */
+#profile-icon {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
+    z-index: 1000;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PART 4: RESPONSIVE ADJUSTMENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+@media screen and (max-width: 768px) {
+    /* On mobile, screens fill entire width */
+    .screen {
+        width: 100vw;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    
+    /* Inner content has side margins */
+    .screen > * {
+        width: 90%;
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+    
+    /* Buttons fill most of the width */
+    .mode-btn {
+        width: 100%;
+        max-width: 500px;
+    }
+}
+
+/* Small phones */
+@media screen and (max-height: 667px) {
+    .screen {
+        padding-top: 20px;
+        padding-bottom: 80px;
+    }
+}
+
+/* Tall phones - more vertical space */
+@media screen and (min-height: 800px) {
+    .screen {
+        padding-top: 80px;
+    }
+    
+    #screen-modes {
+        padding-top: 100px;
+    }
+}
+
+/* Safe area for notched devices */
+@supports (padding: max(0px)) {
+    .screen {
+        padding-top: max(60px, env(safe-area-inset-top));
+        padding-bottom: max(80px, env(safe-area-inset-bottom));
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PART 5: ALTERNATIVE GRADIENT STYLES (OPTIONAL)
+   Uncomment any of these if you want different gradient looks
+   ═══════════════════════════════════════════════════════════════ */
+
+/* OPTION A: Bright neon green gradient */
+/*
+.mode-btn[data-mode="production"],
+.mode-btn[data-mode="beats"], 
+.mode-btn[data-mode="songwriting"] {
+    background: linear-gradient(135deg, #bef264 0%, #84cc16 50%, #65a30d 100%);
+    color: #000 !important;
+}
+*/
+
+/* OPTION B: Dark to light green */
+/*
+.mode-btn[data-mode="production"],
+.mode-btn[data-mode="beats"], 
+.mode-btn[data-mode="songwriting"] {
+    background: linear-gradient(135deg, #3f6212 0%, #65a30d 50%, #84cc16 100%);
+    color: #000 !important;
+}
+*/
+
+/* OPTION C: Yellow-lime gradient (warmer) */
+/*
+.mode-btn[data-mode="production"],
+.mode-btn[data-mode="beats"], 
+.mode-btn[data-mode="songwriting"] {
+    background: linear-gradient(135deg, #fde047 0%, #bef264 50%, #84cc16 100%);
+    color: #000 !important;
+}
+*/
+
+/* OPTION D: Emerald to lime (cooler tones) */
+/*
+.mode-btn[data-mode="production"],
+.mode-btn[data-mode="beats"], 
+.mode-btn[data-mode="songwriting"] {
+    background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #6ee7b7 100%);
+    color: #000 !important;
+}
+*/
+
+/* ═══════════════════════════════════════════════════════════════
+   IMPLEMENTATION GUIDE:
+   ═══════════════════════════════════════════════════════════════
+   
+   1. Open your style.css file
+   2. Scroll to the END of the file
+   3. Paste this ENTIRE section
+   4. Save and refresh!
+   
+   WHAT YOU GET:
+   ✅ Full-width screens (fills to edges)
+   ✅ Green buttons have beautiful gradients
+   ✅ Green button text is BLACK (better contrast)
+   ✅ Content is centered and uses 90% width
+   ✅ Works on all screen sizes
+   ✅ Profile button stays visible
+   
+   NOTE: If you see any weird spacing, check that your existing CSS
+   doesn't have conflicting padding/margin rules on .screen
+   
+   ═══════════════════════════════════════════════════════════════ */
