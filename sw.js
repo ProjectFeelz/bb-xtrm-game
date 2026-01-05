@@ -1,72 +1,58 @@
-// =====================================================
-// BB XTRM PRO STUDIO - SERVICE WORKER (FIXED)
-// =====================================================
-
-const CACHE_NAME = 'bb-xtrm-v1.0.1'; // Updated version
-const RUNTIME_CACHE = 'bb-xtrm-runtime-v1';
-
-// Assets that MUST exist for the game to work
-const ESSENTIAL_ASSETS = [
-    '/',
-    '/index.html',
-    '/style.css',
-    '/app.js',
-    '/manifest.json'
+// BB XTRM - Minimal Service Worker for PWA Install
+const CACHE_VERSION = 'bbxtrm-v1.0.7';
+const CACHE_ASSETS = [
+  '/',
+  '/index.html',
+  '/style.css',
+  '/app.js',
+  '/manifest.json',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png'
 ];
 
-// Assets that might be missing (like icons) - we handle these safely
-const OPTIONAL_ASSETS = [
-    '/icons/icon-192.png',
-    '/icons/icon-512.png'
-];
-
-const EXTERNAL_ASSETS = [
-    'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap',
-    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
-];
-
-// Install event
+// Install - cache core assets
 self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            // 1. Load essentials (if one fails, the whole thing fails)
-            return cache.addAll(ESSENTIAL_ASSETS).then(() => {
-                // 2. Load optional assets individually (if one fails, it's okay!)
-                return Promise.allSettled(
-                    [...OPTIONAL_ASSETS, ...EXTERNAL_ASSETS].map(url => 
-                        cache.add(url).catch(err => console.log('[SW] Optional skip:', url))
-                    )
-                );
-            });
-        }).then(() => self.skipWaiting())
-    );
+  console.log('Service Worker: Installing...');
+  event.waitUntil(
+    caches.open(CACHE_VERSION).then((cache) => {
+      console.log('Service Worker: Caching core files');
+      return cache.addAll(CACHE_ASSETS);
+    }).then(() => self.skipWaiting())
+  );
 });
 
-// Activate event
+// Activate - clean up old caches
 self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((names) => {
-            return Promise.all(
-                names.filter(name => name !== CACHE_NAME).map(name => caches.delete(name))
-            );
-        }).then(() => self.clients.claim())
-    );
+  console.log('Service Worker: Activating...');
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_VERSION) {
+            console.log('Service Worker: Clearing old cache');
+            return caches.delete(cache);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
-// Fetch event (Standard network-first strategy)
+// Fetch - network first, cache fallback (lightweight)
 self.addEventListener('fetch', (event) => {
-    if (event.request.method !== 'GET') return;
-    
-    const url = new URL(event.request.url);
-    if (url.hostname.includes('supabase.co')) return;
-
-    event.respondWith(
-        fetch(event.request)
-            .then(res => {
-                const clone = res.clone();
-                caches.open(RUNTIME_CACHE).then(cache => cache.put(event.request, clone));
-                return res;
-            })
-            .catch(() => caches.match(event.request).then(cached => cached || caches.match('/index.html')))
-    );
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        // Clone and cache the response
+        const responseClone = response.clone();
+        caches.open(CACHE_VERSION).then((cache) => {
+          cache.put(event.request, responseClone);
+        });
+        return response;
+      })
+      .catch(() => {
+        // If network fails, try cache
+        return caches.match(event.request);
+      })
+  );
 });
