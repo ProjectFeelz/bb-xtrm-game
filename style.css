@@ -3430,3 +3430,93 @@ body.in-game #profile-icon {
         padding: 15px !important;
     }
 }
+/* ═══════════════════════════════════════════════════════════════
+   PROFILE OVERLAY - FINAL WORKING VERSION
+   ═══════════════════════════════════════════════════════════════ */
+
+#profile-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    display: none;
+}
+
+#profile-overlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 101;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: 0.2s;
+    line-height: 1;
+}
+
+.close-btn:hover {
+    background: rgba(255, 0, 0, 0.3);
+    color: var(--red);
+    transform: scale(1.1);
+}
+
+.overlay-content {
+    background: linear-gradient(135deg, #1e2533 0%, #141822 100%);
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 60px 30px 40px 30px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 15px auto;
+    background: linear-gradient(135deg, var(--cyan), var(--magenta));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#profile-initial {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #000;
+    z-index: 1;
+}
