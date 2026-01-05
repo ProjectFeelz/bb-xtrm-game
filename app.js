@@ -18,7 +18,7 @@ const supabaseClient = window.supabase.createClient(GAME_URL, GAME_KEY, {
 });
 
 // ==================== CACHE & SERVICE WORKER MANAGEMENT ====================
-const APP_VERSION = '1.0.5'; // Increment this when you deploy updates
+const APP_VERSION = '1.0.7'; // Increment this when you deploy updates
 
 // Clear old caches and manage service worker
 // ═══════════════════════════════════════════════════════════════
