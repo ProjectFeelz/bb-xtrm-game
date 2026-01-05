@@ -1328,9 +1328,9 @@ function showStreakNotification(streak, bonus) {
 }
 
 function getStreakMessage(streak) {
-    if (streak >= 30) return "LEGENDARY STATUS! 👑";
-    if (streak >= 14) return "TWO WEEKS STRONG! 💪";
-    if (streak >= 7) return "ONE WEEK LOCKED IN! 🎯";
+    if (streak >= 30) return "LEGENDARY STREAK! 👑";
+    if (streak >= 14) return "UNSTOPPABLE! 💪";
+    if (streak >= 7) return "ON FIRE! 🎯";
     if (streak >= 3) return "BUILDING MOMENTUM! ⚡";
     return "KEEP IT GOING! 🚀";
 }
