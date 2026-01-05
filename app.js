@@ -189,22 +189,33 @@ setInterval(checkCacheHealth, 5 * 60 * 1000);
 // Add this to your init() function or at the end of the file:
 
 // Unregister any existing service workers
-async function removeServiceWorkers() {
+// ==================== SERVICE WORKER REGISTRATION ====================
+async function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         try {
-            const registrations = await navigator.serviceWorker.getRegistrations();
-            for (const registration of registrations) {
-                await registration.unregister();
-                console.log('Unregistered service worker');
-            }
+            const registration = await navigator.serviceWorker.register('/sw.js', {
+                scope: '/'
+            });
+            console.log('✅ Service Worker registered:', registration.scope);
+            
+            // Update on reload
+            registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        console.log('🔄 New version available, reloading...');
+                        window.location.reload();
+                    }
+                });
+            });
         } catch (err) {
-            console.error('Failed to unregister service workers:', err);
+            console.error('❌ Service Worker registration failed:', err);
         }
     }
 }
 
-// Call this on init
-removeServiceWorkers();
+// Register service worker on init
+registerServiceWorker();
 
 // ═══════════════════════════════════════════════════════════════
 // FIX 3: PERFORMANCE OPTIMIZATION - REDUCE PHONE HEATING
