@@ -2562,3 +2562,94 @@ html, body {
    ✅ Still visible on menu/results screens
    
    ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   FINAL MOBILE FIX - FULL WIDTH BUTTONS & PROPER SPACING
+   ═══════════════════════════════════════════════════════════════ */
+
+body, html {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+}
+
+#console {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh;
+    transform: none !important;
+}
+
+.screen {
+    margin: 0 !important;
+    padding: 40px 20px 100px 20px !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    left: 0 !important;
+    right: 0 !important;
+}
+
+.screen > * {
+    width: 100% !important;
+    max-width: 600px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.mode-btn,
+.btn-community,
+.btn {
+    width: calc(100% - 40px) !important;
+    max-width: 600px !important;
+    margin-left: 20px !important;
+    margin-right: 20px !important;
+}
+
+.overlay-content .btn {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+#rank-panel {
+    width: calc(100% - 40px) !important;
+    max-width: 600px !important;
+    margin-left: 20px !important;
+    margin-right: 20px !important;
+}
+
+body.in-game #profile-icon {
+    display: none !important;
+}
+
+#screen-cooldown {
+    justify-content: center !important;
+    padding-top: 80px !important;
+}
+
+#game-controls,
+#card {
+    width: calc(100% - 40px) !important;
+    margin-left: 20px !important;
+    margin-right: 20px !important;
+}
+
+#screen-feed {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.feed-container {
+    width: 100% !important;
+    padding: 0 15px !important;
+}
+
+@media (max-width: 768px) {
+    #console {
+        transform: none !important;
+        transform-origin: unset !important;
+    }
+}
