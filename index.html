@@ -417,46 +417,46 @@
     </button>
 
     <!-- PROFILE OVERLAY -->
-    <div id="profile-overlay" class="overlay">
-        <div class="overlay-content">
-            <button id="close-profile" class="close-btn">&times;</button>
-            <h2 style="color: var(--magenta); margin-bottom: 18px; font-size: 1rem;">ARTIST PROFILE</h2>
-            
-            <div class="profile-section glass-panel">
-                <div class="profile-avatar" style="width: 72px; height: 72px;">
-                    <span id="profile-initial" style="font-size: 1.8rem;">?</span>
-                </div>
-                <div id="profile-name" class="profile-name" style="font-size: 1.35rem;">LOADING...</div>
-                <div id="profile-location" class="profile-location" style="font-size: 0.77rem;"></div>
+    <!-- PROFILE OVERLAY -->
+<div id="profile-overlay" class="overlay">
+    <button id="close-profile" class="close-btn">&times;</button>
+    <div class="overlay-content">
+        <h2 style="color: var(--magenta); margin-bottom: 18px; font-size: 1rem;">ARTIST PROFILE</h2>
+        
+        <div class="profile-section glass-panel">
+            <div class="profile-avatar">
+                <span id="profile-initial" style="font-size: 1.8rem;">?</span>
             </div>
-            
-            <div class="stats-grid">
-                <div class="stat-card glass-panel">
-                    <div class="stat-value" id="stat-lifetime" style="font-size: 1.6rem;">0</div>
-                    <div class="stat-label" style="font-size: 0.59rem;">LIFETIME CLOUT</div>
-                </div>
-                <div class="stat-card glass-panel">
-                    <div class="stat-value" id="stat-best" style="font-size: 1.6rem;">0</div>
-                    <div class="stat-label" style="font-size: 0.59rem;">PERSONAL BEST</div>
-                </div>
-                <div class="stat-card glass-panel">
-                    <div class="stat-value" id="stat-reruns" style="font-size: 1.6rem;">0</div>
-                    <div class="stat-label" style="font-size: 0.59rem;">TOTAL RERUNS</div>
-                </div>
-                <div class="stat-card glass-panel">
-                    <div class="stat-value" id="stat-clout-lost" style="font-size: 1.6rem;">0</div>
-                    <div class="stat-label" style="font-size: 0.59rem;">CLOUT LOST</div>
-                </div>
-            </div>
-            <button id="leaderboard-btn" class="btn btn-primary" style="margin-top: 18px; width: 100%;">🏆 LEADERBOARD</button>
-            <button id="edit-profile-btn" class="btn btn-secondary" style="margin-top: 10px; width: 100%;">✏️ EDIT PROFILE</button>
-            <button onclick="forceResetApp()" class="btn btn-secondary" style="margin-top: 10px; width: 100%; background: rgba(239,68,68,0.2); color: var(--red); border: 1px solid var(--red);">
-                🔄 RESET APP & CLEAR CACHE
-            </button>
-            <button id="logout-btn" class="btn btn-secondary" style="margin-top: 10px; width: 100%;">LOG OUT</button>
-           
+            <div id="profile-name" class="profile-name" style="font-size: 1.35rem;">LOADING...</div>
+            <div id="profile-location" class="profile-location" style="font-size: 0.77rem;"></div>
         </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card glass-panel">
+                <div class="stat-value" id="stat-lifetime" style="font-size: 1.6rem;">0</div>
+                <div class="stat-label" style="font-size: 0.59rem;">LIFETIME CLOUT</div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-value" id="stat-best" style="font-size: 1.6rem;">0</div>
+                <div class="stat-label" style="font-size: 0.59rem;">PERSONAL BEST</div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-value" id="stat-reruns" style="font-size: 1.6rem;">0</div>
+                <div class="stat-label" style="font-size: 0.59rem;">TOTAL RERUNS</div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-value" id="stat-clout-lost" style="font-size: 1.6rem;">0</div>
+                <div class="stat-label" style="font-size: 0.59rem;">CLOUT LOST</div>
+            </div>
+        </div>
+        <button id="leaderboard-btn" class="btn btn-primary" style="margin-top: 18px; width: 100%;">🏆 LEADERBOARD</button>
+        <button id="edit-profile-btn" class="btn btn-secondary" style="margin-top: 10px; width: 100%;">✏️ EDIT PROFILE</button>
+        <button onclick="forceResetApp()" class="btn btn-secondary" style="margin-top: 10px; width: 100%; background: rgba(239,68,68,0.2); color: var(--red); border: 1px solid var(--red);">
+            🔄 RESET APP & CLEAR CACHE
+        </button>
+        <button id="logout-btn" class="btn btn-secondary" style="margin-top: 10px; width: 100%;">LOG OUT</button>
     </div>
+</div>
 </div>
 
 <!-- Supabase JS -->
