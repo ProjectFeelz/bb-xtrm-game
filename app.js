@@ -2367,5 +2367,77 @@ async function init() {
     initEventListeners();
     await checkAuthState();
 }
+// ==================== PWA INSTALL PROMPT ====================
+let deferredPrompt = null;
+const installBanner = document.getElementById('install-banner');
+const installBtn = document.getElementById('install-btn');
+const installClose = document.getElementById('install-close');
 
+// Capture the beforeinstallprompt event
+window.addEventListener('beforeinstallprompt', (e) => {
+    console.log('💾 PWA install prompt available');
+    
+    // Prevent the default prompt
+    e.preventDefault();
+    
+    // Store the event for later use
+    deferredPrompt = e;
+    
+    // Show our custom install banner (wait 3 seconds)
+    setTimeout(() => {
+        if (installBanner && !localStorage.getItem('pwa-install-dismissed')) {
+            installBanner.style.display = 'flex';
+        }
+    }, 3000);
+});
+
+// Handle install button click
+if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) {
+            console.log('❌ No install prompt available');
+            return;
+        }
+        
+        // Hide our banner
+        installBanner.style.display = 'none';
+        
+        // Show the browser's install prompt
+        deferredPrompt.prompt();
+        
+        // Wait for the user's response
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response: ${outcome}`);
+        
+        // Clear the deferred prompt
+        deferredPrompt = null;
+        
+        if (outcome === 'accepted') {
+            playSuccess();
+        }
+    });
+}
+
+// Handle close button
+if (installClose) {
+    installClose.addEventListener('click', () => {
+        installBanner.style.display = 'none';
+        localStorage.setItem('pwa-install-dismissed', 'true');
+        playClick();
+    });
+}
+
+// Detect if app is already installed
+window.addEventListener('appinstalled', () => {
+    console.log('✅ PWA installed successfully');
+    deferredPrompt = null;
+    if (installBanner) installBanner.style.display = 'none';
+    playSuccess();
+});
+
+// Check if running as PWA
+if (window.matchMedia('(display-mode: standalone)').matches) {
+    console.log('🚀 Running as installed PWA');
+    if (installBanner) installBanner.style.display = 'none';
+}
 if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
