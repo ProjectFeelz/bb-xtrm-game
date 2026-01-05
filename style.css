@@ -2495,3 +2495,70 @@ html, body {
    doesn't have conflicting padding/margin rules on .screen
    
    ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   BB XTRM - HIDE PROFILE BUTTON DURING GAMEPLAY
+   Makes the game more immersive by hiding profile icon
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Hide profile button ONLY on game screen */
+#screen-game #profile-icon {
+    display: none !important;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Alternative: Hide on game screen AND cooldown screen */
+#screen-game #profile-icon,
+#screen-cooldown #profile-icon {
+    display: none !important;
+}
+
+/* Keep profile button visible on all other screens */
+#screen-modes #profile-icon,
+#screen-results #profile-icon,
+#screen-feed #profile-icon,
+#screen-leaderboard #profile-icon,
+#screen-manual #profile-icon {
+    display: flex !important;
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ALTERNATIVE: FADE OUT DURING GAMEPLAY (SMOOTHER)
+   Uncomment this if you want it to fade instead of instantly hide
+   ═══════════════════════════════════════════════════════════════ */
+
+/*
+#profile-icon {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#screen-game #profile-icon,
+#screen-cooldown #profile-icon {
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+}
+
+#screen-modes #profile-icon,
+#screen-results #profile-icon {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: all;
+}
+*/
+
+/* ═══════════════════════════════════════════════════════════════
+   HOW TO USE:
+   ═══════════════════════════════════════════════════════════════
+   
+   Simply add this to the END of your style.css file!
+   
+   RESULT:
+   ✅ Profile button hidden during gameplay
+   ✅ More immersive experience
+   ✅ Less distractions
+   ✅ Still visible on menu/results screens
+   
+   ═══════════════════════════════════════════════════════════════ */
