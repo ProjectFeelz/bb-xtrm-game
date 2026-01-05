@@ -1093,34 +1093,63 @@ async function completeOnboarding() {
 }
 
 function openProfile() {
-    if (!userProfile) return;
+    console.log('🔵 openProfile called');
     
-    // Update avatar
+    if (!userProfile) {
+        console.error('❌ No user profile');
+        return;
+    }
+    
+    if (!elements.profileOverlay) {
+        console.error('❌ Profile overlay element not found');
+        return;
+    }
+    
+    // Get elements
     const avatarContainer = document.querySelector('.profile-avatar');
     const avatarInitial = document.getElementById('profile-initial');
     
-    if (userProfile.avatar_url && avatarContainer) {
-        // Clear the initial and show image
-        avatarInitial.style.display = 'none';
-        avatarContainer.style.background = 'transparent';
-        avatarContainer.innerHTML = `<img src="${userProfile.avatar_url}" alt="${userProfile.artist_name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-    } else if (avatarInitial) {
-        // Show initial letter
-        avatarInitial.style.display = 'flex';
-        avatarInitial.textContent = userProfile.artist_name?.charAt(0).toUpperCase() || '?';
+    console.log('Avatar container:', avatarContainer);
+    console.log('Avatar initial:', avatarInitial);
+    
+    if (!avatarContainer) {
+        console.error('❌ Avatar container not found');
+        return;
+    }
+    
+    // Clear previous content
+    avatarContainer.innerHTML = '';
+    
+    // Show avatar or initial
+    if (userProfile.avatar_url) {
+        // Show image
+        const img = document.createElement('img');
+        img.src = userProfile.avatar_url;
+        img.alt = userProfile.artist_name;
+        avatarContainer.appendChild(img);
+        console.log('✅ Avatar image added');
+    } else {
+        // Show initial
+        const initial = document.createElement('span');
+        initial.id = 'profile-initial';
+        initial.textContent = userProfile.artist_name?.charAt(0).toUpperCase() || '?';
+        initial.style.cssText = 'font-size:2.5rem;font-weight:900;color:#000;z-index:1;';
+        avatarContainer.appendChild(initial);
+        console.log('✅ Initial added');
     }
     
     // Update text fields
-    elements.profileName.textContent = userProfile.artist_name || 'UNKNOWN';
-    elements.profileLocation.textContent = userProfile.country || 'Unknown';
-    elements.statLifetime.textContent = userProfile.lifetime_clout || 0;
-    elements.statBest.textContent = userProfile.personal_best || 0;
-    elements.statReruns.textContent = userProfile.total_reruns || userAnalytics?.total_reruns || 0;
-    elements.statCloutLost.textContent = userProfile.clout_lost || userAnalytics?.clout_lost_to_reruns || 0;
+    if (elements.profileName) elements.profileName.textContent = userProfile.artist_name || 'UNKNOWN';
+    if (elements.profileLocation) elements.profileLocation.textContent = userProfile.country || 'Unknown';
+    if (elements.statLifetime) elements.statLifetime.textContent = userProfile.lifetime_clout || 0;
+    if (elements.statBest) elements.statBest.textContent = userProfile.personal_best || 0;
+    if (elements.statReruns) elements.statReruns.textContent = userProfile.total_reruns || userAnalytics?.total_reruns || 0;
+    if (elements.statCloutLost) elements.statCloutLost.textContent = userProfile.clout_lost || userAnalytics?.clout_lost_to_reruns || 0;
     
     // Show overlay
     elements.profileOverlay.classList.add('active');
     playClick();
+    console.log('✅ Profile overlay opened');
 }
 
 function closeProfile() { elements.profileOverlay.classList.remove('active'); playClick(); }
