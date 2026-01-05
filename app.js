@@ -62,6 +62,16 @@ async function manageCacheAndSW() {
     setTimeout(() => {
         sessionStorage.setItem('boot_attempts', '0');
     }, 5000);
+    // Auto-clear cache every 24 hours
+    const lastCacheClear = localStorage.getItem('last_cache_clear');
+    const dayInMs = 24 * 60 * 60 * 1000;
+    
+    if (!lastCacheClear || (now - parseInt(lastCacheClear)) > dayInMs) {
+        console.log('🧹 Auto-clearing cache (24hr maintenance)...');
+        await clearAllCaches();
+        localStorage.setItem('last_cache_clear', now.toString());
+        localStorage.setItem('app_version', APP_VERSION);
+    }
     
     if (storedVersion !== APP_VERSION) {
         console.log('New version detected, clearing caches...');
@@ -124,6 +134,32 @@ async function forceResetApp() {
     if (!confirm('Reset app and clear all caches? You will stay logged in.')) {
         return;
     }
+async function checkCacheHealth() {
+    try {
+        if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            
+            if (cacheNames.length > 10) {
+                console.warn('⚠️ Too many caches detected, cleaning up...');
+                await clearAllCaches();
+            }
+            
+            if ('storage' in navigator && 'estimate' in navigator.storage) {
+                const estimate = await navigator.storage.estimate();
+                const usageInMB = (estimate.usage / 1024 / 1024).toFixed(2);
+                
+                if (estimate.usage > 50 * 1024 * 1024) {
+                    console.warn('⚠️ Cache size too large, clearing...');
+                    await clearAllCaches();
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Cache health check failed:', error);
+    }
+}
+
+setInterval(checkCacheHealth, 5 * 60 * 1000);
     
     try {
         const { data: { session } } = await supabaseClient.auth.getSession();
