@@ -3086,6 +3086,11 @@ body.in-game #profile-icon {
 .profile-avatar {
     width: 90px !important;
     height: 90px !important;
+    min-width: 90px !important;
+    min-height: 90px !important;
+    max-width: 90px !important;
+    max-height: 90px !important;
+    aspect-ratio: 1 / 1 !important;
     border-radius: 50% !important;
     overflow: hidden !important;
     margin: 0 auto 15px auto !important;
@@ -3094,14 +3099,23 @@ body.in-game #profile-icon {
     align-items: center !important;
     justify-content: center !important;
     border: 3px solid rgba(255, 255, 255, 0.2) !important;
+    position: relative;
 }
 
 .profile-avatar img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
+#profile-initial {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #000;
+}
 /* Make it look like native screens */
 #profile-overlay.active {
     display: flex !important;
@@ -3114,15 +3128,19 @@ body.in-game #profile-icon {
    ═══════════════════════════════════════════════════════════════ */
 
 #profile-overlay .overlay-content {
+    background: linear-gradient(135deg, #1e2533 0%, #141822 100%) !important;
+    width: 90% !important;
+    max-width: 500px !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    padding: 60px 30px 40px 30px !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    position: relative !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    justify-content: flex-start !important;
-    max-width: 600px !important;
-    margin: 0 auto !important;
-    padding: 60px 20px 40px 20px !important;
 }
-
 /* All children should be centered */
 #profile-overlay .overlay-content > * {
     width: 100% !important;
@@ -3163,7 +3181,7 @@ body.in-game #profile-icon {
 
 /* Close button - fixed position */
 .close-btn {
-    position: fixed !important;
+    position: absolute !important;  /* ✅ CORRECT */
     top: 20px !important;
     right: 20px !important;
 }
