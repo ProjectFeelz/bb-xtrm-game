@@ -3027,3 +3027,85 @@ body.in-game #profile-icon {
         right: 15px !important;
     }
 }
+/* ═══════════════════════════════════════════════════════════════
+   FIX: PROFILE OVERLAY - REMOVE CONTAINER, MAKE IT FULLSCREEN
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Make overlay take full screen like other screens */
+#profile-overlay {
+    background: rgba(0, 0, 0, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.overlay-content {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 40px 20px !important;
+    max-height: 100vh !important;
+    overflow-y: auto !important;
+}
+
+/* Profile section - remove extra container look */
+.profile-section {
+    background: rgba(26, 29, 38, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Stats grid - better spacing */
+.stats-grid {
+    width: 100% !important;
+    max-width: 600px !important;
+    margin: 20px auto !important;
+}
+
+.stat-card {
+    background: rgba(26, 29, 38, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Close button - better positioning */
+.close-btn {
+    position: absolute !important;
+    top: 20px !important;
+    right: 20px !important;
+    z-index: 10 !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 50% !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Profile avatar - fix image display */
+.profile-avatar {
+    width: 90px !important;
+    height: 90px !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    margin: 0 auto 15px auto !important;
+    background: linear-gradient(135deg, var(--cyan), var(--magenta)) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 3px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.profile-avatar img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+/* Make it look like native screens */
+#profile-overlay.active {
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    padding-top: 0 !important;
+}
