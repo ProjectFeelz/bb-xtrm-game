@@ -31,7 +31,7 @@ const APP_VERSION = '1.0.5'; // Increment this when you deploy updates
 // ═══════════════════════════════════════════════════════════════
 // Replace your existing manageCacheAndSW() function with this:
 
-async function manageCacheAndSW() {
+async function clearAllCaches() {
     const APP_VERSION = '1.0.6'; // Increment this when deploying updates
     const storedVersion = localStorage.getItem('app_version');
     
