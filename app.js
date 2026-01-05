@@ -1107,10 +1107,6 @@ function openProfile() {
     
     // Get elements
     const avatarContainer = document.querySelector('.profile-avatar');
-    const avatarInitial = document.getElementById('profile-initial');
-    
-    console.log('Avatar container:', avatarContainer);
-    console.log('Avatar initial:', avatarInitial);
     
     if (!avatarContainer) {
         console.error('❌ Avatar container not found');
@@ -1122,20 +1118,16 @@ function openProfile() {
     
     // Show avatar or initial
     if (userProfile.avatar_url) {
-        // Show image
         const img = document.createElement('img');
         img.src = userProfile.avatar_url;
         img.alt = userProfile.artist_name;
         avatarContainer.appendChild(img);
-        console.log('✅ Avatar image added');
     } else {
-        // Show initial
         const initial = document.createElement('span');
         initial.id = 'profile-initial';
         initial.textContent = userProfile.artist_name?.charAt(0).toUpperCase() || '?';
         initial.style.cssText = 'font-size:2.5rem;font-weight:900;color:#000;z-index:1;';
         avatarContainer.appendChild(initial);
-        console.log('✅ Initial added');
     }
     
     // Update text fields
@@ -1143,8 +1135,8 @@ function openProfile() {
     if (elements.profileLocation) elements.profileLocation.textContent = userProfile.country || 'Unknown';
     if (elements.statLifetime) elements.statLifetime.textContent = userProfile.lifetime_clout || 0;
     if (elements.statBest) elements.statBest.textContent = userProfile.personal_best || 0;
-    if (elements.statReruns) elements.statReruns.textContent = userProfile.total_reruns || userAnalytics?.total_reruns || 0;
-    if (elements.statCloutLost) elements.statCloutLost.textContent = userProfile.clout_lost || userAnalytics?.clout_lost_to_reruns || 0;
+    if (elements.statReruns) elements.statReruns.textContent = userProfile.total_reruns || 0;
+    if (elements.statCloutLost) elements.statCloutLost.textContent = userProfile.clout_lost || 0;
     
     // Show overlay
     elements.profileOverlay.classList.add('active');
@@ -1152,7 +1144,13 @@ function openProfile() {
     console.log('✅ Profile overlay opened');
 }
 
-function closeProfile() { elements.profileOverlay.classList.remove('active'); playClick(); }
+function closeProfile() {
+    console.log('🔴 closeProfile called');
+    if (!elements.profileOverlay) return;
+    elements.profileOverlay.classList.remove('active');
+    playClick();
+    console.log('✅ Profile closed');
+}
 
 async function openLeaderboard() {
     closeProfile();
