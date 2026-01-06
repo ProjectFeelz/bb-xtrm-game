@@ -2129,11 +2129,6 @@ h2 {
     }
     /* ← END OF NEW CODE ← */
     
-    #console {  /* ← Line 2109 - this should come AFTER */
-        border-radius: 0 !important;
-        /* ... */
-    }
-    
     #console {
         border-radius: 0 !important;
         max-height: 100vh !important;
