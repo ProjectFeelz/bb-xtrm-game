@@ -158,7 +158,7 @@ setInterval(async () => {
 // Replace your existing manageCacheAndSW() function with this:
 
 async function manageCacheAndSW() {
-    const APP_VERSION = '1.0.6'; // Increment this when deploying updates
+    const APP_VERSION = '1.0.7'; // Increment this when deploying updates
     const storedVersion = localStorage.getItem('app_version');
     
     // Check if we're stuck in a boot loop
