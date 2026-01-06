@@ -2119,7 +2119,7 @@ h2 {
         height: 100vh !important;
         border-radius: 0 !important;
         margin: 0 !important;
-        padding: 60px 20px 100px 20px !important;
+        padding: 20px 20px 20px 20px !important;
     }
     /* ← ADD THIS NEW SECTION ← */
     .profile-avatar img {
