@@ -2113,14 +2113,19 @@ h2 {
     }
     
     .overlay-content {
-        max-width: 100vw !important;
-        max-height: 100vh !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        border-radius: 0 !important;
-        margin: 0 !important;
-        padding: 50px 20px 10px 20px !important;
-    }
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0 !important;  /* ← This removes rounded corners */
+    margin: 0 !important;
+    padding: 0 !important;  /* ← Remove ALL padding */
+    padding-top: 45px !important;  /* ← Space for close button only */
+    padding-left: 20px !important;  /* ← Side padding */
+    padding-right: 20px !important;  /* ← Side padding */
+    padding-bottom: 0 !important;  /* ← No bottom padding */
+}
+    
     /* ← ADD THIS NEW SECTION ← */
     .profile-avatar img {
         display: block !important;
