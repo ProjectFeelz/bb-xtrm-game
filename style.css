@@ -2105,6 +2105,34 @@ h2 {
         padding: 0 !important;
         margin: 0 !important;
     }
+
+    /* ← ADD THE NEW CODE HERE ← */
+    .overlay {
+        padding: 0 !important;
+        inset: 0 !important;
+    }
+    
+    .overlay-content {
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        padding: 60px 20px 100px 20px !important;
+    }
+    
+    .close-btn {
+        top: 20px !important;
+        right: 20px !important;
+        z-index: 200 !important;
+    }
+    /* ← END OF NEW CODE ← */
+    
+    #console {  /* ← Line 2109 - this should come AFTER */
+        border-radius: 0 !important;
+        /* ... */
+    }
     
     #console {
         border-radius: 0 !important;
