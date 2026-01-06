@@ -27,5 +27,8 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "categories": ["games", "music", "entertainment"],
+  "display_override": ["standalone", "fullscreen"],
+  "prefer_related_applications": false
 }
