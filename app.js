@@ -16,6 +16,135 @@ const supabaseClient = window.supabase.createClient(GAME_URL, GAME_KEY, {
         detectSessionInUrl: true
     }
 });
+// ═══════════════════════════════════════════════════════════════
+// AUTO CACHE REFRESH SYSTEM - BATTERY OPTIMIZED
+// ═══════════════════════════════════════════════════════════════
+
+let isOnline = navigator.onLine;
+let lastRefresh = Date.now();
+const REFRESH_INTERVAL = 60 * 1000;        // 1 minute full refresh
+const UPDATE_CHECK_INTERVAL = 30 * 1000;   // 30 seconds update check
+const PING_INTERVAL = 45 * 1000;           // 45 seconds keepalive ping
+
+// Register service worker with update checks
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(registration => {
+      console.log('✅ Service Worker registered');
+
+      // Check for updates every 30 seconds (lightweight)
+      setInterval(() => {
+        registration.update();
+      }, UPDATE_CHECK_INTERVAL);
+
+      // Listen for new service worker
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            console.log('🔄 New version available, activating...');
+            newWorker.postMessage({ type: 'SKIP_WAITING' });
+            window.location.reload();
+          }
+        });
+      });
+
+      // Register periodic background sync (Chrome only)
+      if ('periodicSync' in registration) {
+        registration.periodicSync.register('auto-refresh', {
+          minInterval: 60 * 1000 // 1 minute
+        }).catch(err => console.log('Periodic sync not supported:', err));
+      }
+    })
+    .catch(err => console.error('❌ Service Worker registration failed:', err));
+
+  // Listen for messages from service worker
+  navigator.serviceWorker.addEventListener('message', event => {
+    if (event.data.type === 'DATA_REFRESHED') {
+      console.log('🔄 Data refreshed by service worker');
+      if (typeof loadCurrentScreenData === 'function') {
+        loadCurrentScreenData();
+      }
+    }
+  });
+}
+
+// Auto-refresh when app becomes visible
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    const timeSinceRefresh = Date.now() - lastRefresh;
+    
+    // If more than 1 minute since last refresh, clear cache and reload
+    if (timeSinceRefresh > REFRESH_INTERVAL) {
+      console.log('🔄 App resumed, refreshing data...');
+      clearCacheAndReload();
+    }
+  }
+});
+
+// Auto-refresh when online status changes
+window.addEventListener('online', () => {
+  console.log('🌐 Back online, refreshing data...');
+  isOnline = true;
+  clearCacheAndReload();
+});
+
+window.addEventListener('offline', () => {
+  console.log('📴 Offline mode activated');
+  isOnline = false;
+});
+
+// Clear cache and reload function
+async function clearCacheAndReload() {
+  try {
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      const messageChannel = new MessageChannel();
+      
+      messageChannel.port1.onmessage = (event) => {
+        if (event.data.success) {
+          console.log('✅ Cache cleared, reloading...');
+          lastRefresh = Date.now();
+          window.location.reload();
+        }
+      };
+      
+      navigator.serviceWorker.controller.postMessage(
+        { type: 'CLEAR_CACHE' },
+        [messageChannel.port2]
+      );
+    }
+  } catch (err) {
+    console.error('❌ Cache clear failed:', err);
+    window.location.reload();
+  }
+}
+
+// Periodic cache refresh (every 1 minute while active)
+setInterval(() => {
+  if (!document.hidden && isOnline) {
+    const timeSinceRefresh = Date.now() - lastRefresh;
+    if (timeSinceRefresh > REFRESH_INTERVAL) {
+      console.log('🔄 Periodic refresh triggered');
+      clearCacheAndReload();
+    }
+  }
+}, REFRESH_INTERVAL);
+
+// Keep connection alive with periodic ping (every 45 seconds)
+setInterval(async () => {
+  if (isOnline && !document.hidden && supabaseClient) {
+    try {
+      await supabaseClient.from('users').select('count').limit(1);
+      console.log('💚 Connection ping successful');
+    } catch (err) {
+      console.log('❌ Connection ping failed:', err.message);
+    }
+  }
+}, PING_INTERVAL);
+
+// ═══════════════════════════════════════════════════════════════
+// END AUTO CACHE REFRESH SYSTEM
+// ═══════════════════════════════════════════════════════════════
 
 // ==================== CACHE & SERVICE WORKER MANAGEMENT ====================
 const APP_VERSION = '1.0.7'; // Increment this when you deploy updates
