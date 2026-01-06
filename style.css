@@ -2452,3 +2452,7 @@ h2 {
 .btn-challenge-enter-small {
     display: none !important;
 }
+/* Hide feed tabs (no longer needed) */
+.feed-tabs {
+    display: none !important;
+}
