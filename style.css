@@ -341,7 +341,6 @@ h2 {
     display: inline-block;
 }
 
-/* MODE BUTTONS - GREEN GRADIENT */
 .mode-btn[data-mode="production"],
 .mode-btn[data-mode="beats"], 
 .mode-btn[data-mode="songwriting"] {
@@ -359,7 +358,6 @@ h2 {
     box-shadow: 0 0 0 #3f6212, 0 2px 8px rgba(132, 204, 22, 0.4);
 }
 
-/* COMMUNITY BUTTON - PURPLE/MAGENTA */
 .btn-community {
     background: linear-gradient(145deg, var(--magenta), #cc00cc, #990099, #660066);
     color: #fff;
@@ -379,7 +377,6 @@ h2 {
         inset 0 2px 0 rgba(255,255,255,0.2);
 }
 
-/* GAME UI */
 #cheat-error { 
     color: var(--red); 
     font-weight: 900; 
@@ -763,7 +760,6 @@ h2 {
     margin-top: 5px;
 }
 
-/* LEADERBOARD */
 #screen-leaderboard {
     padding: 20px;
 }
@@ -867,7 +863,6 @@ h2 {
     color: var(--red);
 }
 
-/* COOLDOWN SCREEN */
 #screen-cooldown {
     background: linear-gradient(135deg, #0a0d12 0%, #141822 50%, #0a0d12 100%);
 }
@@ -936,79 +931,10 @@ h2 {
     font-weight: 700;
 }
 
-/* AUTH MESSAGE - CENTERED */
 #auth-message {
     text-align: center !important;
     width: 100% !important;
     display: block !important;
-}
-
-/* MOBILE OPTIMIZATIONS */
-@media (max-width: 440px) {
-    body {
-        align-items: flex-start;
-        justify-content: flex-start;
-    }
-    
-    #console {
-        border-radius: 0;
-        max-height: 100vh;
-        height: 100vh;
-        width: 100vw;
-        max-width: 100vw;
-        transform: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .screen {
-        inset: 0;
-        border-radius: 0;
-        padding: 20px;
-    }
-    
-    .profile-trigger {
-        bottom: 20px;
-        right: 20px;
-        width: 42px;
-        height: 42px;
-    }
-    
-    #screen-leaderboard {
-        padding: 15px;
-        inset: 0;
-    }
-    
-    #leaderboard-list {
-        padding: 5px;
-        width: 100%;
-    }
-    
-    .leaderboard-item {
-        padding: 10px 8px;
-    }
-}
-
-/* PERFORMANCE OPTIMIZATIONS */
-@media (max-width: 768px) {
-    * {
-        transition-duration: 0.15s !important;
-    }
-    
-    .glass-panel,
-    .overlay-content {
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-    }
-    
-    body::before {
-        display: none !important;
-    }
-    
-    .logo-small {
-        filter: none !important;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.5) !important;
-    }
 }
 
 .screen {
@@ -1025,13 +951,7 @@ h2 {
     contain: layout style;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
+/* Results, Notifications, Install Banner, Feed, Edit Profile - Continue in next message due to length... */
 /* ═══════════════════════════════════════════════════════════════
    RESULTS SCREEN - COLORFUL TEXT & BETTER SPACING
    ═══════════════════════════════════════════════════════════════ */
@@ -1082,7 +1002,7 @@ h2 {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   STREAK NOTIFICATION - CENTERED OVERLAY
+   STREAK & BONUS NOTIFICATIONS
    ═══════════════════════════════════════════════════════════════ */
 
 .streak-notification {
@@ -1138,10 +1058,6 @@ h2 {
     letter-spacing: 2px !important;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   BONUS NOTIFICATION - CENTERED OVERLAY
-   ═══════════════════════════════════════════════════════════════ */
-
 .bonus-notification {
     position: fixed !important;
     top: 50% !important;
@@ -1186,7 +1102,7 @@ h2 {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   PWA INSTALL BANNER - STYLED IN APP COLORS
+   PWA INSTALL BANNER
    ═══════════════════════════════════════════════════════════════ */
 
 .install-banner {
@@ -1285,53 +1201,8 @@ h2 {
     color: var(--red) !important;
 }
 
-/* Mobile adjustments */
-@media (max-width: 768px) {
-    .install-banner {
-        padding: 12px 15px !important;
-    }
-    
-    .install-banner-content {
-        gap: 10px !important;
-    }
-    
-    .install-icon {
-        font-size: 1.5rem !important;
-    }
-    
-    .install-title {
-        font-size: 0.8rem !important;
-    }
-    
-    .install-subtitle {
-        font-size: 0.65rem !important;
-    }
-    
-    .install-button {
-        padding: 8px 15px !important;
-        font-size: 0.7rem !important;
-    }
-    
-    .streak-notification,
-    .bonus-notification {
-        padding: 25px 35px !important;
-        max-width: 90vw !important;
-    }
-}
-
-/* Very small screens */
-@media (max-width: 380px) {
-    .install-subtitle {
-        display: none !important;
-    }
-    
-    .install-button {
-        padding: 8px 12px !important;
-        font-size: 0.65rem !important;
-    }
-}
 /* ═══════════════════════════════════════════════════════════════
-   COMMUNITY FEED - COMPLETE STYLES
+   COMMUNITY FEED - COMPLETE
    ═══════════════════════════════════════════════════════════════ */
 
 #screen-feed {
@@ -1346,7 +1217,6 @@ h2 {
     font-size: 0.85rem;
 }
 
-/* WEEKLY CHALLENGE BANNER */
 .weekly-challenge-banner {
     background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,215,0,0.05));
     border: 1px solid var(--yellow);
@@ -1392,7 +1262,6 @@ h2 {
     margin-top: 3px;
 }
 
-/* WINNER BANNER */
 .winner-banner {
     background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,215,0,0.05));
     border: 2px solid var(--yellow);
@@ -1445,7 +1314,6 @@ h2 {
     transform: scale(1.05);
 }
 
-/* FEED TABS */
 .feed-tabs {
     display: flex;
     gap: 5px;
@@ -1476,7 +1344,6 @@ h2 {
     color: var(--magenta);
 }
 
-/* FEED CONTAINER */
 .feed-container {
     flex: 1;
     overflow-y: auto;
@@ -1495,7 +1362,6 @@ h2 {
     border-radius: 2px;
 }
 
-/* FEED POST */
 .feed-post {
     background: rgba(0,0,0,0.3);
     border: 1px solid var(--border);
@@ -1564,7 +1430,6 @@ h2 {
     margin-bottom: 10px;
 }
 
-/* TIKTOK LINK (COMPACT) */
 .feed-tiktok-link {
     display: flex;
     align-items: center;
@@ -1599,7 +1464,6 @@ h2 {
     font-size: 0.9rem;
 }
 
-/* TIKTOK PREVIEW (EXPANDABLE) */
 .feed-tiktok-preview {
     position: relative;
     width: 100%;
@@ -1664,7 +1528,6 @@ h2 {
     border: none;
 }
 
-/* ENGAGEMENT SCORE */
 .engagement-score {
     display: flex;
     align-items: center;
@@ -1689,7 +1552,6 @@ h2 {
     50% { box-shadow: 0 0 20px rgba(255,215,0,0.6); }
 }
 
-/* POST ACTIONS */
 .feed-post-actions {
     display: flex;
     gap: 15px;
@@ -1737,7 +1599,6 @@ h2 {
     transform: scale(1.2);
 }
 
-/* COMMENTS */
 .feed-comments {
     margin-top: 10px;
     padding-top: 10px;
@@ -1794,7 +1655,6 @@ h2 {
     cursor: pointer;
 }
 
-/* EMOJI PICKER */
 .emoji-picker {
     display: flex;
     flex-wrap: wrap;
@@ -1834,7 +1694,6 @@ h2 {
     border-color: var(--cyan);
 }
 
-/* BOTTOM ACTIONS */
 .feed-actions-small {
     display: flex;
     gap: 8px;
@@ -1896,7 +1755,6 @@ h2 {
     box-shadow: 0 0 0 #997a00;
 }
 
-/* CHALLENGE ENTRY BUTTON */
 .btn-challenge-enter {
     background: linear-gradient(145deg, var(--yellow), #e6c200, #ccac00, #b39700);
     color: #000;
@@ -1917,23 +1775,618 @@ h2 {
         0 2px 8px rgba(255,215,0,0.4);
 }
 
-/* MOBILE ADJUSTMENTS */
+/* Continue to PART 3 for Edit Profile + Mobile styles... */
+/* ═══════════════════════════════════════════════════════════════
+   EDIT PROFILE SCREEN
+   ═══════════════════════════════════════════════════════════════ */
+
+#screen-edit-profile {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+#screen-edit-profile h2 {
+    color: var(--cyan);
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+#screen-edit-profile .glass-panel {
+    padding: 15px;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+#screen-edit-profile .form-group {
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+#screen-edit-profile .form-label {
+    display: block;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: var(--cyan);
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+#screen-edit-profile textarea.cassette-field {
+    min-height: 80px;
+    font-family: inherit;
+    resize: vertical;
+    padding: 12px;
+    font-size: 0.8rem;
+    text-align: left;
+}
+
+#screen-edit-profile input.cassette-field {
+    font-size: 0.8rem;
+    padding: 12px;
+}
+
+.avatar-upload-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.avatar-preview {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--cyan), var(--magenta));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #000;
+    border: 2px solid var(--yellow);
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.avatar-upload-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+}
+
+.avatar-upload-btn {
+    font-size: 0.65rem !important;
+    padding: 10px 15px !important;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+}
+
+#remove-avatar-btn {
+    font-size: 0.6rem !important;
+    padding: 8px 12px !important;
+}
+
+.avatar-uploading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+#screen-edit-profile input[type="text"],
+#screen-edit-profile input[type="url"] {
+    text-align: left;
+}
+
+#edit-profile-message {
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: #888;
+    min-height: 20px;
+    text-align: center;
+}
+
+#screen-edit-profile > div:last-child {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    width: 100%;
+}
+
+#save-profile-btn,
+#cancel-edit-btn {
+    flex: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PUBLIC PROFILE VIEW
+   ═══════════════════════════════════════════════════════════════ */
+
+#screen-public-profile {
+    padding: 20px;
+}
+
+.public-profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.public-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--cyan), var(--magenta));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 10px;
+    border: 3px solid var(--yellow);
+    box-shadow: 0 0 20px rgba(255,215,0,0.3);
+    overflow: hidden;
+    position: relative;
+}
+
+.public-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+}
+
+.public-name {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 2px;
+}
+
+.public-location {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 5px;
+}
+
+.public-bio {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #aaa;
+    padding: 15px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-style: italic;
+    min-height: 40px;
+}
+
+.public-bio:empty::before {
+    content: "No bio";
+    color: #555;
+}
+
+.public-stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.public-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0,0,0,0.3);
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.public-stat-val {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--yellow);
+}
+
+.public-stat-label {
+    font-size: 0.55rem;
+    color: #666;
+    letter-spacing: 1px;
+    margin-top: 3px;
+}
+
+.public-socials {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.public-social-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 15px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.7rem;
+    transition: 0.2s;
+}
+
+.public-social-link svg {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+}
+
+.public-social-link:hover {
+    transform: scale(1.05);
+}
+
+.public-social-link.tiktok {
+    background: linear-gradient(135deg, #000, #111);
+    border-color: #333;
+}
+
+.public-social-link.tiktok:hover {
+    border-color: #ff0050;
+    box-shadow: 0 0 10px rgba(255,0,80,0.3);
+}
+
+.public-social-link.youtube {
+    background: linear-gradient(135deg, #1a0000, #330000);
+    border-color: #660000;
+}
+
+.public-social-link.youtube:hover {
+    border-color: #ff0000;
+    box-shadow: 0 0 10px rgba(255,0,0,0.3);
+}
+
+.public-social-link.instagram {
+    background: linear-gradient(135deg, #1a0a1a, #2a1a2a);
+    border-color: #4a2a4a;
+}
+
+.public-social-link.instagram:hover {
+    border-color: #e1306c;
+    box-shadow: 0 0 10px rgba(225,48,108,0.3);
+}
+
+#close-public-profile {
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE - FILL ENTIRE SCREEN
+   ═══════════════════════════════════════════════════════════════ */
+
 @media (max-width: 440px) {
+    body {
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    #console {
+        border-radius: 0 !important;
+        max-height: 100vh !important;
+        height: 100vh !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        transform: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+    }
+    
+    .screen {
+        inset: 0 !important;
+        border-radius: 0 !important;
+        padding: 20px !important;
+        padding-bottom: 30px !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow-y: auto !important;
+    }
+    
+    /* Auth screen - centered vertically */
+    #screen-auth {
+        justify-content: center !important;
+        padding: 40px 20px !important;
+    }
+    
+    /* Loading screen - centered */
+    #screen-loading {
+        justify-content: center !important;
+        align-items: center !important;
+    }
+    
+    /* Manual/How To screen - centered */
+    #screen-manual {
+        justify-content: center !important;
+        padding: 40px 20px !important;
+    }
+    
+    /* Modes screen - centered */
+    #screen-modes {
+        justify-content: center !important;
+        padding: 40px 20px 100px 20px !important;
+    }
+    
+    /* Onboarding screen - centered */
+    #screen-onboarding {
+        justify-content: center !important;
+        padding: 40px 20px !important;
+    }
+    
+    /* Game screen - top aligned */
+    #screen-game {
+        justify-content: flex-start !important;
+        padding: 20px 20px 140px 20px !important;
+    }
+    
+    /* Cooldown screen - centered */
+    #screen-cooldown {
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 40px 20px !important;
+    }
+    
+    /* Results screen - centered */
+    #screen-results {
+        justify-content: center !important;
+        padding: 60px 20px 100px 20px !important;
+    }
+    
+    /* Leaderboard - full screen */
+    #screen-leaderboard {
+        padding: 15px !important;
+        justify-content: flex-start !important;
+    }
+    
+    #leaderboard-list {
+        padding: 5px !important;
+        width: 100% !important;
+    }
+    
+    .leaderboard-item {
+        padding: 10px 8px !important;
+    }
+    
+    /* Feed screen - full screen */
     #screen-feed {
-        padding: 10px;
-        padding-top: 40px;
-        padding-bottom: 25px;
+        padding: 10px !important;
+        padding-top: 40px !important;
+        padding-bottom: 25px !important;
+        justify-content: flex-start !important;
     }
     
     .feed-container {
-        max-height: 55vh;
-        flex: 1;
-        min-height: 0;
+        max-height: 55vh !important;
+        flex: 1 !important;
+        min-height: 0 !important;
     }
     
     .feed-actions-small {
-        margin-top: auto;
-        padding-top: 10px;
-        flex-shrink: 0;
+        margin-top: auto !important;
+        padding-top: 10px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    /* Submit screens - top aligned */
+    #screen-submit,
+    #screen-challenge-submit {
+        justify-content: flex-start !important;
+        padding: 20px !important;
+    }
+    
+    /* Edit profile - scrollable */
+    #screen-edit-profile {
+        padding: 15px !important;
+        justify-content: flex-start !important;
+        padding-top: 60px !important;
+    }
+    
+    #screen-edit-profile .glass-panel {
+        padding: 12px !important;
+    }
+    
+    .avatar-upload-container {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    
+    .avatar-preview {
+        width: 70px !important;
+        height: 70px !important;
+    }
+    
+    .avatar-upload-btns {
+        width: 100% !important;
+    }
+    
+    /* Public profile - scrollable */
+    #screen-public-profile {
+        padding: 15px !important;
+        justify-content: flex-start !important;
+        padding-top: 60px !important;
+    }
+    
+    /* Profile trigger - bottom right */
+    .profile-trigger {
+        bottom: 20px !important;
+        right: 20px !important;
+        width: 42px !important;
+        height: 42px !important;
+    }
+    
+    /* Logo sizing */
+    .logo-small {
+        font-size: 3rem !important;
+        letter-spacing: 6px !important;
+        margin-top: 0 !important;
+        margin-bottom: 25px !important;
+    }
+    
+    /* Timer sizing */
+    #timer {
+        font-size: 3.5rem !important;
+    }
+    
+    /* Card sizing */
+    #card {
+        font-size: 1.2rem !important;
+        padding: 18px !important;
+    }
+    
+    /* Button sizing */
+    .btn {
+        padding: 16px !important;
+        font-size: 0.95rem !important;
+    }
+    
+    /* Rank panel */
+    #rank-panel {
+        padding: 18px !important;
+        margin-bottom: 18px !important;
+    }
+    
+    /* Headings */
+    h2 {
+        font-size: 0.75rem !important;
+        margin-bottom: 15px !important;
+    }
+    
+    /* Install banner adjustments */
+    .install-banner {
+        padding: 12px 15px !important;
+    }
+    
+    .install-banner-content {
+        gap: 10px !important;
+    }
+    
+    .install-icon {
+        font-size: 1.5rem !important;
+    }
+    
+    .install-title {
+        font-size: 0.8rem !important;
+    }
+    
+    .install-subtitle {
+        font-size: 0.65rem !important;
+    }
+    
+    .install-button {
+        padding: 8px 15px !important;
+        font-size: 0.7rem !important;
+    }
+    
+    /* Streak/bonus notifications */
+    .streak-notification,
+    .bonus-notification {
+        padding: 25px 35px !important;
+        max-width: 90vw !important;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PERFORMANCE OPTIMIZATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    * {
+        transition-duration: 0.15s !important;
+    }
+    
+    .glass-panel,
+    .overlay-content {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+    
+    body::before {
+        display: none !important;
+    }
+    
+    .logo-small {
+        filter: none !important;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5) !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 380px) {
+    .install-subtitle {
+        display: none !important;
+    }
+    
+    .install-button {
+        padding: 8px 12px !important;
+        font-size: 0.65rem !important;
+    }
+    
+    .logo-small {
+        font-size: 2.5rem !important;
+    }
+}
+
+/* Tall phones - more vertical space */
+@media (min-height: 800px) and (max-width: 440px) {
+    #screen-modes {
+        padding-top: 80px !important;
+    }
+    
+    #screen-auth,
+    #screen-manual,
+    #screen-onboarding {
+        padding-top: 60px !important;
+    }
+}
+
+/* Safe area for notched devices */
+@supports (padding: max(0px)) {
+    @media (max-width: 440px) {
+        .screen {
+            padding-top: max(20px, env(safe-area-inset-top)) !important;
+            padding-bottom: max(30px, env(safe-area-inset-bottom)) !important;
+        }
+        
+        .profile-trigger {
+            bottom: max(20px, env(safe-area-inset-bottom)) !important;
+            right: max(20px, env(safe-area-inset-right)) !important;
+        }
     }
 }
