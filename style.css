@@ -623,13 +623,13 @@ h2 {
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.98);  /* ← Even darker */
-    backdrop-filter: none;  /* ← Remove blur */
+    background: rgba(0,0,0,0.98);
+    backdrop-filter: none;
     z-index: 100;
     display: none;
     align-items: center;
     justify-content: center;
-    padding: 15px;  /* ← Reduced from 20px */
+    padding: 0;  /* ← Changed from 15px to 0 */
     opacity: 0;
     transition: opacity 0.3s;
 }
@@ -2120,6 +2120,11 @@ h2 {
         border-radius: 0 !important;
         margin: 0 !important;
         padding: 60px 20px 100px 20px !important;
+    }
+    /* ← ADD THIS NEW SECTION ← */
+    .profile-avatar img {
+        display: block !important;
+        opacity: 1 !important;
     }
     
     .close-btn {
