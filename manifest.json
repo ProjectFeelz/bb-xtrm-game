@@ -1,37 +1,28 @@
 {
   "name": "BB XTRM Pro Studio",
   "short_name": "BB XTRM",
-  "description": "The ultimate beatmaking challenge game",
-  "display": "standalone",
-  "orientation": "portrait",
-  "theme_color": "#1a1d26",
-  "background_color": "#1a1d26",
+  "description": "30-Second Beat Challenges",
   "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1d26",
+  "theme_color": "#84cc16",
+  "orientation": "portrait",
   "scope": "/",
-  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "/icons/icon-192.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "shortcuts": [
-    {
-      "name": "Start Game",
-      "short_name": "Play",
-      "description": "Jump straight into BB XTRM",
-      "url": "/",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
-    }
-  ],
-  "categories": ["games", "music", "entertainment"],
-  "screenshots": []
+  "permissions": [
+    "periodic-background-sync"
+  ]
 }
