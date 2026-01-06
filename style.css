@@ -2456,3 +2456,8 @@ h2 {
 .feed-tabs {
     display: none !important;
 }
+/* Hide reset and logout buttons from profile */
+#profile-overlay button[onclick*="forceResetApp"],
+#profile-overlay #logout-btn {
+    display: none !important;
+}
