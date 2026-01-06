@@ -111,3 +111,19 @@ self.addEventListener('message', event => {
     self.skipWaiting();
   }
 });
+```
+
+3. Save the file
+
+#### **STEP 3: Verify file structure**
+Your project should look like this:
+```
+bb-xtrm-game/
+├── index.html
+├── app.js (with duplicate line removed)
+├── style.css
+├── service-worker.js (NEW FILE YOU JUST CREATED)
+├── manifest.json
+├── icons/
+│   ├── icon-192.png
+│   └── icon-512.png
