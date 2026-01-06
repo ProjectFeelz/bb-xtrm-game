@@ -146,9 +146,6 @@ setInterval(async () => {
 // END AUTO CACHE REFRESH SYSTEM
 // ═══════════════════════════════════════════════════════════════
 
-// ==================== CACHE & SERVICE WORKER MANAGEMENT ====================
-const APP_VERSION = '1.0.7'; // Increment this when you deploy updates
-
 // Clear old caches and manage service worker
 // ═══════════════════════════════════════════════════════════════
 // BB XTRM - MOBILE/APK FIXES
