@@ -2123,7 +2123,7 @@ h2 {
     padding-top: 45px !important;
     padding-left: 20px !important;
     padding-right: 20px !important;
-    padding-bottom: 80px !important;  /* ← CHANGED: Add bottom padding for scroll space */
+    padding-bottom: 150px !important;  /* ← CHANGED: Add bottom padding for scroll space */
 }
     
     /* ← ADD THIS NEW SECTION ← */
