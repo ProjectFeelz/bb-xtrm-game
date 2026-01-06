@@ -2251,7 +2251,7 @@ h2 {
     
     /* Profile trigger - bottom right */
     .profile-trigger {
-        bottom: 20px !important;
+        bottom: 80px !important;
         right: 20px !important;
         width: 42px !important;
         height: 42px !important;
