@@ -2129,8 +2129,8 @@ h2 {
     #public-profile-overlay .overlay-content {
         position: relative !important;
         width: 100vw !important;
-        height: 100% !important;
-        min-height: 100% !important;
+        height: auto !important;
+        min-height: 100vh !important;
         max-width: 100vw !important;
         margin: 0 !important;
         padding: 60px 20px 40px 20px !important;  /* ← NEW LINE - LESS PADDING */
@@ -2525,23 +2525,17 @@ h2 {
 #profile-overlay #logout-btn {
     display: none !important;
 }
-/* ═══════════════════════════════════════════════════════════════
-   UNIVERSAL HIDE SCROLLBARS (Native App Feel)
-   ═══════════════════════════════════════════════════════════════ */
-
-/* 1. For Chrome, Safari, and Opera (Webkit) */
-*::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
-}
-
-/* 2. For Firefox */
-* {
-    scrollbar-width: none !important;
-}
-
-/* 3. For Internet Explorer and Edge */
-* {
-    -ms-overflow-style: none !important;
+.overlay-content {
+    width: 100%;
+    max-width: 420px; /* Matches your game console width */
+    
+    /* CHANGE THESE: */
+    height: 100vh !important;   /* Forces it to fill the top/bottom */
+    max-height: 100vh !important;
+    border-radius: 0;           /* Makes it look like a real mobile app screen */
+    
+    background: linear-gradient(135deg, #1e2533 0%, #141822 100%);
+    overflow-y: auto;
+    position: relative;
+    padding: 40px 20px 20px 20px !important;
 }
