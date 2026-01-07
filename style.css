@@ -530,9 +530,9 @@ h2 {
 #result-buttons {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 10px;
     width: 100%;
-    margin-top: 2px;
+    margin-top: 10px;
 }
 
 .social-icons {
@@ -2381,8 +2381,8 @@ h2 {
     
     /* Button sizing */
     .btn {
-        padding: 16px !important;
-        font-size: 0.95rem !important;
+    padding: 10px !important;    /* Reduced from 16px to save vertical space */
+    font-size: 0.85rem !important; /* Slightly smaller text to keep the slim look */
     }
     
     /* Rank panel */
