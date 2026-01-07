@@ -16,7 +16,12 @@ const supabaseClient = window.supabase.createClient(GAME_URL, GAME_KEY, {
         detectSessionInUrl: true
     }
 });
+// ═══════════════════════════════════════════════════════════════
+// SIMPLIFIED CACHE MANAGEMENT - NO SERVICE WORKER
+// ═══════════════════════════════════════════════════════════════
 
+// Track last open time
+const now = Date.now();
 localStorage.setItem('last_open_time', now.toString());
 
 async function manageCacheAndSW() {
