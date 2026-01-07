@@ -2154,17 +2154,14 @@ h2 {
 }
 
 #screen-edit-profile .glass-panel:last-of-type {
-    margin-bottom: 80px !important;
+    margin-bottom: 30px !important;
 }
 
-/* Save/Cancel buttons - sticky at bottom */
+/* Save/Cancel buttons - normal flow at bottom */
 #screen-edit-profile > div:last-child {
-    position: sticky !important;
-    bottom: 20px !important;
-    background: linear-gradient(0deg, #141822 80%, transparent) !important;
-    padding: 20px 0 !important;
-    margin-top: 20px !important;
-    z-index: 10 !important;
+    margin-top: 30px !important;
+    padding: 0 !important;
+    width: 100% !important;
 }
 
 /* Close button - always visible */
