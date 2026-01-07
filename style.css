@@ -642,7 +642,8 @@ h2 {
 .overlay-content {
     width: 100%;
     max-width: 440px;
-    max-height: 92vh;
+    max-height: 100vh;
+    height: auto;
     overflow-y: auto;
     background: linear-gradient(135deg, #1e2533 0%, #141822 100%);
     border-radius: 20px;
@@ -2113,9 +2114,9 @@ h2 {
     
     .overlay-content {
     max-width: 100vw !important;
-    max-height: 100vh !important;
+    max-height: none !important;  /* ← Remove height limit */
     width: 100vw !important;
-    min-height: 100vh !important;  /* ← CHANGED: min-height instead of height */
+    min-height: 100dvh !important;  /* ← Use dvh for better mobile support */
     height: auto !important;  /* ← ADDED: allows content to expand */
     border-radius: 0 !important;
     margin: 0 !important;
@@ -2123,7 +2124,7 @@ h2 {
     padding-top: 45px !important;
     padding-left: 20px !important;
     padding-right: 20px !important;
-    padding-bottom: 250px !important;  /* ← CHANGED: Add bottom padding for scroll space */
+    padding-bottom: 200px !important;  /* ← CHANGED: Add bottom padding for scroll space */
 }
     
     /* ← ADD THIS NEW SECTION ← */
