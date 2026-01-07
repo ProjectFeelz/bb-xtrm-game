@@ -2526,3 +2526,23 @@ h2 {
 #profile-overlay #logout-btn {
     display: none !important;
 }
+/* ═══════════════════════════════════════════════════════════════
+   UNIVERSAL HIDE SCROLLBARS (Native App Feel)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 1. For Chrome, Safari, and Opera (Webkit) */
+*::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* 2. For Firefox */
+* {
+    scrollbar-width: none !important;
+}
+
+/* 3. For Internet Explorer and Edge */
+* {
+    -ms-overflow-style: none !important;
+}
