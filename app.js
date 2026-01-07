@@ -16,40 +16,6 @@ const supabaseClient = window.supabase.createClient(GAME_URL, GAME_KEY, {
         detectSessionInUrl: true
     }
 });
-// ═══════════════════════════════════════════════════════════════
-// SIMPLIFIED CACHE MANAGEMENT - NO AUTO-REFRESH
-// ═══════════════════════════════════════════════════════════════
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/service-worker.js')
-    .then(registration => {
-      console.log('✅ Service Worker registered');
-      
-      registration.addEventListener('updatefound', () => {
-        const newWorker = registration.installing;
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            console.log('🔄 New version available');
-            if (confirm('New version available! Reload now?')) {
-              window.location.reload();
-            }
-          }
-        });
-      });
-    })
-    .catch(err => console.error('❌ Service Worker registration failed:', err));
-}
-
-let lastOpenTime = parseInt(localStorage.getItem('last_open_time') || '0');
-const now = Date.now();
-const ONE_HOUR = 60 * 60 * 1000;
-
-if (now - lastOpenTime > ONE_HOUR) {
-  console.log('🔄 App hasn\'t been opened in over 1 hour - checking for updates');
-  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-    navigator.serviceWorker.controller.postMessage({ type: 'CHECK_UPDATE' });
-  }
-}
 
 localStorage.setItem('last_open_time', now.toString());
 
@@ -205,33 +171,6 @@ async function forceResetApp() {
 // Add this to your init() function or at the end of the file:
 
 // Unregister any existing service workers
-// ==================== SERVICE WORKER REGISTRATION ====================
-async function registerServiceWorker() {
-    if ('serviceWorker' in navigator) {
-        try {
-            const registration = await navigator.serviceWorker.register('/sw.js', {
-                scope: '/'
-            });
-            console.log('✅ Service Worker registered:', registration.scope);
-            
-            // Update on reload
-            registration.addEventListener('updatefound', () => {
-                const newWorker = registration.installing;
-                newWorker.addEventListener('statechange', () => {
-                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        console.log('🔄 New version available, reloading...');
-                        window.location.reload();
-                    }
-                });
-            });
-        } catch (err) {
-            console.error('❌ Service Worker registration failed:', err);
-        }
-    }
-}
-
-// Register service worker on init
-registerServiceWorker();
 
 // ═══════════════════════════════════════════════════════════════
 // FIX 3: PERFORMANCE OPTIMIZATION - REDUCE PHONE HEATING
