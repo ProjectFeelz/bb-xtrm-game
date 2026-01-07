@@ -54,10 +54,9 @@ if (now - lastOpenTime > ONE_HOUR) {
 localStorage.setItem('last_open_time', now.toString());
 
 async function manageCacheAndSW() {
-    const APP_VERSION = '1.0.8'; // Increment this when deploying updates
+    const APP_VERSION = '1.0.8';
     const storedVersion = localStorage.getItem('app_version');
     
-    // Check if we're stuck in a boot loop
     const bootAttempts = parseInt(sessionStorage.getItem('boot_attempts') || '0');
     const lastBootTime = parseInt(sessionStorage.getItem('last_boot_time') || '0');
     const now = Date.now();
@@ -65,17 +64,25 @@ async function manageCacheAndSW() {
     // If we've tried to boot multiple times in quick succession, clear everything
     if (bootAttempts > 5 && (now - lastBootTime) < 10000) {
         console.warn('⚠️ Boot loop detected, clearing cache but PRESERVING AUTH');
-
-    // Preserve auth tokens
-    const authToken = localStorage.getItem('bb-xtrm-auth');
-    const supabaseAuth = localStorage.getItem('sb-qholvwlaeldvrlmvepnj-auth-token');
-
-    localStorage.clear();
-    sessionStorage.clear();
-
-    // Restore auth
-    if (authToken) localStorage.setItem('bb-xtrm-auth', authToken);
-    if (supabaseAuth) localStorage.setItem('sb-qholvwlaeldvrlmvepnj-auth-token', supabaseAuth);
+        
+        // Preserve auth tokens
+        const authToken = localStorage.getItem('bb-xtrm-auth');
+        const supabaseAuth = localStorage.getItem('sb-qholvwlaeldvrlmvepnj-auth-token');
+        
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Restore auth
+        if (authToken) localStorage.setItem('bb-xtrm-auth', authToken);
+        if (supabaseAuth) localStorage.setItem('sb-qholvwlaeldvrlmvepnj-auth-token', supabaseAuth);
+        
+        if ('caches' in window) {
+            const names = await caches.keys();
+            await Promise.all(names.map(name => caches.delete(name)));
+        }
+        
+        sessionStorage.setItem('boot_attempts', '0');
+        return true;
     }
     
     // Track boot attempt
@@ -84,46 +91,16 @@ async function manageCacheAndSW() {
     
     // Clear boot attempts after successful load (increased time)
     setTimeout(() => {
-    sessionStorage.setItem('boot_attempts', '0');
-    }, 10000); // 10 seconds instead of 5
+        sessionStorage.setItem('boot_attempts', '0');
+    }, 10000);
     
     // Only clear cache on version update
-if (storedVersion !== APP_VERSION) {
-    console.log('New version detected, clearing caches...');
-    
-    // Preserve auth BEFORE clearing
-    const authToken = localStorage.getItem('bb-xtrm-auth');
-    const supabaseAuth = localStorage.getItem('sb-qholvwlaeldvrlmvepnj-auth-token');
-    
-    // Clear all caches
-    if ('caches' in window) {
-        const cacheNames = await caches.keys();
-        await Promise.all(cacheNames.map(name => caches.delete(name)));
-    }
-    
-    // Update service worker instead of unregistering
-    if ('serviceWorker' in navigator) {
-        const registration = await navigator.serviceWorker.getRegistration();
-        if (registration) {
-            await registration.update();
-        }
-    }
-    
-    // Clear only session storage
-    sessionStorage.clear();
-    
-    // Restore auth
-    if (authToken) localStorage.setItem('bb-xtrm-auth', authToken);
-    if (supabaseAuth) localStorage.setItem('sb-qholvwlaeldvrlmvepnj-auth-token', supabaseAuth);
-    
-    // Update version
-    localStorage.setItem('app_version', APP_VERSION);
-    
-    console.log('✅ Cache cleared, auth preserved');
-}
-    
     if (storedVersion !== APP_VERSION) {
         console.log('New version detected, clearing caches...');
+        
+        // Preserve auth BEFORE clearing
+        const authToken = localStorage.getItem('bb-xtrm-auth');
+        const supabaseAuth = localStorage.getItem('sb-qholvwlaeldvrlmvepnj-auth-token');
         
         // Clear all caches
         if ('caches' in window) {
@@ -131,26 +108,25 @@ if (storedVersion !== APP_VERSION) {
             await Promise.all(cacheNames.map(name => caches.delete(name)));
         }
         
-        // Unregister service workers
+        // Update service worker instead of unregistering
         if ('serviceWorker' in navigator) {
-            const registrations = await navigator.serviceWorker.getRegistrations();
-            for (const registration of registrations) {
-                await registration.unregister();
+            const registration = await navigator.serviceWorker.getRegistration();
+            if (registration) {
+                await registration.update();
             }
         }
         
-        // Clear only session storage (keep auth in localStorage)
+        // Clear only session storage
         sessionStorage.clear();
+        
+        // Restore auth
+        if (authToken) localStorage.setItem('bb-xtrm-auth', authToken);
+        if (supabaseAuth) localStorage.setItem('sb-qholvwlaeldvrlmvepnj-auth-token', supabaseAuth);
         
         // Update version
         localStorage.setItem('app_version', APP_VERSION);
         
-        // Only reload if this wasn't a fresh install
-        if (storedVersion !== null) {
-            console.log('Reloading for version update...');
-            window.location.reload(true);
-            return false;
-        }
+        console.log('✅ Cache cleared, auth preserved');
     }
     
     return true;
