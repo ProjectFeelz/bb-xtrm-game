@@ -642,18 +642,23 @@ h2 {
 .overlay-content {
     width: 100%;
     max-width: 440px;
-    max-height: 100vh;
-    height: auto;
+    
+    /* FIX: Use 85vh so it doesn't go behind mobile browser bars */
+    max-height: 85vh !important; 
+    height: auto !important;
+    
     overflow-y: auto;
     background: linear-gradient(135deg, #1e2533 0%, #141822 100%);
     border-radius: 20px;
-    padding: 40px 30px 30px 30px; /* ← CHANGED THIS LINE */
+    
+    /* FIX: Drastically reduced padding with !important to force the update */
+    padding: 40px 20px 20px 20px !important; 
+    
     position: relative;
-    /* border removed */
     box-shadow: 
         0 20px 60px rgba(0,0,0,0.8),
         inset 0 3px 18px rgba(0,0,0,0.8);
-    
+
     /* Hide scrollbar */
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -2524,4 +2529,13 @@ h2 {
 #profile-overlay button[onclick*="forceResetApp"],
 #profile-overlay #logout-btn {
     display: none !important;
+}
+/* Add this to the bottom of your CSS file */
+#result-buttons, .button-container, .modal-footer {
+    position: static !important; /* Stops it from floating/sticking */
+    background: transparent !important; /* Removes any background color */
+    margin-top: 20px !important;
+    padding: 0 !important;
+    transform: none !important;
+    z-index: 1;
 }
