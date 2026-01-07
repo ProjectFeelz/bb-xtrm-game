@@ -2133,18 +2133,10 @@ h2 {
         min-height: 100vh !important;
         max-width: 100vw !important;
         margin: 0 !important;
-        padding: 80px 20px 50px 20px !important;
+        padding: 60px 20px 40px 20px !important;  /* ← NEW LINE - LESS PADDING */
         border-radius: 0 !important;
         overflow: visible !important;
     }
-    
-    /* Edit profile specific - extra bottom space */
-    /* Edit profile specific - extra bottom space */
-#screen-edit-profile {
-    width: 100% !important;
-    padding: 0 !important;
-    padding-bottom: 150px !important;
-}
 
 /* Remove glass panel container on mobile - fields render directly */
 #screen-edit-profile .glass-panel {
