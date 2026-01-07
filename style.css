@@ -2525,17 +2525,3 @@ h2 {
 #profile-overlay #logout-btn {
     display: none !important;
 }
-.overlay-content {
-    width: 100%;
-    max-width: 420px; /* Matches your game console width */
-    
-    /* CHANGE THESE: */
-    height: 100vh !important;   /* Forces it to fill the top/bottom */
-    max-height: 100vh !important;
-    border-radius: 0;           /* Makes it look like a real mobile app screen */
-    
-    background: linear-gradient(135deg, #1e2533 0%, #141822 100%);
-    overflow-y: auto;
-    position: relative;
-    padding: 40px 20px 20px 20px !important;
-}
