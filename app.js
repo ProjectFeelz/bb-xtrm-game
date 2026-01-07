@@ -63,37 +63,64 @@ async function manageCacheAndSW() {
     const now = Date.now();
     
     // If we've tried to boot multiple times in quick succession, clear everything
-    if (bootAttempts > 3 && (now - lastBootTime) < 5000) {
-        console.warn('⚠️ Boot loop detected, forcing cache clear...');
-        localStorage.clear();
-        sessionStorage.clear();
-        if ('caches' in window) {
-            const names = await caches.keys();
-            await Promise.all(names.map(name => caches.delete(name)));
-        }
-        // Don't reload - just continue with fresh state
-        sessionStorage.setItem('boot_attempts', '0');
-        return true;
+    if (bootAttempts > 5 && (now - lastBootTime) < 10000) {
+        console.warn('⚠️ Boot loop detected, clearing cache but PRESERVING AUTH');
+
+    // Preserve auth tokens
+    const authToken = localStorage.getItem('bb-xtrm-auth');
+    const supabaseAuth = localStorage.getItem('sb-qholvwlaeldvrlmvepnj-auth-token');
+
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Restore auth
+    if (authToken) localStorage.setItem('bb-xtrm-auth', authToken);
+    if (supabaseAuth) localStorage.setItem('sb-qholvwlaeldvrlmvepnj-auth-token', supabaseAuth);
     }
     
     // Track boot attempt
     sessionStorage.setItem('boot_attempts', (bootAttempts + 1).toString());
     sessionStorage.setItem('last_boot_time', now.toString());
     
-    // Clear boot attempts after successful load
+    // Clear boot attempts after successful load (increased time)
     setTimeout(() => {
-        sessionStorage.setItem('boot_attempts', '0');
-    }, 5000);
-    // Auto-clear cache every 24 hours
-    const lastCacheClear = localStorage.getItem('last_cache_clear');
-    const dayInMs = 24 * 60 * 60 * 1000;
+    sessionStorage.setItem('boot_attempts', '0');
+    }, 10000); // 10 seconds instead of 5
     
-    if (!lastCacheClear || (now - parseInt(lastCacheClear)) > dayInMs) {
-        console.log('🧹 Auto-clearing cache (24hr maintenance)...');
-        await clearAllCaches();
-        localStorage.setItem('last_cache_clear', now.toString());
-        localStorage.setItem('app_version', APP_VERSION);
+    // Only clear cache on version update
+if (storedVersion !== APP_VERSION) {
+    console.log('New version detected, clearing caches...');
+    
+    // Preserve auth BEFORE clearing
+    const authToken = localStorage.getItem('bb-xtrm-auth');
+    const supabaseAuth = localStorage.getItem('sb-qholvwlaeldvrlmvepnj-auth-token');
+    
+    // Clear all caches
+    if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
     }
+    
+    // Update service worker instead of unregistering
+    if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration) {
+            await registration.update();
+        }
+    }
+    
+    // Clear only session storage
+    sessionStorage.clear();
+    
+    // Restore auth
+    if (authToken) localStorage.setItem('bb-xtrm-auth', authToken);
+    if (supabaseAuth) localStorage.setItem('sb-qholvwlaeldvrlmvepnj-auth-token', supabaseAuth);
+    
+    // Update version
+    localStorage.setItem('app_version', APP_VERSION);
+    
+    console.log('✅ Cache cleared, auth preserved');
+}
     
     if (storedVersion !== APP_VERSION) {
         console.log('New version detected, clearing caches...');
@@ -130,22 +157,32 @@ async function manageCacheAndSW() {
 }
 async function clearAllCaches() {
     try {
+        // Preserve auth BEFORE clearing
+        const authToken = localStorage.getItem('bb-xtrm-auth');
+        const supabaseAuth = localStorage.getItem('sb-qholvwlaeldvrlmvepnj-auth-token');
+        
         if ('caches' in window) {
             const cacheNames = await caches.keys();
             await Promise.all(cacheNames.map(name => caches.delete(name)));
             console.log('✅ Browser caches cleared');
         }
         
+        // Don't unregister service worker - just update it
         if ('serviceWorker' in navigator) {
-            const registrations = await navigator.serviceWorker.getRegistrations();
-            for (const registration of registrations) {
-                await registration.unregister();
+            const registration = await navigator.serviceWorker.getRegistration();
+            if (registration) {
+                registration.update();
+                console.log('✅ Service worker updated');
             }
-            console.log('✅ Service workers unregistered');
         }
         
         sessionStorage.clear();
         console.log('✅ Session storage cleared');
+        
+        // Restore auth tokens
+        if (authToken) localStorage.setItem('bb-xtrm-auth', authToken);
+        if (supabaseAuth) localStorage.setItem('sb-qholvwlaeldvrlmvepnj-auth-token', supabaseAuth);
+        console.log('✅ Auth tokens preserved');
         
     } catch (error) {
         console.error('❌ Error clearing caches:', error);
@@ -156,45 +193,26 @@ async function forceResetApp() {
     if (!confirm('Reset app and clear all caches? You will stay logged in.')) {
         return;
     }
-async function checkCacheHealth() {
-    try {
-        if ('caches' in window) {
-            const cacheNames = await caches.keys();
-            
-            if (cacheNames.length > 10) {
-                console.warn('⚠️ Too many caches detected, cleaning up...');
-                await clearAllCaches();
-            }
-            
-            if ('storage' in navigator && 'estimate' in navigator.storage) {
-                const estimate = await navigator.storage.estimate();
-                const usageInMB = (estimate.usage / 1024 / 1024).toFixed(2);
-                
-                if (estimate.usage > 50 * 1024 * 1024) {
-                    console.warn('⚠️ Cache size too large, clearing...');
-                    await clearAllCaches();
-                }
-            }
-        }
-    } catch (error) {
-        console.error('Cache health check failed:', error);
-    }
-}
-
-setInterval(checkCacheHealth, 5 * 60 * 1000);
     
     try {
+        // Get current session BEFORE clearing
         const { data: { session } } = await supabaseClient.auth.getSession();
         
         await clearAllCaches();
+        
+        // Clear localStorage BUT preserve auth
+        const authToken = localStorage.getItem('bb-xtrm-auth');
+        const supabaseAuth = localStorage.getItem('sb-qholvwlaeldvrlmvepnj-auth-token');
+        
         localStorage.clear();
+        
+        // Restore auth tokens
+        if (authToken) localStorage.setItem('bb-xtrm-auth', authToken);
+        if (supabaseAuth) localStorage.setItem('sb-qholvwlaeldvrlmvepnj-auth-token', supabaseAuth);
+        
         sessionStorage.clear();
         
-        if (session) {
-            localStorage.setItem('bb-xtrm-auth', JSON.stringify(session));
-        }
-        
-        localStorage.setItem('app_version', '1.0.7');
+        localStorage.setItem('app_version', '1.0.8');
         
         playSuccess();
         alert('App reset complete! Reloading...');
@@ -1259,23 +1277,42 @@ function startTimer() {
     clearInterval(timerInterval);
     elements.timer.classList.remove('timer-low');
     
-    // Show time immediately before interval starts
-    const m = Math.floor(timeLeft / 60);
-    const s = timeLeft % 60;
-    elements.timer.textContent = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+    updateTimerDisplay();
+    
+    let lastUpdate = Date.now();
+    const UPDATE_INTERVAL = 1000;
     
     timerInterval = setInterval(() => {
+        const now = Date.now();
+        
+        if (now - lastUpdate < UPDATE_INTERVAL) return;
+        lastUpdate = now;
+        
         timeLeft--;
-        if (cooldownLeft > 0) { cooldownLeft--; updateCooldownUI(); }
+        
+        if (cooldownLeft > 0) { 
+            cooldownLeft--; 
+            updateCooldownUI(); 
+        }
+        
         if (timeLeft <= 10) {
             elements.timer.classList.add('timer-low');
-            playAlarmBuzz((10 - timeLeft) / 10);
-        } else { playTick(); }
-        const min = Math.floor(timeLeft / 60);
-        const sec = timeLeft % 60;
-        elements.timer.textContent = (min < 10 ? "0" + min : min) + ":" + (sec < 10 ? "0" + sec : sec);
-        if (timeLeft <= 0) { clearInterval(timerInterval); comboCount = 0; playError(); showScreen('screen-modes'); }
-    }, 1000);
+            if (timeLeft % 2 === 0) {
+                playAlarmBuzz((10 - timeLeft) / 10);
+            }
+        } else if (timeLeft % 5 === 0) {
+            playTick();
+        }
+        
+        updateTimerDisplay();
+        
+        if (timeLeft <= 0) { 
+            clearInterval(timerInterval); 
+            comboCount = 0; 
+            playError(); 
+            showScreen('screen-modes'); 
+        }
+    }, 100);
 }
 
 function attemptComplete() { if (cooldownLeft > 0) { showCheatError(); return; } completeTask(); }
