@@ -2139,69 +2139,80 @@ h2 {
     }
     
     /* Edit profile specific - extra bottom space */
-    #screen-edit-profile {
-        width: 100% !important;
-        padding: 0 !important;
-        padding-bottom: 150px !important;
-    }
-    
-    #screen-edit-profile .glass-panel {
-        padding: 15px !important;
-        margin-bottom: 15px !important;
-    }
-    
-    #screen-edit-profile .glass-panel:last-of-type {
-        margin-bottom: 80px !important;
-    }
-    
-    /* Save/Cancel buttons - sticky at bottom */
-    #screen-edit-profile > div:last-child {
-        position: sticky !important;
-        bottom: 20px !important;
-        background: linear-gradient(0deg, #141822 80%, transparent) !important;
-        padding: 20px 0 !important;
-        margin-top: 20px !important;
-        z-index: 10 !important;
-    }
-    
-    /* Close button - always visible */
-    .overlay .close-btn {
-        position: fixed !important;
-        top: 20px !important;
-        right: 20px !important;
-        z-index: 9999 !important;
-        background: rgba(0,0,0,0.7) !important;
-        width: 40px !important;
-        height: 40px !important;
-        border-radius: 50% !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-    
-    /* Profile avatar images visible */
-    .profile-avatar img,
-    .avatar-preview img {
-        display: block !important;
-        opacity: 1 !important;
-    }
-    
-    /* Avatar upload container - stacked on mobile */
-    .avatar-upload-container {
-        flex-direction: column !important;
-        align-items: center !important;
-        text-align: center !important;
-    }
-    
-    .avatar-preview {
-        width: 70px !important;
-        height: 70px !important;
-        margin-bottom: 15px !important;
-    }
-    
-    .avatar-upload-btns {
-        width: 100% !important;
-    }
+    /* Edit profile specific - extra bottom space */
+#screen-edit-profile {
+    width: 100% !important;
+    padding: 0 !important;
+    padding-bottom: 150px !important;
+}
+
+/* Remove glass panel container on mobile - fields render directly */
+#screen-edit-profile .glass-panel {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin-bottom: 15px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+#screen-edit-profile .glass-panel::before {
+    display: none !important;
+}
+
+#screen-edit-profile .glass-panel:last-of-type {
+    margin-bottom: 80px !important;
+}
+
+/* Save/Cancel buttons - sticky at bottom */
+#screen-edit-profile > div:last-child {
+    position: sticky !important;
+    bottom: 20px !important;
+    background: linear-gradient(0deg, #141822 80%, transparent) !important;
+    padding: 20px 0 !important;
+    margin-top: 20px !important;
+    z-index: 10 !important;
+}
+
+/* Close button - always visible */
+.overlay .close-btn {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    z-index: 9999 !important;
+    background: rgba(0,0,0,0.7) !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Profile avatar images visible */
+.profile-avatar img,
+.avatar-preview img {
+    display: block !important;
+    opacity: 1 !important;
+}
+
+/* Avatar upload container - stacked on mobile */
+.avatar-upload-container {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+}
+
+.avatar-preview {
+    width: 70px !important;
+    height: 70px !important;
+    margin-bottom: 15px !important;
+}
+
+.avatar-upload-btns {
+    width: 100% !important;
+}
     
     #console {
         border-radius: 0 !important;
