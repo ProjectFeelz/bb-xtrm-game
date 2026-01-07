@@ -643,7 +643,7 @@ h2 {
     width: 100%;
     max-width: 440px;
     max-height: 100vh;
-    height: auto;
+    height: 100;
     overflow-y: auto;
     background: linear-gradient(135deg, #1e2533 0%, #141822 100%);
     border-radius: 20px;
