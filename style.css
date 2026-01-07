@@ -2111,21 +2111,28 @@ h2 {
         padding: 0 !important;
         inset: 0 !important;
     }
-    
     .overlay-content {
-    max-width: 100vw !important;
-    max-height: none !important;  /* ← Remove height limit */
-    width: 100vw !important;
-    min-height: 100dvh !important;  /* ← Use dvh for better mobile support */
-    height: auto !important;  /* ← ADDED: allows content to expand */
-    border-radius: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    padding-top: 45px !important;
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-    padding-bottom: 200px !important;  /* ← CHANGED: Add bottom padding for scroll space */
-}
+        max-width: 100vw !important;
+        width: 100vw !important;
+        min-height: 100vh !important;
+        height: auto !important;
+        max-height: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        padding: 60px 20px 280px 20px !important;
+        overflow-y: scroll !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* Make sure edit profile form has extra bottom space */
+    #screen-edit-profile .glass-panel:last-of-type {
+        margin-bottom: 120px !important;
+    }
+    /* Keep save/cancel buttons visible */
+    #screen-edit-profile > div:last-child {
+        margin-top: 30px !important;
+        padding-bottom: 20px !important;
+    }
     
     /* ← ADD THIS NEW SECTION ← */
     .profile-avatar img {
